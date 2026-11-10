@@ -1,5 +1,6 @@
 stow
 shell
+common-tools
 tmux
 vim
 telegram

@@ -7,7 +7,7 @@ if [[ -x "$HOME/.local/bin/nvim" || -x /usr/local/bin/nvim ]]; then
 fi
 
 package_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
-. "$package_dir/../../share/debian-install.sh"
+. "$package_dir/../../share/install.sh"
 commit=c868e1ab3d11ac2a0cc3c284b16808f3de5adf31
 prefix="$HOME/.local/opt/neovim-$commit"
 link="$HOME/.local/bin/nvim"

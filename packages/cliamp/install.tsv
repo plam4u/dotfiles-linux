@@ -2,3 +2,6 @@
 debian	apt	curl
 debian	apt	libasound2t64
 debian	script	install.sh
+arch	pacman	curl
+arch	pacman	alsa-lib
+arch	script	install.sh

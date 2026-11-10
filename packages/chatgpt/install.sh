@@ -6,5 +6,5 @@ if [[ $(dpkg --print-architecture) != amd64 ]]; then
     exit 1
 fi
 package_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
-. "$package_dir/../../share/debian-install.sh"
+. "$package_dir/../../share/install.sh"
 install_vendor_package chatgpt "$package_dir/defaults" chatgpt.sources

@@ -6,4 +6,4 @@
 !packages/
 !packages/**
 !share/
-!share/debian-install.sh
+!share/install.sh

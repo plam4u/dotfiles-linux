@@ -6,3 +6,4 @@ debian	apt	gettext
 debian	apt	git
 debian	apt	ninja-build
 debian	script	install.sh
+arch	pacman	neovim

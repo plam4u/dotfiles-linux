@@ -2,3 +2,4 @@
 debian	apt	curl
 debian	apt	yt-dlp
 debian	script	install.sh
+arch	pacman	yt-dlp

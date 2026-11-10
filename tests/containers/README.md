@@ -19,6 +19,9 @@ pm install --dry-run --bundle starter
 pm install tmux vim
 ```
 
+Inside the Arch container, preview the full Arch package selection with
+`pm install --dry-run --bundle arch-workstation`.
+
 For commands that write to the checkout, such as `pm add`, make a writable
 copy inside the container.
 

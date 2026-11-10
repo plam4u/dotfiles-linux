@@ -1,3 +1,4 @@
 # distro	installer	target
 debian	apt	emacs
 debian	apt	emacs-common-non-dfsg
+arch	pacman	emacs

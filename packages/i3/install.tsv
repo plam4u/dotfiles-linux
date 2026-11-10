@@ -11,3 +11,17 @@ debian	apt	rofi
 debian	apt	x11-utils
 debian	apt	xdotool
 debian	apt	xss-lock
+arch	pacman	arandr
+arch	pacman	dex
+arch	pacman	dunst
+arch	pacman	feh
+arch	pacman	i3-wm
+arch	pacman	i3lock
+arch	pacman	i3status
+arch	pacman	picom
+arch	pacman	rofi
+arch	pacman	xdotool
+arch	pacman	xorg-server
+arch	pacman	xorg-xinit
+arch	pacman	xorg-xprop
+arch	pacman	xss-lock

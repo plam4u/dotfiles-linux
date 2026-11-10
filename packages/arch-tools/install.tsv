@@ -1,0 +1,22 @@
+# distro	installer	target
+arch	pacman	base-devel
+arch	pacman	blueman
+arch	pacman	bluez
+arch	pacman	bluez-utils
+arch	pacman	cmake
+arch	pacman	cronie
+arch	pacman	keyd
+arch	pacman	logrotate
+arch	pacman	mesa-utils
+arch	pacman	network-manager-applet
+arch	pacman	nftables
+arch	pacman	ninja
+arch	pacman	pavucontrol
+arch	pacman	pipewire-alsa
+arch	pacman	pipewire-audio
+arch	pacman	pipewire-pulse
+arch	pacman	pulsemixer
+arch	pacman	samba
+arch	pacman	smartmontools
+arch	pacman	wireplumber
+arch	pacman	wpa_supplicant

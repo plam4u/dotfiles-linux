@@ -14,20 +14,24 @@ because the config links point into it.
 ```
 
 Bundles run in file order. `starter` installs GNU Stow first, then the shell
-package, tmux and its `xclip` helper, Vim, Telegram, and Docker. It links the
-shell, tmux, and Vim configs. A dry run on a system without Stow shows that
-linking is planned. Stow can check the individual paths once it is installed.
-Use `starter` for a shared Debian or Arch setup and `debian-workstation` for
-the full Debian restore, which includes the same packages.
+package, common tools, tmux and its `xclip` helper, Vim, Telegram, and Docker.
+It links the shell, tmux, and Vim configs. A dry run on a system without Stow
+shows that linking is planned. Stow can check the individual paths once it is
+installed. Both workstation bundles already include the starter packages.
+
+`common-tools` contains utilities such as Git, `curl`, `jq`, `fzf`, and
+`ffmpeg`. It has explicit APT and pacman mappings for differences such as
+Debian's `bind9-dnsutils` and `bind9-host`, which Arch supplies through `bind`.
+Use `./bin/pm install common-tools` to install just those utilities.
 
 For a smaller setup, run `./bin/pm install stow shell tmux vim`. Telegram uses system
 Flathub. Docker uses its vendor APT source on Debian 13 and the native package
 on Arch. The Debian dry run shows the path to Docker's install script.
 
-Both `starter` and `debian-workstation` include `shell`. Open a new Bash or Zsh
-session after installing to use `pm` from any directory. The shared PATH
-snippet finds the checkout through its Stow symlink. Packages can add shell
-fragments by putting `.sh` files under `stow/.bashrc.d/` or `stow/.zshrc.d/`.
+Open a new Bash or Zsh session after installing `shell` to use `pm` from any
+directory. The shared PATH snippet finds the checkout through its Stow
+symlink. Packages can add shell fragments by putting `.sh` files under
+`stow/.bashrc.d/` or `stow/.zshrc.d/`.
 
 ## Debian workstation packages
 
@@ -72,6 +76,26 @@ versions, architectures, and restore paths. Debian's installer and APT
 dependencies cover the system base. The bundle installs the OpenSSH server.
 Restore any existing SSH server configuration and host keys separately when
 migrating its identity.
+
+## Arch workstation packages
+
+On an up-to-date Arch x86-64 install, run from the checkout:
+
+```bash
+./bin/pm install --dry-run --bundle arch-workstation
+./bin/pm install --bundle arch-workstation
+```
+
+`arch-workstation` installs the shared tools, Arch development and desktop
+dependencies, XFCE, i3, OpenSSH, and Docker with Compose and Buildx. Arch uses
+its repository versions of Obsidian, Neovim, and yt-dlp. CLIamp uses the pinned
+upstream binary. Brave and Telegram use Flathub. Start the services you use
+after configuration, such as `lightdm.service`, `sshd.service`, or
+`docker.service`.
+
+Steam is an optional install on Arch. Enable `multilib` and fully update the
+system before running `pm install steam`. The ChatGPT APT package and the
+iMac firmware profile target Debian.
 
 ## Existing config files
 

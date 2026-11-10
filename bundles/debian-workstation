@@ -1,6 +1,7 @@
 debian-apt
 stow
 shell
+common-tools
 debian-tools
 tmux
 vim

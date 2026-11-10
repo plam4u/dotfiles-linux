@@ -1,3 +1,4 @@
 # distro	installer	target
 debian	apt	curl
 debian	script	install.sh
+arch	pacman	obsidian

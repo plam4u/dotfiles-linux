@@ -11,7 +11,7 @@ if [[ $(dpkg --print-architecture) != amd64 ]]; then
 fi
 
 package_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
-. "$package_dir/../../share/debian-install.sh"
+. "$package_dir/../../share/install.sh"
 work_dir=$(mktemp -d)
 trap 'rm -r -- "$work_dir"' EXIT
 version=1.15.0
