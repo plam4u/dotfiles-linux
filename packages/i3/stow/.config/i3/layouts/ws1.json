@@ -1,0 +1,26 @@
+{
+  "type": "con",
+  "layout": "splith",
+  "nodes": [
+    {
+      "type": "con",
+      "border": "normal",
+      "percent": 0.6,
+      "swallows": [
+        {
+          "class": "^DevTerminal$"
+        }
+      ]
+    },
+    {
+      "type": "con",
+      "border": "normal",
+      "percent": 0.4,
+      "swallows": [
+        {
+          "class": "^Chatgpt$"
+        }
+      ]
+    }
+  ]
+}

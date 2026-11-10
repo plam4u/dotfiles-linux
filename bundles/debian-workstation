@@ -3,6 +3,7 @@ stow
 shell
 common-tools
 debian-tools
+deno
 tmux
 vim
 emacs

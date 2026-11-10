@@ -1,0 +1,28 @@
+{
+  "type": "con",
+  "layout": "splith",
+  "nodes": [
+    {
+      "type": "con",
+      "name": "Telegram",
+      "border": "normal",
+      "percent": 0.5,
+      "swallows": [
+        {
+          "class": "^TelegramDesktop$"
+        }
+      ]
+    },
+    {
+      "type": "con",
+      "name": "WhatsApp Web",
+      "border": "normal",
+      "percent": 0.5,
+      "swallows": [
+        {
+          "instance": "^crx_hnpfjngllnobngcgfapefoaidbinmjnm$"
+        }
+      ]
+    }
+  ]
+}

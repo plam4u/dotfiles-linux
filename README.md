@@ -33,6 +33,10 @@ directory. The shared PATH snippet finds the checkout through its Stow
 symlink. Packages can add shell fragments by putting `.sh` files under
 `stow/.bashrc.d/` or `stow/.zshrc.d/`.
 
+The shell package also restores `.profile` for login shells. Both workstation
+bundles include the pinned Deno 2.9.8 installer for Linux x86-64. It uses
+`~/.deno/bin` and generates missing Bash and Zsh completions.
+
 ## Debian workstation packages
 
 The `debian-workstation` bundle targets Debian 13 on amd64. It starts with
@@ -96,6 +100,24 @@ after configuration, such as `lightdm.service`, `sshd.service`, or
 Steam is an optional install on Arch. Enable `multilib` and fully update the
 system before running `pm install steam`. The ChatGPT APT package and the
 iMac firmware profile target Debian.
+
+## i3 and XFCE Terminal settings
+
+Both workstation bundles link the i3 config, its startup and scratchpad
+scripts, and the three saved workspace layout files. On login, i3 launches
+Flatpak Telegram and uses the available Brave install. The WhatsApp launcher
+runs when its desktop entry has been restored or recreated.
+
+After installing `xfce4-terminal`, close XFCE Terminal and run its settings
+restore from another terminal in the same desktop session:
+
+```bash
+bash packages/xfce4-terminal/post-install.sh
+```
+
+The script applies the recorded terminal settings through Xfconf and copies
+the shortcut and legacy config files into place, backing up files it changes.
+Open XFCE Terminal afterward to load the restored shortcuts.
 
 ## Existing config files
 

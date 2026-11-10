@@ -2,6 +2,7 @@ stow
 shell
 common-tools
 arch-tools
+deno
 tmux
 vim
 emacs

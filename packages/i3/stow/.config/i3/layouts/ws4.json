@@ -1,0 +1,39 @@
+{
+  "type": "con",
+  "layout": "splith",
+  "nodes": [
+    {
+      "type": "con",
+      "name": "YouTube",
+      "border": "normal",
+      "percent": 0.3333333333333333,
+      "swallows": [
+        {
+          "instance": "^crx_agimnkijcaahngcdmfeangaknmldooml$"
+        }
+      ]
+    },
+    {
+      "type": "con",
+      "name": "Twitch",
+      "border": "normal",
+      "percent": 0.3333333333333333,
+      "swallows": [
+        {
+          "instance": "^crx_idniplokpnmiplmpfgamffjpfbfemgim$"
+        }
+      ]
+    },
+    {
+      "type": "con",
+      "name": "Plex",
+      "border": "normal",
+      "percent": 0.3333333333333334,
+      "swallows": [
+        {
+          "instance": "^crx_bdlnfdpdhknidkahpgicifonclffkmck$"
+        }
+      ]
+    }
+  ]
+}
