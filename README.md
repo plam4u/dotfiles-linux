@@ -2,31 +2,38 @@
 
 `pm` installs packages and links configuration files into your home directory.
 
-## One-command Debian setup
+## Quick start
 
-On fresh Debian 13 (amd64), run this command as your regular user with
-`sudo` access. For a workstation restore, use a text console before signing
-into XFCE, or after signing out of it.
+On Debian 13 or an up-to-date Arch Linux system (x86-64), run these as your
+regular user with `sudo` access.
 
 ```bash
 wget -O- https://github.com/plam4u/dotfiles-debian/raw/main/install.sh | bash
+~/dotfiles-debian/bootstrap.sh
 ```
 
-The launcher installs Git if needed, clones the public repo to
-`~/dotfiles-debian`, and opens a menu. Press Enter for **Debian workstation**
-on a VM or PC. Choose **Starter** for the smaller bundle. On an iMac12,2 the
-menu also offers the workstation with its hardware settings. If `wget` is
-missing on a minimal install, run `sudo apt install wget` first.
+On Arch, you can use `curl -fsSL` in place of `wget -O-`.
 
-The workstation profiles install Restic and run the XFCE desktop, XFCE
-Terminal, btop, htop, and CLIamp settings restores. Reboot or sign in to XFCE
-when setup finishes. The [Restic recovery](#back-up-and-restore-the-imac-system-settings)
-commands handle your encrypted backup separately.
+The first command installs Git if needed and clones the public repo to
+`~/dotfiles-debian`. The second installs GNU Stow, Bash and Zsh setup, tmux
+with xclip, and Vim. GNU Stow links each package's saved config after its
+installation. Open a new shell to use `pm` from anywhere. Keep the checkout in
+a stable location because the config links point into it.
 
-From an existing checkout, run `./bootstrap.sh` for the same menu or
-`./bootstrap.sh --profile workstation --dry-run` to preview the package
-installation. Keep the checkout in a stable location because the config
-links point into it.
+To preview the basics, run `~/dotfiles-debian/bootstrap.sh --dry-run`.
+From the checkout, you can also choose exact packages or combine them with
+a bundle:
+
+```bash
+./bin/pm install --dry-run vim tmux
+./bin/pm install --bundle starter restic
+```
+
+Bundles are plain lists in [`bundles/`](bundles/). For the full desktop and
+app setup, run `./bootstrap.sh --profile workstation --dry-run` to see the
+package plan. Run it without `--dry-run` from a text console after signing
+out of XFCE to apply it. The workstation profile chooses the Debian or Arch
+bundle and applies the saved desktop and app settings.
 
 ## Starter bundle
 
@@ -41,9 +48,9 @@ installed. Both workstation bundles already include the starter packages.
 Debian's `bind9-dnsutils` and `bind9-host`, which Arch supplies through `bind`.
 Use `./bin/pm install common-tools` to install just those utilities.
 
-For a smaller setup, run `./bin/pm install stow shell tmux vim`. Telegram uses system
-Flathub. Docker uses its vendor APT source on Debian 13 and the native package
-on Arch. The Debian dry run shows the path to Docker's install script.
+Telegram uses system Flathub. Docker uses its vendor APT source on Debian 13
+and the native package on Arch. The Debian dry run shows the path to Docker's
+install script.
 
 Open a new Bash or Zsh session after installing `shell` to use `pm` from any
 directory. The shared PATH snippet finds the checkout through its Stow
@@ -66,8 +73,8 @@ AMD Radeon GPU. It installs AMD, Intel, and miscellaneous firmware plus Intel
 microcode. Use it when reinstalling this iMac or after checking the hardware
 on another machine.
 
-The bootstrap applies the workstation setup and its configuration follow-ups
-in order. To run just the package bundle from an existing checkout, use
+The workstation bootstrap profile applies the package bundle and configuration
+follow-ups in order. To run just the package bundle from an existing checkout, use
 `./bin/pm install --bundle debian-workstation`.
 
 To preview both bundles together for the iMac:
@@ -99,7 +106,7 @@ migrating its identity.
 ### Back up and restore the iMac system settings
 
 Run these from the checkout as your regular user with your initialized
-repository. The Debian workstation bootstrap installs Restic. For a manual
+repository. The workstation bootstrap profile installs Restic. For a manual
 setup, run `./bin/pm install restic`.
 
 ```bash
@@ -169,7 +176,7 @@ iMac firmware profile target Debian.
 
 ## Desktop settings and fonts
 
-The Debian bootstrap runs the settings restores in this section. Use the
+The workstation bootstrap profile runs the settings restores in this section. Use the
 commands below to apply them individually.
 
 Both workstation bundles link the i3 config, its startup and scratchpad
@@ -219,7 +226,7 @@ Both workstation bundles link the saved Emacs init at
 `~/.emacs.el`, or `~/.emacs.d/` ahead of the XDG location.
 
 The btop, htop, and CLIamp snapshots are restored as writable files under
-`$XDG_CONFIG_HOME` or `~/.config`. The Debian bootstrap applies them. For a
+`$XDG_CONFIG_HOME` or `~/.config`. The workstation bootstrap applies them. For a
 manual restore, preview from the checkout, close the apps, then rerun the
 desired commands without `--dry-run`. Changed files get numbered backups beside
 the originals.

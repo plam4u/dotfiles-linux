@@ -19,7 +19,7 @@ fi
 if [[ ! -x $prefix/bin/nvim ]]; then
     mkdir -p -- "$HOME/.local/opt"
     work_dir=$(mktemp -d "$HOME/.local/opt/.neovim-build.XXXXXX")
-    trap 'rm -r -- "$work_dir"' EXIT
+    trap 'rm -rf -- "$work_dir"' EXIT
     if [[ $(dpkg --print-architecture) == amd64 ]] && download_verified \
         https://github.com/neovim/neovim/releases/download/nightly/nvim-linux-x86_64.tar.gz \
         25b78146d4d8772e47a07b101f76c14e1ac77e60dd09b455883a0deccc370978 \

@@ -4,3 +4,4 @@ debian	apt	xfconf
 debian	apt	dbus-daemon
 arch	pacman	xfce4-terminal
 arch	pacman	xfconf
+arch	pacman	dbus

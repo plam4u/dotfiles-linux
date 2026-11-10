@@ -3,18 +3,27 @@ set -euo pipefail
 
 install_dotfiles() {
     if (( EUID == 0 )); then
-        printf 'Run the bootstrap as your regular user. It requests sudo when needed.\n' >&2
+        printf 'Run the installer as your regular user. It requests sudo when needed.\n' >&2
         exit 1
     fi
     . /etc/os-release
-    if [[ ${ID:-} != debian || ${VERSION_CODENAME:-} != trixie || $(dpkg --print-architecture) != amd64 ]]; then
-        printf 'This bootstrap requires Debian 13 (amd64).\n' >&2
+    case ${ID:-}:${VERSION_CODENAME:-} in
+        debian:trixie|arch:*) ;;
+        *) printf 'This installer supports Debian 13 and Arch Linux.\n' >&2; exit 1 ;;
+    esac
+    if [[ $(uname -m) != x86_64 ]]; then
+        printf 'This installer requires an x86-64 system.\n' >&2
         exit 1
     fi
 
     if ! command -v git >/dev/null; then
-        sudo apt-get update
-        sudo apt-get install -y git ca-certificates
+        case $ID in
+            debian)
+                sudo apt-get update
+                sudo apt-get install -y git ca-certificates
+                ;;
+            arch) sudo pacman -S --needed --noconfirm git ;;
+        esac
     fi
 
     local checkout="$HOME/dotfiles-debian"
@@ -36,11 +45,7 @@ install_dotfiles() {
         GIT_TERMINAL_PROMPT=0 git clone --branch main -- "$remote" "$checkout"
     fi
 
-    # Read menu input from the terminal when the launcher arrives over a pipe.
-    if [[ ! -t 0 && -t 1 ]]; then
-        exec </dev/tty
-    fi
-    exec bash "$checkout/bootstrap.sh" "$@"
+    printf '\nRun this to install the basics:\n  %q\n' "$checkout/bootstrap.sh"
 }
 
-install_dotfiles "$@"
+install_dotfiles
