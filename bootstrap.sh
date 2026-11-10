@@ -41,7 +41,10 @@ if [[ -z $profile ]]; then
     if [[ $model == iMac12,2 ]]; then
         printf '3) iMac12,2 workstation and hardware settings\n'
     fi
-    read -r -p 'Select a profile [1] ' choice
+    if ! read -r -p 'Select a profile [1] ' choice; then
+        printf 'Choose a profile in a terminal or pass --profile.\n' >&2
+        exit 1
+    fi
     case ${choice:-1} in
         1) profile=workstation ;;
         2) profile=starter ;;

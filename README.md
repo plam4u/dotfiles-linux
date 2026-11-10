@@ -4,22 +4,19 @@
 
 ## One-command Debian setup
 
-On fresh Debian 13 (amd64), paste this command as your regular user with
+On fresh Debian 13 (amd64), run this command as your regular user with
 `sudo` access. For a workstation restore, use a text console before signing
 into XFCE, or after signing out of it.
 
 ```bash
-sudo apt-get update && sudo apt-get install -y gh git ca-certificates \
-  && (gh auth status --hostname github.com >/dev/null 2>&1 || gh auth login --hostname github.com --git-protocol https --web) \
-  && bootstrap=$(gh api -H 'Accept: application/vnd.github.raw+json' 'repos/plam4u/dotfiles-debian/contents/remote-install.sh?ref=main') \
-  && bash -c "$bootstrap"
+wget -O- https://github.com/plam4u/dotfiles-debian/raw/main/install.sh | bash
 ```
 
-GitHub sign-in grants access to the private repo. You can enter the one-time
-code in a browser on another device. The launcher clones the repo to
-`~/dotfiles-debian` and opens a menu. Press Enter for **Debian workstation**
+The launcher installs Git if needed, clones the public repo to
+`~/dotfiles-debian`, and opens a menu. Press Enter for **Debian workstation**
 on a VM or PC. Choose **Starter** for the smaller bundle. On an iMac12,2 the
-menu also offers the workstation with its hardware settings.
+menu also offers the workstation with its hardware settings. If `wget` is
+missing on a minimal install, run `sudo apt install wget` first.
 
 The workstation profiles install Restic and run the XFCE desktop, XFCE
 Terminal, btop, htop, and CLIamp settings restores. Reboot or sign in to XFCE
