@@ -23,6 +23,39 @@ For a smaller setup, run `pm install stow tmux vim`. Telegram uses system
 Flathub. Docker uses its vendor APT source on Debian 13 and the native package
 on Arch. The Debian dry run shows the path to Docker's install script.
 
+## Debian workstation packages
+
+The `debian-workstation` bundle targets Debian 13 on amd64. It starts with
+the Debian source setup, then installs the recorded desktop, development,
+multimedia, networking, and app packages. The `debian-hardware` bundle adds
+the firmware and Intel microcode from this machine.
+
+```bash
+pm install --dry-run --bundle debian-workstation
+bash packages/debian-apt/install.sh --dry-run
+pm install --bundle debian-workstation
+```
+
+The APT setup adds missing entries for the official Debian mirrors in
+`/etc/apt/sources.list.d/pm-debian.sources`. Existing `.list` and `.sources`
+entries are used as coverage and left in place. A changed managed file is
+backed up. Backports stays available for explicit use. Telegram is installed
+via Flatpak. Steam enables the Debian `i386` architecture before installing
+the required 32-bit graphics packages.
+
+Brave, ChatGPT, and Docker use their own APT repositories. Obsidian, CLIamp,
+and the user copy of yt-dlp use checksummed upstream releases. Neovim uses
+the checksummed nightly archive when it matches the recorded build, with a
+source build from the recorded commit as a fallback. CLIamp, Neovim, and the
+upstream yt-dlp copy install under `~/.local/`. Ensure `~/.local/bin` is on
+your `PATH`.
+
+See the [APT inventory](docs/debian-packages.tsv) for the original package
+versions, architectures, and restore paths. Debian's installer and APT
+dependencies cover the system base. The bundle installs the OpenSSH server.
+Restore any existing SSH server configuration and host keys separately when
+migrating its identity.
+
 ## Existing config files
 
 `pm install` and `pm stow` save conflicting regular files beside the originals

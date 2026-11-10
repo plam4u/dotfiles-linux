@@ -1,0 +1,13 @@
+# distro	installer	target
+debian	apt	arandr
+debian	apt	dex
+debian	apt	dunst
+debian	apt	feh
+debian	apt	i3
+debian	apt	i3lock
+debian	apt	i3status
+debian	apt	picom
+debian	apt	rofi
+debian	apt	x11-utils
+debian	apt	xdotool
+debian	apt	xss-lock

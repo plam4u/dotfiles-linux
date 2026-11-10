@@ -1,0 +1,2 @@
+# distro	installer	target
+debian	script	install.sh

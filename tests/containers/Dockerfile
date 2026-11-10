@@ -3,6 +3,7 @@ FROM scratch AS checkout
 COPY bin/pm /workspace/bin/pm
 COPY bundles/ /workspace/bundles/
 COPY packages/ /workspace/packages/
+COPY share/ /workspace/share/
 
 FROM debian:13-slim AS debian
 

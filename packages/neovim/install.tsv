@@ -1,0 +1,8 @@
+# distro	installer	target
+debian	apt	build-essential
+debian	apt	cmake
+debian	apt	curl
+debian	apt	gettext
+debian	apt	git
+debian	apt	ninja-build
+debian	script	install.sh

@@ -1,0 +1,4 @@
+# distro	installer	target
+debian	apt	curl
+debian	apt	libasound2t64
+debian	script	install.sh

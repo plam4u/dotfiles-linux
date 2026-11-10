@@ -1,0 +1,4 @@
+# distro	installer	target
+debian	apt	curl
+debian	apt	yt-dlp
+debian	script	install.sh

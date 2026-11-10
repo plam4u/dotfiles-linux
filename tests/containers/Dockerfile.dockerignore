@@ -5,3 +5,5 @@
 !bundles/**
 !packages/
 !packages/**
+!share/
+!share/debian-install.sh

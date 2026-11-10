@@ -1,0 +1,5 @@
+# distro	installer	target
+debian	apt	firmware-amd-graphics
+debian	apt	firmware-intel-graphics
+debian	apt	firmware-misc-nonfree
+debian	apt	intel-microcode

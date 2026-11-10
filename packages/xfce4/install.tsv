@@ -1,0 +1,4 @@
+# distro	installer	target
+debian	apt	task-xfce-desktop
+debian	apt	xfce4-goodies
+debian	apt	xfce4-power-manager

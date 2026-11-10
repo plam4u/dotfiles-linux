@@ -1,0 +1,280 @@
+package	version	architecture	APT origin (installed version)	restore path
+adduser	3.152	all	Debian	Debian installer or dependency
+apt	3.0.4	amd64	Debian	Debian installer or dependency
+apt-listchanges	4.8	all	Debian	debian-tools
+apt-utils	3.0.4	amd64	Debian	debian-tools
+arandr	0.1.11-2	all	Debian	i3
+base-files	13.8+deb13u7	amd64	Debian	Debian installer or dependency
+base-passwd	3.6.7	amd64	Debian	Debian installer or dependency
+bash	5.2.37-2+b10	amd64	Debian	Debian installer or dependency
+bash-completion	1:2.16.0-7	all	Debian	debian-tools
+bind9-dnsutils	1:9.20.30-1~deb13u1	amd64	Debian	debian-tools
+bind9-host	1:9.20.30-1~deb13u1	amd64	Debian	debian-tools
+blueman	2.4.4-1	amd64	Debian	debian-tools
+bluez	5.82-1.1	amd64	Debian	debian-tools
+brave-browser	1.99.55	amd64	Brave Software	brave-browser
+bsdutils	1:2.41.5-0+deb13u1	amd64	Debian	Debian installer or dependency
+btop	1.3.2-0.1	amd64	Debian	debian-tools
+build-essential	12.12	amd64	Debian	neovim
+busybox	1:1.37.0-6+b9	amd64	Debian	Debian installer or dependency
+bzip2	1.0.8-6	amd64	Debian	debian-tools
+ca-certificates	20250419+deb13u1	all	Debian	debian-tools
+chatgpt	26.1103.32239	amd64	installed version absent from APT indexes	chatgpt
+cmake	3.31.6-2	amd64	Debian	neovim
+console-setup	1.242~deb13u1	all	Debian	Debian installer or dependency
+containerd.io	2.4.2-3~debian.13~trixie	amd64	Docker	docker
+coreutils	9.7-3	amd64	Debian	Debian installer or dependency
+cpio	2.15+dfsg-2	amd64	Debian	Debian installer or dependency
+cpp-doc	5:14.2.0-1	amd64	Debian	debian-tools
+cron	3.0pl1-197	amd64	Debian	debian-tools
+cron-daemon-common	3.0pl1-197	all	Debian	Debian installer or dependency
+curl	8.14.1-2+deb13u7	amd64	Debian	cliamp
+dash	0.5.12-12	amd64	Debian	Debian installer or dependency
+dbus	1.16.2-2	amd64	Debian	Debian installer or dependency
+debconf	1.5.91	all	Debian	Debian installer or dependency
+debconf-i18n	1.5.91	all	Debian	Debian installer or dependency
+debian-archive-keyring	2025.1	all	Debian	Debian installer or dependency
+debian-faq	12.2	all	Debian	Debian installer or dependency
+debianutils	5.23.2	amd64	Debian	Debian installer or dependency
+dhcpcd-base	1:10.1.0-11+deb13u4	amd64	Debian	Debian installer or dependency
+diffutils	1:3.10-4	amd64	Debian	Debian installer or dependency
+dmidecode	3.6-2	amd64	Debian	debian-tools
+doc-debian	11.3+nmu1	all	Debian	Debian installer or dependency
+docker-buildx-plugin	0.38.1-1~debian.13~trixie	amd64	Docker	docker
+docker-ce	5:29.9.3-1~debian.13~trixie	amd64	Docker	docker
+docker-ce-cli	5:29.9.3-1~debian.13~trixie	amd64	Docker	docker
+docker-compose-plugin	5.7.0-1~debian.13~trixie	amd64	Docker	docker
+dosfstools	4.2-1.2	amd64	Debian	Debian installer or dependency
+dpkg	1.22.22	amd64	Debian	Debian installer or dependency
+e2fsprogs	1.47.2-3+b12	amd64	Debian	Debian installer or dependency
+efibootmgr	18-2	amd64	Debian	Debian installer or dependency
+eject	2.41.5-0+deb13u1	amd64	Debian	Debian installer or dependency
+emacs	1:30.1+1-6+deb13u1	all	Debian	emacs
+emacs-common-non-dfsg	1:30.1+1-1	all	Debian	emacs
+fastfetch	2.40.4+dfsg-1	amd64	Debian	debian-tools
+fdisk	2.41.5-0+deb13u1	amd64	Debian	Debian installer or dependency
+feh	3.10.3-1	amd64	Debian	i3
+ffmpeg	7:7.1.5-0+deb13u1	amd64	Debian	debian-tools
+file	1:5.46-5	amd64	Debian	debian-tools
+findutils	4.10.0-3	amd64	Debian	Debian installer or dependency
+firmware-amd-graphics	20250410-2	all	Debian	debian-firmware
+firmware-intel-graphics	20250410-2	all	Debian	debian-firmware
+firmware-misc-nonfree	20250410-2	all	Debian	debian-firmware
+flatpak	1.16.6-1~deb13u3	amd64	Debian	telegram (Flatpak runtime)
+fzf	0.60.3-1+b2	amd64	Debian	debian-tools
+gcc-14-base	14.2.0-19	amd64	Debian	Debian installer or dependency
+gcc-doc	5:14.2.0-1	amd64	Debian	debian-tools
+gdb	16.3-1	amd64	Debian	debian-tools
+gdb-doc	16.3-1	all	Debian	debian-tools
+gettext	0.23.1-2	amd64	Debian	debian-tools
+gettext-base	0.23.1-2	amd64	Debian	Debian installer or dependency
+git	1:2.47.3-0+deb13u1	amd64	Debian	debian-tools
+glibc-doc	2.41-12+deb13u4	all	Debian	debian-tools
+glibc-doc-reference	2.41-1	all	Debian	debian-tools
+grep	3.11-4	amd64	Debian	Debian installer or dependency
+groff-base	1.23.0-9	amd64	Debian	Debian installer or dependency
+grub-common	2.12-9+deb13u2	amd64	Debian	Debian installer or dependency
+grub-efi-amd64	2.12-9+deb13u2	amd64	Debian	Debian installer or dependency
+gzip	1.13-1+deb13u1	amd64	Debian	Debian installer or dependency
+hostname	3.25	amd64	Debian	Debian installer or dependency
+htop	3.4.1-5	amd64	Debian	debian-tools
+i3	4.24-1	amd64	Debian	i3
+ifupdown	0.8.44+deb13u1	amd64	Debian	Debian installer or dependency
+inetutils-telnet	2:2.6-3+deb13u3	amd64	Debian	debian-tools
+info	7.1.1-1+b1	amd64	Debian	debian-tools
+init	1.69~deb13u1	amd64	Debian	Debian installer or dependency
+init-system-helpers	1.69~deb13u1	all	Debian	Debian installer or dependency
+initramfs-tools	0.148.4	all	Debian	Debian installer or dependency
+installation-report	2.97	all	Debian	Debian installer or dependency
+intel-microcode	3.20251111.1~deb13u1	amd64	Debian	debian-firmware
+iproute2	6.15.0-1	amd64	Debian	Debian installer or dependency
+iputils-ping	3:20240905-3	amd64	Debian	Debian installer or dependency
+jq	1.7.1-6+deb13u4	amd64	Debian	debian-tools
+keyboard-configuration	1.242~deb13u1	all	Debian	Debian installer or dependency
+keyd	2.5.0-4	amd64	Debian	debian-tools
+kmod	34.2-2	amd64	Debian	Debian installer or dependency
+krb5-locales	1.21.3-5+deb13u1	all	Debian	Debian installer or dependency
+laptop-detect	0.16+nmu1	all	Debian	Debian installer or dependency
+lazygit	0.50.0+ds1-1+b2	amd64	Debian	debian-tools
+less	668-1	amd64	Debian	debian-tools
+libacl1	2.3.2-2+b1	amd64	Debian	Debian installer or dependency
+libapparmor1	4.1.0-1	amd64	Debian	Debian installer or dependency
+libapt-pkg7.0	3.0.4	amd64	Debian	Debian installer or dependency
+libattr1	1:2.5.2-3	amd64	Debian	Debian installer or dependency
+libaudit-common	1:4.0.2-2+deb13u1	all	Debian	Debian installer or dependency
+libaudit1	1:4.0.2-2+deb13u1	amd64	Debian	Debian installer or dependency
+libblkid1	2.41.5-0+deb13u1	amd64	Debian	Debian installer or dependency
+libbpf1	1:1.5.0-3	amd64	Debian	Debian installer or dependency
+libbsd0	0.12.2-2	amd64	Debian	Debian installer or dependency
+libbz2-1.0	1.0.8-6	amd64	Debian	Debian installer or dependency
+libc-bin	2.41-12+deb13u4	amd64	Debian	Debian installer or dependency
+libc6	2.41-12+deb13u4	amd64	Debian	Debian installer or dependency
+libcap-ng0	0.8.5-4+b1	amd64	Debian	Debian installer or dependency
+libcap2	1:2.75-10+deb13u1+b3	amd64	Debian	Debian installer or dependency
+libcap2-bin	1:2.75-10+deb13u1+b3	amd64	Debian	Debian installer or dependency
+libcom-err2	1.47.2-3+b12	amd64	Debian	Debian installer or dependency
+libcrypt1	1:4.4.38-1	amd64	Debian	Debian installer or dependency
+libdb5.3t64	5.3.28+dfsg2-9	amd64	Debian	Debian installer or dependency
+libdebconfclient0	0.280	amd64	Debian	Debian installer or dependency
+libedit2	3.1-20250104-1	amd64	Debian	Debian installer or dependency
+libelf1t64	0.192-4	amd64	Debian	Debian installer or dependency
+libext2fs2t64	1.47.2-3+b12	amd64	Debian	Debian installer or dependency
+libfdisk1	2.41.5-0+deb13u1	amd64	Debian	Debian installer or dependency
+libgcc-s1	14.2.0-19	amd64	Debian	Debian installer or dependency
+libgl1-mesa-dri:i386	25.0.7-2+deb13u1	i386	Debian	steam
+libglx-mesa0:i386	25.0.7-2+deb13u1	i386	Debian	steam
+libgmp10	2:6.3.0+dfsg-3	amd64	Debian	Debian installer or dependency
+libgssapi-krb5-2	1.21.3-5+deb13u1	amd64	Debian	Debian installer or dependency
+libhogweed6t64	3.10.1-1	amd64	Debian	Debian installer or dependency
+libidn2-0	2.3.8-2	amd64	Debian	Debian installer or dependency
+libjansson4	2.14-2+b3	amd64	Debian	Debian installer or dependency
+libk5crypto3	1.21.3-5+deb13u1	amd64	Debian	Debian installer or dependency
+libkeyutils1	1.6.3-6	amd64	Debian	Debian installer or dependency
+libkmod2	34.2-2	amd64	Debian	Debian installer or dependency
+libkrb5-3	1.21.3-5+deb13u1	amd64	Debian	Debian installer or dependency
+libkrb5support0	1.21.3-5+deb13u1	amd64	Debian	Debian installer or dependency
+liblastlog2-2	2.41.5-0+deb13u1	amd64	Debian	Debian installer or dependency
+liblocale-gettext-perl	1.07-7+b1	amd64	Debian	Debian installer or dependency
+liblockfile-bin	1.17-2	amd64	Debian	Debian installer or dependency
+liblz4-1	1.10.0-4	amd64	Debian	Debian installer or dependency
+liblzma5	5.8.1-1+deb13u2	amd64	Debian	Debian installer or dependency
+libmd0	1.1.0-2+b1	amd64	Debian	Debian installer or dependency
+libmnl0	1.0.5-3	amd64	Debian	Debian installer or dependency
+libmount1	2.41.5-0+deb13u1	amd64	Debian	Debian installer or dependency
+libncursesw6	6.5+20250216-2	amd64	Debian	Debian installer or dependency
+libnettle8t64	3.10.1-1	amd64	Debian	Debian installer or dependency
+libnewt0.52	0.52.25-1	amd64	Debian	Debian installer or dependency
+libnftables1	1.1.3-1	amd64	Debian	Debian installer or dependency
+libnftnl11	1.2.9-1	amd64	Debian	Debian installer or dependency
+libnss-systemd	257.13-1~deb13u1	amd64	Debian	Debian installer or dependency
+libpam-modules	1.7.0-5	amd64	Debian	Debian installer or dependency
+libpam-modules-bin	1.7.0-5	amd64	Debian	Debian installer or dependency
+libpam-runtime	1.7.0-5	all	Debian	Debian installer or dependency
+libpam-systemd	257.13-1~deb13u1	amd64	Debian	Debian installer or dependency
+libpam0g	1.7.0-5	amd64	Debian	Debian installer or dependency
+libpcre2-8-0	10.46-1~deb13u3	amd64	Debian	Debian installer or dependency
+libpopt0	1.19+dfsg-2	amd64	Debian	Debian installer or dependency
+libproc2-0	2:4.0.4-9	amd64	Debian	Debian installer or dependency
+libreadline8t64	8.2-6	amd64	Debian	Debian installer or dependency
+libseccomp2	2.6.0-2	amd64	Debian	Debian installer or dependency
+libselinux1	3.8.1-1	amd64	Debian	Debian installer or dependency
+libsemanage-common	3.8.1-1	all	Debian	Debian installer or dependency
+libsemanage2	3.8.1-1	amd64	Debian	Debian installer or dependency
+libsepol2	3.8.1-1	amd64	Debian	Debian installer or dependency
+libslang2	2.3.3-5+b2	amd64	Debian	Debian installer or dependency
+libsmartcols1	2.41.5-0+deb13u1	amd64	Debian	Debian installer or dependency
+libspa-0.2-bluetooth	1.4.2-1	amd64	Debian	debian-tools
+libsqlite3-0	3.46.1-7+deb13u2	amd64	Debian	Debian installer or dependency
+libss2	1.47.2-3+b12	amd64	Debian	Debian installer or dependency
+libssl3t64	3.5.7-1~deb13u3	amd64	Debian	Debian installer or dependency
+libstdc++6	14.2.0-19	amd64	Debian	Debian installer or dependency
+libsystemd-shared	257.13-1~deb13u1	amd64	Debian	Debian installer or dependency
+libsystemd0	257.13-1~deb13u1	amd64	Debian	Debian installer or dependency
+libtext-charwidth-perl	0.04-11+b4	amd64	Debian	Debian installer or dependency
+libtext-iconv-perl	1.7-8+b4	amd64	Debian	Debian installer or dependency
+libtext-wrapi18n-perl	0.06-10	all	Debian	Debian installer or dependency
+libtinfo6	6.5+20250216-2	amd64	Debian	Debian installer or dependency
+libtirpc-common	1.3.6+ds-1	all	Debian	Debian installer or dependency
+libtirpc3t64	1.3.6+ds-1	amd64	Debian	Debian installer or dependency
+libudev1	257.13-1~deb13u1	amd64	Debian	Debian installer or dependency
+libunistring5	1.3-2	amd64	Debian	Debian installer or dependency
+libuuid1	2.41.5-0+deb13u1	amd64	Debian	Debian installer or dependency
+libxtables12	1.8.11-2	amd64	Debian	Debian installer or dependency
+libxxhash0	0.8.3-2	amd64	Debian	Debian installer or dependency
+libzstd1	1.5.7+dfsg-1	amd64	Debian	Debian installer or dependency
+linux-image-amd64	6.12.115-2	amd64	installed version absent from APT indexes	Debian installer or dependency
+linux-sysctl-defaults	4.12.1	all	Debian	Debian installer or dependency
+locales	2.41-12+deb13u4	all	Debian	Debian installer or dependency
+login	1:4.16.0-2+really2.41.5-0+deb13u1	amd64	Debian	Debian installer or dependency
+login.defs	1:4.17.4-2	all	Debian	Debian installer or dependency
+logrotate	3.22.0-1	amd64	Debian	debian-tools
+logsave	1.47.2-3+b12	amd64	Debian	Debian installer or dependency
+lsof	4.99.4+dfsg-2	amd64	Debian	debian-tools
+make-doc	4.4.1-1	all	Debian	debian-tools
+man-db	2.13.1-1	amd64	Debian	debian-tools
+manpages	6.9.1-1	all	Debian	debian-tools
+manpages-dev	6.9.1-1	all	Debian	debian-tools
+mawk	1.3.4.20250131-1	amd64	Debian	Debian installer or dependency
+media-types	13.0.0	all	Debian	Debian installer or dependency
+mesa-utils	9.0.0-2+b2	amd64	Debian	debian-tools
+mount	2.41.5-0+deb13u1	amd64	Debian	Debian installer or dependency
+nano	8.4-1+deb13u1	amd64	Debian	debian-tools
+ncdu	1.22-1	amd64	Debian	debian-tools
+ncurses-base	6.5+20250216-2	all	Debian	Debian installer or dependency
+ncurses-bin	6.5+20250216-2	amd64	Debian	Debian installer or dependency
+ncurses-term	6.5+20250216-2	all	Debian	debian-tools
+netbase	6.5	all	Debian	Debian installer or dependency
+netcat-traditional	1.10-50	amd64	Debian	debian-tools
+network-manager-gnome	1.36.0-3+b1	amd64	Debian	debian-tools
+nftables	1.1.3-1	amd64	Debian	debian-tools
+ninja-build	1.12.1-1	amd64	Debian	neovim
+obsidian	1.15.0	amd64	installed version absent from APT indexes	obsidian
+openssh-client	1:10.0p1-7+deb13u4	amd64	Debian	Debian installer or dependency
+openssh-server	1:10.0p1-7+deb13u4	amd64	Debian	openssh-server
+openssl-provider-legacy	3.5.7-1~deb13u3	amd64	Debian	Debian installer or dependency
+os-prober	1.83	amd64	Debian	Debian installer or dependency
+passwd	1:4.17.4-2	amd64	Debian	Debian installer or dependency
+pavucontrol	6.1-1	amd64	Debian	debian-tools
+pciutils	1:3.13.0-2	amd64	Debian	debian-tools
+perl	5.40.1-6+deb13u1	amd64	Debian	Debian installer or dependency
+perl-base	5.40.1-6+deb13u1	amd64	Debian	Debian installer or dependency
+picom	12.5-1	amd64	Debian	i3
+pipewire-audio	1.4.2-1	all	Debian	debian-tools
+pipx	1.7.1-1	all	Debian	debian-tools
+procps	2:4.0.4-9	amd64	Debian	Debian installer or dependency
+pulsemixer	1.5.1-1.1	all	Debian	debian-tools
+python3	3.13.5-1	amd64	Debian	debian-apt
+python3-doc	3.13.5-1	all	Debian	debian-tools
+python3-secretstorage	3.3.3-3	all	Debian	debian-tools
+readline-common	8.2-6	all	Debian	Debian installer or dependency
+reportbug	13.2.0	all	Debian	debian-tools
+rofi	1.7.5-0.1+b2	amd64	Debian	i3
+samba	2:4.22.11+dfsg-0+deb13u1	amd64	Debian	debian-tools
+sed	4.9-2+deb13u1	amd64	Debian	Debian installer or dependency
+sensible-utils	0.0.25	all	Debian	Debian installer or dependency
+shim-signed	1.51~1+deb13u1+16.1-2~deb13u1	amd64	Debian	Debian installer or dependency
+smartmontools	7.4-3	amd64	Debian	debian-tools
+sqv	1.3.0-3+b2	amd64	Debian	Debian installer or dependency
+steam-installer	1:1.0.0.83~ds-3	amd64	Debian	steam
+stow	2.4.1-2	all	Debian	stow
+sudo	1.9.16p2-3+deb13u2	amd64	Debian	Debian installer or dependency
+systemd	257.13-1~deb13u1	amd64	Debian	Debian installer or dependency
+systemd-sysv	257.13-1~deb13u1	amd64	Debian	Debian installer or dependency
+systemd-timesyncd	257.13-1~deb13u1	amd64	Debian	Debian installer or dependency
+sysvinit-utils	3.14-4	amd64	Debian	Debian installer or dependency
+tar	1.35+dfsg-3.1	amd64	Debian	Debian installer or dependency
+task-desktop	3.81	all	Debian	xfce4 (task dependency)
+task-english	3.81	all	Debian	Debian installer or dependency
+task-ssh-server	3.81	all	Debian	openssh-server
+task-xfce-desktop	3.81	all	Debian	xfce4
+tasksel	3.81	all	Debian	Debian installer or dependency
+telegram-desktop	5.7.2+ds-2~bpo13+2	amd64	Debian Backports	superseded by Telegram Flatpak
+tmux	3.5a-3	amd64	Debian	tmux
+traceroute	1:2.1.6-1	amd64	Debian	debian-tools
+tree	2.2.1-1	amd64	Debian	debian-tools
+tzdata	2026f-0+deb13u1	all	Debian	Debian installer or dependency
+ucf	3.0052	all	Debian	Debian installer or dependency
+udev	257.13-1~deb13u1	amd64	Debian	Debian installer or dependency
+unzip	6.0-29+deb13u1	amd64	Debian	debian-tools
+usbutils	1:018-2	amd64	Debian	debian-tools
+util-linux	2.41.5-0+deb13u1	amd64	Debian	Debian installer or dependency
+util-linux-extra	2.41.5-0+deb13u1	amd64	Debian	Debian installer or dependency
+vim	2:9.1.1230-2+deb13u2	amd64	Debian	vim
+vim-common	2:9.1.1230-2+deb13u2	all	Debian	vim (dependency)
+vim-tiny	2:9.1.1230-2+deb13u2	amd64	Debian	Debian installer or dependency
+wamerican	2020.12.07-4	all	Debian	Debian installer or dependency
+wget	1.25.0-2	amd64	Debian	debian-tools
+whiptail	0.52.25-1	amd64	Debian	Debian installer or dependency
+wireless-tools	30~pre9-18+b1	amd64	Debian	debian-tools
+wireplumber	0.5.8-2	amd64	Debian	debian-tools
+wpasupplicant	2:2.10-24	amd64	Debian	debian-tools
+wtmpdb	0.73.0-3+deb13u1	amd64	Debian	Debian installer or dependency
+x11-utils	7.7+7	amd64	Debian	i3
+xclip	0.13-4	amd64	Debian	tmux
+xdotool	1:3.20160805.1-5.1	amd64	Debian	i3
+xfce4-power-manager	4.20.0-1	amd64	Debian	xfce4
+xz-utils	5.8.1-1+deb13u2	amd64	Debian	debian-tools
+yt-dlp	2025.04.30-1	all	Debian	yt-dlp
+zlib1g	1:1.3.dfsg+really1.3.1-1+deb13u1	amd64	Debian	Debian installer or dependency
+zsh	5.9-8+b24	amd64	Debian	debian-tools
+zstd	1.5.7+dfsg-1	amd64	Debian	debian-tools
