@@ -101,12 +101,35 @@ Steam is an optional install on Arch. Enable `multilib` and fully update the
 system before running `pm install steam`. The ChatGPT APT package and the
 iMac firmware profile target Debian.
 
-## i3 and XFCE Terminal settings
+## Desktop settings and fonts
 
 Both workstation bundles link the i3 config, its startup and scratchpad
 scripts, and the three saved workspace layout files. On login, i3 launches
 Flatpak Telegram and uses the available Brave install. The WhatsApp launcher
 runs when its desktop entry has been restored or recreated.
+
+Both bundles install JetBrains Mono Nerd Font 3.5.1 and the saved MesloLGS NF
+Regular, Bold, and Italic fonts from pinned, checksum-verified downloads. To
+install only the fonts, run `./bin/pm install fonts`. They are installed under
+`${XDG_DATA_HOME:-$HOME/.local/share}/fonts`.
+
+The XFCE desktop restore includes both panels and their launchers, keyboard
+shortcuts, appearance and window manager settings, and Thunar preferences and
+the **Open Terminal Here** action. Launcher buttons use your XFCE preferred
+applications. The panel's directory menu opens the restoring user's home.
+
+Preview the restore from the checkout. Apply it from a text console as your
+regular user before your first graphical login or after logging out of the
+graphical session.
+
+```bash
+bash packages/xfce4/post-install.sh --dry-run
+bash packages/xfce4/post-install.sh
+```
+
+Add `--imac12-2` to include the saved display, pointer, keyboard device, and
+power settings for the 27-inch iMac. Changed files get numbered backups next to
+the originals. Log in to XFCE after restoring the desktop settings.
 
 After installing `xfce4-terminal`, close XFCE Terminal and run its settings
 restore from another terminal in the same desktop session:

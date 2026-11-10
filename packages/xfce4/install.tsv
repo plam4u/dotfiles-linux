@@ -2,6 +2,7 @@
 debian	apt	task-xfce-desktop
 debian	apt	xfce4-goodies
 debian	apt	xfce4-power-manager
+debian	apt	python3
 arch	pacman	xorg-server
 arch	pacman	xorg-xinit
 arch	pacman	lightdm
@@ -9,3 +10,8 @@ arch	pacman	lightdm-gtk-greeter
 arch	pacman	xfce4
 arch	pacman	xfce4-clipman-plugin
 arch	pacman	xfce4-screenshooter
+arch	pacman	xfce4-screensaver
+arch	pacman	xfce4-taskmanager
+arch	pacman	xorg-xkill
+arch	pacman	adwaita-cursors
+arch	pacman	python

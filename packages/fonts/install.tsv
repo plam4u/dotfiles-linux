@@ -1,0 +1,9 @@
+# distro	installer	target
+debian	apt	curl
+debian	apt	fontconfig
+debian	apt	xz-utils
+debian	script	install.sh
+arch	pacman	curl
+arch	pacman	fontconfig
+arch	pacman	xz
+arch	script	install.sh
