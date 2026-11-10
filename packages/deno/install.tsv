@@ -1,7 +1,7 @@
 # distro	installer	target
 debian	apt	curl
 debian	apt	unzip
-debian	script	install.sh
+debian	script	install.sh	x86_64,aarch64
 arch	pacman	curl
 arch	pacman	unzip
-arch	script	install.sh
+arch	script	install.sh	x86_64,aarch64

@@ -47,24 +47,11 @@ if (( ! ${#bundles[@]} )); then
     bundles=(basics)
 fi
 
-architecture=$(uname -m)
-case "$ID:$architecture" in
-    *:x86_64|debian:aarch64) ;;
-    *)
-        printf 'This bootstrap supports x86-64 and the basics on Debian ARM64.\n' >&2
-        exit 1
-        ;;
-esac
-
 install=()
 desktop_options=()
 restore_common=0
 restore_desktop=0
 for bundle in "${bundles[@]}"; do
-    if [[ $architecture == aarch64 && $bundle != basics ]]; then
-        printf 'On Debian ARM64, run ./bootstrap.sh for the basics. The %s bundle requires x86-64.\n' "$bundle" >&2
-        exit 1
-    fi
     case $bundle in
         starter) restore_common=1 ;;
         debian-workstation|arch-workstation)
@@ -80,11 +67,9 @@ for bundle in "${bundles[@]}"; do
             if [[ -r /sys/devices/virtual/dmi/id/product_name ]]; then
                 read -r model < /sys/devices/virtual/dmi/id/product_name
             fi
-            if [[ $ID != debian || $model != iMac12,2 ]]; then
-                printf 'The firmware bundle requires Debian on an iMac12,2.\n' >&2
-                exit 1
+            if [[ $ID == debian && $model == iMac12,2 ]]; then
+                desktop_options=(--imac12-2)
             fi
-            desktop_options=(--imac12-2)
             ;;
     esac
     install+=(--bundle "$bundle")
@@ -105,7 +90,9 @@ fi
 if (( restore_desktop )); then
     bash packages/xfce4/post-install.sh "${desktop_options[@]}"
     dbus-run-session -- bash packages/xfce4-terminal/post-install.sh
-    bash packages/cliamp/post-install.sh
+    if [[ -x $HOME/.local/bin/cliamp || -x /usr/local/bin/cliamp ]]; then
+        bash packages/cliamp/post-install.sh
+    fi
     printf '\nSign in again or reboot to load the desktop settings.\n'
 fi
 

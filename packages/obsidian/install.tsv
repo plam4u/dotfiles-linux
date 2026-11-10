@@ -1,4 +1,5 @@
 # distro	installer	target
-debian	apt	curl
-debian	script	install.sh
+debian	apt	curl	x86_64
+debian	script	install.sh	x86_64
+debian	flatpak	md.obsidian.Obsidian	aarch64
 arch	pacman	obsidian

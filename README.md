@@ -32,15 +32,16 @@ the default setup. From the checkout, you can also choose exact packages:
 ./bin/pm install vim tmux restic
 ```
 
-Bundles are plain lists in [`bundles/`](bundles/). On x86-64, you can combine a
+Bundles are plain lists in [`bundles/`](bundles/). You can combine a
 bundle with individual packages, for example `./bin/pm install --bundle starter restic`.
 For the full desktop and app setup, preview with
 `./bootstrap.sh --bundle debian-workstation --dry-run` on Debian, or use
 `--bundle arch-workstation` on Arch. Run the chosen command without `--dry-run`
 from a text console after signing out of XFCE. Bootstrap installs the selected
 workstation bundle and applies the saved settings.
-On Debian arm64, including a Debian ARM VM in UTM, use the basics and select
-additional packages individually.
+On Debian ARM64, including a Debian VM in UTM, you can use `basics`, `starter`,
+or `debian-workstation`. Bootstrap installs the compatible packages and
+lists skipped packages with reasons. Dry runs show the same planned skips.
 
 ## Starter bundle
 
@@ -66,20 +67,21 @@ symlink. Packages can add shell fragments by putting `.sh` files under
 `stow/.bashrc.d/` or `stow/.zshrc.d/`.
 
 The shell package also restores `.profile` for login shells. Both workstation
-bundles include the pinned Deno 2.9.8 installer for Linux x86-64. It uses
+bundles include the pinned Deno 2.9.8 installer for Linux x86-64 and ARM64. It uses
 `~/.deno/bin` and generates missing Bash and Zsh completions.
 
 ## Debian workstation packages
 
-The `debian-workstation` bundle targets Debian 13 on amd64. It starts with
+The `debian-workstation` bundle targets Debian 13. It starts with
 the Debian source setup, then installs the recorded desktop, development,
-multimedia, networking, and app packages.
+multimedia, networking, and app packages. On ARM64 it skips Steam because
+this setup uses Debian's x86 Steam launcher and 32-bit x86 graphics libraries.
 
 The optional `debian-imac12-2-firmware` bundle restores the firmware selection
 from this 27-inch iMac (`iMac12,2`), which has Intel integrated graphics and an
 AMD Radeon GPU. It installs AMD, Intel, and miscellaneous firmware plus Intel
-microcode. Use it when reinstalling this iMac or after checking the hardware
-on another machine.
+microcode. Select it when reinstalling this iMac. The firmware package is
+skipped if the detected model differs.
 
 Bootstrap applies the workstation bundle and configuration follow-ups in order.
 To run just the package bundle from an existing checkout, use
@@ -98,8 +100,10 @@ backed up. Backports stays available for explicit use. Telegram is installed
 via Flatpak. Steam enables the Debian `i386` architecture before installing
 the required 32-bit graphics packages.
 
-Brave, ChatGPT, and Docker use their own APT repositories. Obsidian, CLIamp,
-and the user copy of yt-dlp use checksummed upstream releases. `neovim-nightly`
+Brave, ChatGPT, and Docker use their own APT repositories. Obsidian uses its
+checksummed upstream Debian package on x86-64 and Flathub on ARM64. CLIamp
+uses the checksummed upstream build for the current architecture. The user
+copy of yt-dlp also uses a checksummed upstream release. `neovim-nightly`
 uses the checksummed nightly archive when it matches the recorded build, with a
 source build from the recorded commit as a fallback. CLIamp, Neovim, and the
 upstream yt-dlp copy install under `~/.local/`. Ensure `~/.local/bin` is on
@@ -277,8 +281,17 @@ row. Supported installers are `apt`, `pacman`, `flatpak` (Flathub), and `script`
 One `pm` package can install multiple system packages. `pm` processes every row
 for the detected distro in file order, then links the config. For example, the
 `tmux` package installs `tmux` and `xclip` on both Debian and Arch. A comment-only
-table with a `stow/` directory is a config-only package. A table with install
-rows requires a mapping for the current distro.
+table with a `stow/` directory is a config-only package.
+
+For an architecture-specific installer, add a fourth tab-separated field
+with one or more comma-separated architectures as reported by `uname -m`
+(for example, `x86_64,aarch64`). Rows with no fourth field apply to every
+architecture. If a distro has architecture-specific rows, at least one must
+match for the package to install. This lets a package select a different
+installer for each architecture and share dependencies across them. Packages
+with install rows and no matching distro or architecture are reported as
+skipped, including their config links. For machine-specific packages, an
+optional `hardware-model` file contains the exact Linux DMI product name.
 
 Place home files under `stow/` using paths relative to `$HOME`. An optional
 `post-install.sh` is listed as a manual follow-up. Bundle files contain one
@@ -287,3 +300,22 @@ package name per line, with blank lines and comments allowed.
 See the [container test guide](tests/containers/README.md) for Debian and Arch
 test environments. Keep SSH keys, browser profiles, and other private app data
 in your encrypted backup.
+
+The ChatGPT package supports Debian x86-64/ARM64 through APT and Arch through
+OpenAI's installer. On Arch, the upstream installer prompts for a full system
+upgrade. Use `./bin/pm install chatgpt` on either Linux distribution.
+
+On macOS with Homebrew installed, run `bash packages/chatgpt/install.sh` from
+the checkout. This package script uses the ChatGPT cask for Intel or Apple
+Silicon. The repository's general bootstrap and pm commands currently target
+Linux.
+
+Install the terminal coding agent with `./bin/pm install codex`, then run
+`codex` and sign in. Debian and Arch install Node.js and npm, then install
+`@openai/codex` under `~/.local`. The `shell` package puts its binary on PATH.
+The package skips installation when `codex` is already available. To update
+this npm installation, run
+`npm install --global --prefix "$HOME/.local" @openai/codex@latest`.
+
+On macOS with Homebrew installed, run `bash packages/codex/install.sh` from
+the checkout. It installs the Codex cask.

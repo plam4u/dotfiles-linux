@@ -42,20 +42,22 @@ read_bundle() {
 }
 
 read_package() {
-    local line row_distro installer target
-    local row_pattern=$'^([a-z][a-z0-9-]*)\t([a-z][a-z0-9-]*)\t([^\t]+)$'
-    local has_rows=0
+    local line row_distro installer target row_architecture
+    local row_pattern=$'^([a-z][a-z0-9-]*)\t([a-z][a-z0-9-]*)\t([^\t]+)(\t([a-z0-9_]+(,[a-z0-9_]+)*))?$'
+    local has_rows=0 has_distro_rows=0 supported_architectures= architecture_matched=0
     installers=()
     targets=()
 
     while IFS= read -r line || [[ -n $line ]]; do
         [[ $line =~ ^[[:space:]]*(#|$) ]] && continue
-        [[ $line =~ $row_pattern ]] || die "$package: expected three tab-separated fields"
+        [[ $line =~ $row_pattern ]] || die "$package: expected three tab-separated fields and an optional architecture"
         row_distro=${BASH_REMATCH[1]}
         installer=${BASH_REMATCH[2]}
         target=${BASH_REMATCH[3]}
+        row_architecture=${BASH_REMATCH[5]}
         has_rows=1
         [[ $row_distro == "$distro" ]] || continue
+        has_distro_rows=1
         case $distro:$installer in
             debian:apt|arch:pacman|*:flatpak)
                 [[ $target =~ ^[a-zA-Z0-9][a-zA-Z0-9.+_:@-]*$ ]] \
@@ -67,12 +69,21 @@ read_package() {
                 ;;
             *) die "$package: unsupported installer for $distro: $installer" ;;
         esac
+        if [[ -n $row_architecture ]]; then
+            if [[ ,$supported_architectures, != *,"$row_architecture",* ]]; then
+                supported_architectures+=${supported_architectures:+,}$row_architecture
+            fi
+            [[ ,$row_architecture, == *,"$architecture",* ]] || continue
+            architecture_matched=1
+        fi
         installers+=("$installer")
         targets+=("$target")
     done < "$package_dir/install.tsv"
 
-    if (( has_rows && ${#installers[@]} == 0 )); then
-        die "$package: no install mapping for $distro"
+    if (( has_rows && ! has_distro_rows )); then
+        skipped[$package]="no install mapping for $distro"
+    elif [[ -n $supported_architectures ]] && (( ! architecture_matched )); then
+        skipped[$package]="installer supports $supported_architectures (detected $architecture)"
     fi
     if (( has_rows == 0 )) && [[ ! -d $package_dir/stow ]]; then
         die "$package: add an install mapping or a stow/ directory"
@@ -236,6 +247,7 @@ stow_package() {
 check_stow_packages() {
     local package package_dir
     for package in "${packages[@]}"; do
+        [[ ! ${skipped[$package]+set} ]] || continue
         package_dir="$repo/packages/$package"
         stow_package check
     done
@@ -262,12 +274,13 @@ fi
 (( EUID != 0 )) || die 'run pm as your regular user'
 [[ -r /etc/os-release ]] || die 'cannot read /etc/os-release'
 distro=$(. /etc/os-release; printf '%s' "${ID:-}")
+architecture=$(uname -m)
 case $distro in
     debian|arch) ;;
     *) die "unsupported distro: $distro" ;;
 esac
 
-declare -A requested=()
+declare -A requested=() skipped=()
 declare -a packages=() installers=() targets=()
 dry_run=0
 apt_updated=0
@@ -307,7 +320,18 @@ for package in "${packages[@]}"; do
     [[ -f $package_dir/install.tsv ]] || die "unknown package: $package"
     if [[ $subcommand == install ]]; then
         read_package
+        if [[ ! ${skipped[$package]+set} && -f $package_dir/hardware-model ]]; then
+            read -r required_model < "$package_dir/hardware-model"
+            model=
+            if [[ -r /sys/devices/virtual/dmi/id/product_name ]]; then
+                read -r model < /sys/devices/virtual/dmi/id/product_name
+            fi
+            if [[ $model != "$required_model" ]]; then
+                skipped[$package]="requires hardware model $required_model (detected ${model:-unknown})"
+            fi
+        fi
     fi
+    [[ ! ${skipped[$package]+set} ]] || continue
     if [[ -d $package_dir/stow ]] && (( ! stow_scheduled )); then
         die "$package: GNU Stow is required. Install stow or put the stow package first."
     fi
@@ -321,6 +345,7 @@ if (( ! dry_run && stow_available )); then
 fi
 
 for package in "${packages[@]}"; do
+    [[ ! ${skipped[$package]+set} ]] || continue
     package_dir="$repo/packages/$package"
     printf '%s\n' "$package"
     if [[ $subcommand == install ]]; then
@@ -348,3 +373,16 @@ for package in "${packages[@]}"; do
         printf '  Manual follow-up: bash %q\n' "$package_dir/post-install.sh"
     fi
 done
+
+if (( ${#skipped[@]} )); then
+    if (( dry_run )); then
+        printf '\nPackages that would be skipped\n'
+    else
+        printf '\nSkipped packages\n'
+    fi
+    for package in "${packages[@]}"; do
+        if [[ ${skipped[$package]+set} ]]; then
+            printf '  %s (%s)\n' "$package" "${skipped[$package]}"
+        fi
+    done
+fi
