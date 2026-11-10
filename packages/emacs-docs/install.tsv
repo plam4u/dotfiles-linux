@@ -1,0 +1,2 @@
+# distro	installer	target
+debian	apt	emacs-common-non-dfsg

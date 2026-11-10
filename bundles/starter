@@ -1,7 +1,10 @@
 stow
 shell
+basic-tools
 common-tools
 tmux
 vim
+neovim
+emacs
 telegram
 docker

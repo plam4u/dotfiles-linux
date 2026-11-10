@@ -15,10 +15,13 @@ wget -O- https://github.com/plam4u/dotfiles-debian/raw/main/install.sh | bash
 On Arch, you can use `curl -fsSL` in place of `wget -O-`.
 
 The first command installs Git if needed and clones the public repo to
-`~/dotfiles-debian`. The second installs GNU Stow, Bash and Zsh setup, tmux
-with xclip, and Vim. GNU Stow links each package's saved config after its
-installation. Open a new shell to use `pm` from anywhere. Keep the checkout in
-a stable location because the config links point into it.
+`~/dotfiles-debian`. The second installs the [basics bundle](bundles/basics).
+It includes GNU Stow, Bash and Zsh, tmux with xclip, Vim, packaged Neovim,
+Emacs, GCC, Make, GDB, Git, curl, wget, ripgrep, fd, and development man pages.
+On Debian the `fd-find` package provides the `fdfind` command. GNU Stow links
+saved configs after each package installs. Open a new shell to use `pm` from
+anywhere. Keep the checkout in a stable location because the config links
+point into it.
 
 To preview the basics, run `~/dotfiles-debian/bootstrap.sh --dry-run`.
 From the checkout, you can also choose exact packages:
@@ -39,11 +42,12 @@ additional packages individually.
 
 ## Starter bundle
 
-Bundles run in file order. `starter` installs GNU Stow first, then the shell
-package, common tools, tmux and its `xclip` helper, Vim, Telegram, and Docker.
-It links the shell, tmux, and Vim configs. A dry run on a system without Stow
-shows that linking is planned. Stow can check the individual paths once it is
-installed. Both workstation bundles already include the starter packages.
+Bundles run in file order. `starter` includes the basics plus common tools,
+Telegram, and Docker. A dry run on a system without Stow shows that linking is
+planned. Stow can check the individual paths once it is installed. Both
+workstation bundles include the basic tools. The `neovim` package installs
+the distro version. Debian workstation selects `neovim-nightly` and adds the
+optional `emacs-docs` package from Debian's `non-free` component.
 
 `common-tools` contains utilities such as Git, `curl`, `jq`, `fzf`, and
 `ffmpeg`. It has explicit APT and pacman mappings for differences such as
@@ -93,8 +97,8 @@ via Flatpak. Steam enables the Debian `i386` architecture before installing
 the required 32-bit graphics packages.
 
 Brave, ChatGPT, and Docker use their own APT repositories. Obsidian, CLIamp,
-and the user copy of yt-dlp use checksummed upstream releases. Neovim uses
-the checksummed nightly archive when it matches the recorded build, with a
+and the user copy of yt-dlp use checksummed upstream releases. `neovim-nightly`
+uses the checksummed nightly archive when it matches the recorded build, with a
 source build from the recorded commit as a fallback. CLIamp, Neovim, and the
 upstream yt-dlp copy install under `~/.local/`. Ensure `~/.local/bin` is on
 your `PATH`.

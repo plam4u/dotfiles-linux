@@ -1,5 +1,6 @@
 stow
 shell
+basic-tools
 common-tools
 arch-tools
 deno

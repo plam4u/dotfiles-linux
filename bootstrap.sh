@@ -34,7 +34,7 @@ cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
 desktop_options=()
 case $profile in
-    basics) install=(stow shell tmux vim) ;;
+    basics) install=(--bundle basics) ;;
     starter) install=(--bundle starter) ;;
     workstation) install=(--bundle "$ID-workstation" restic) ;;
     imac)

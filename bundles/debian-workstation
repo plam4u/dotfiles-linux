@@ -1,12 +1,14 @@
 debian-apt
 stow
 shell
+basic-tools
 common-tools
 debian-tools
 deno
 tmux
 vim
 emacs
+emacs-docs
 fonts
 xfce4
 xfce4-terminal
@@ -16,7 +18,7 @@ brave-browser
 chatgpt
 telegram
 obsidian
-neovim
+neovim-nightly
 yt-dlp
 cliamp
 steam
