@@ -1,5 +1,6 @@
 # distro	installer	target
 debian	apt	xfce4-terminal
 debian	apt	xfconf
+debian	apt	dbus-daemon
 arch	pacman	xfce4-terminal
 arch	pacman	xfconf

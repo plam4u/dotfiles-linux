@@ -1,17 +1,37 @@
 # Linux dotfiles with pm
 
 `pm` installs packages and links configuration files into your home directory.
-The starter packages target Debian 13 and Arch Linux. Make sure your regular
-account can use `sudo` for package installs. On Arch, use a
-fully updated system with synced package databases before running `pm install`.
 
-Run the first install from the checkout. Keep the checkout in a stable location
-because the config links point into it.
+## One-command Debian setup
+
+On fresh Debian 13 (amd64), paste this command as your regular user with
+`sudo` access. For a workstation restore, use a text console before signing
+into XFCE, or after signing out of it.
 
 ```bash
-./bin/pm install --dry-run --bundle starter
-./bin/pm install --bundle starter
+sudo apt-get update && sudo apt-get install -y gh git ca-certificates \
+  && (gh auth status --hostname github.com >/dev/null 2>&1 || gh auth login --hostname github.com --git-protocol https --web) \
+  && bootstrap=$(gh api -H 'Accept: application/vnd.github.raw+json' 'repos/plam4u/dotfiles-debian/contents/remote-install.sh?ref=main') \
+  && bash -c "$bootstrap"
 ```
+
+GitHub sign-in grants access to the private repo. You can enter the one-time
+code in a browser on another device. The launcher clones the repo to
+`~/dotfiles-debian` and opens a menu. Press Enter for **Debian workstation**
+on a VM or PC. Choose **Starter** for the smaller bundle. On an iMac12,2 the
+menu also offers the workstation with its hardware settings.
+
+The workstation profiles install Restic and run the XFCE desktop, XFCE
+Terminal, btop, htop, and CLIamp settings restores. Reboot or sign in to XFCE
+when setup finishes. The [Restic recovery](#back-up-and-restore-the-imac-system-settings)
+commands handle your encrypted backup separately.
+
+From an existing checkout, run `./bootstrap.sh` for the same menu or
+`./bootstrap.sh --profile workstation --dry-run` to preview the package
+installation. Keep the checkout in a stable location because the config
+links point into it.
+
+## Starter bundle
 
 Bundles run in file order. `starter` installs GNU Stow first, then the shell
 package, common tools, tmux and its `xclip` helper, Vim, Telegram, and Docker.
@@ -49,16 +69,14 @@ AMD Radeon GPU. It installs AMD, Intel, and miscellaneous firmware plus Intel
 microcode. Use it when reinstalling this iMac or after checking the hardware
 on another machine.
 
-```bash
-pm install --dry-run --bundle debian-workstation
-bash packages/debian-apt/install.sh --dry-run
-pm install --bundle debian-workstation
-```
+The bootstrap applies the workstation setup and its configuration follow-ups
+in order. To run just the package bundle from an existing checkout, use
+`./bin/pm install --bundle debian-workstation`.
 
 To preview both bundles together for the iMac:
 
 ```bash
-pm install --dry-run --bundle debian-workstation --bundle debian-imac12-2-firmware
+./bootstrap.sh --profile imac --dry-run
 ```
 
 The APT setup adds missing entries for the official Debian mirrors in
@@ -83,8 +101,9 @@ migrating its identity.
 
 ### Back up and restore the iMac system settings
 
-Run these from the checkout as your regular user. Install Restic first with
-`sudo apt install restic` and use your initialized repository.
+Run these from the checkout as your regular user with your initialized
+repository. The Debian workstation bootstrap installs Restic. For a manual
+setup, run `./bin/pm install restic`.
 
 ```bash
 ./bin/pm-system-settings backup
@@ -153,6 +172,9 @@ iMac firmware profile target Debian.
 
 ## Desktop settings and fonts
 
+The Debian bootstrap runs the settings restores in this section. Use the
+commands below to apply them individually.
+
 Both workstation bundles link the i3 config, its startup and scratchpad
 scripts, and the three saved workspace layout files. On login, i3 launches
 Flatpak Telegram and uses the available Brave install. The WhatsApp launcher
@@ -200,9 +222,10 @@ Both workstation bundles link the saved Emacs init at
 `~/.emacs.el`, or `~/.emacs.d/` ahead of the XDG location.
 
 The btop, htop, and CLIamp snapshots are restored as writable files under
-`$XDG_CONFIG_HOME` or `~/.config`. Preview from the checkout, close the apps,
-then rerun the desired commands without `--dry-run`. Changed files get numbered
-backups beside the originals.
+`$XDG_CONFIG_HOME` or `~/.config`. The Debian bootstrap applies them. For a
+manual restore, preview from the checkout, close the apps, then rerun the
+desired commands without `--dry-run`. Changed files get numbered backups beside
+the originals.
 
 ```bash
 bash packages/common-tools/post-install.sh --dry-run

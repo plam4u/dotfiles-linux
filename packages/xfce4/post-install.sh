@@ -5,10 +5,12 @@ package_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 config_dir=${XDG_CONFIG_HOME:-$HOME/.config}
 profiles=(desktop)
 dry_run=0
+check_session=0
 
 for arg in "$@"; do
     case $arg in
         --dry-run) dry_run=1 ;;
+        --check-session) check_session=1 ;;
         --imac12-2) profiles=(desktop imac12-2) ;;
         -h|--help)
             printf 'Usage: bash %s [--dry-run] [--imac12-2]\n' "$0"
@@ -22,6 +24,10 @@ if (( ! dry_run )) &&
     pgrep -ix -u "$UID" 'xfconfd|xfce4-panel|xfce4-session|xfdesktop|xfwm4|Thunar|xfsettingsd' >/dev/null; then
     printf 'Log out of the graphical session and run this from a text console. XFCE or Xfconf is still running.\n' >&2
     exit 1
+fi
+
+if (( check_session )); then
+    exit 0
 fi
 
 work_dir=$(mktemp -d)
