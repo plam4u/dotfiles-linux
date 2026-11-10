@@ -1,17 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
+
 usage() {
-    printf 'Usage: %s [--profile basics|starter|workstation|imac] [--dry-run]\n' "${0##*/}"
+    printf 'Usage: %s [--bundle NAME]... [--dry-run]\n' "${0##*/}"
+    printf 'Defaults to the basics bundle. Repeat --bundle to combine bundles.\n'
+    printf 'Use --dry-run to preview installation and config links.\n'
+    printf '\nBundles in this checkout\n'
+    local file
+    for file in bundles/*; do
+        [[ -f $file ]] || continue
+        printf '  %s\n' "${file##*/}"
+    done
 }
 
-profile=basics
+bundles=()
 dry_run=0
 while (( $# )); do
     case $1 in
-        --profile)
-            (( $# >= 2 )) || { usage >&2; exit 1; }
-            profile=$2
+        --bundle)
+            if (( $# < 2 )) || [[ -z $2 || $2 == -* ]]; then
+                usage >&2
+                exit 1
+            fi
+            bundles+=("$2")
             shift
             ;;
         --dry-run) dry_run=1 ;;
@@ -30,54 +43,66 @@ case ${ID:-}:${VERSION_CODENAME:-} in
     debian:trixie|arch:*) ;;
     *) printf 'This bootstrap supports Debian 13 and Arch Linux.\n' >&2; exit 1 ;;
 esac
-cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
-
-desktop_options=()
-case $profile in
-    basics) install=(--bundle basics) ;;
-    starter) install=(--bundle starter) ;;
-    workstation) install=(--bundle "$ID-workstation" restic) ;;
-    imac)
-        model=
-        if [[ -r /sys/devices/virtual/dmi/id/product_name ]]; then
-            read -r model < /sys/devices/virtual/dmi/id/product_name
-        fi
-        if [[ $ID != debian || $model != iMac12,2 ]]; then
-            printf 'The iMac profile requires Debian on an iMac12,2. Choose workstation for a VM.\n' >&2
-            exit 1
-        fi
-        install=(--bundle debian-workstation --bundle debian-imac12-2-firmware restic)
-        desktop_options=(--imac12-2)
-        ;;
-    *) usage >&2; exit 1 ;;
-esac
+if (( ! ${#bundles[@]} )); then
+    bundles=(basics)
+fi
 
 architecture=$(uname -m)
-case "$ID:$architecture:$profile" in
-    *:x86_64:*|debian:aarch64:basics) ;;
-    debian:aarch64:*)
-        printf 'On Debian ARM64, run ./bootstrap.sh for the basics. The %s profile requires x86-64.\n' "$profile" >&2
-        exit 1
-        ;;
+case "$ID:$architecture" in
+    *:x86_64|debian:aarch64) ;;
     *)
         printf 'This bootstrap supports x86-64 and the basics on Debian ARM64.\n' >&2
         exit 1
         ;;
 esac
 
+install=()
+desktop_options=()
+restore_common=0
+restore_desktop=0
+for bundle in "${bundles[@]}"; do
+    if [[ $architecture == aarch64 && $bundle != basics ]]; then
+        printf 'On Debian ARM64, run ./bootstrap.sh for the basics. The %s bundle requires x86-64.\n' "$bundle" >&2
+        exit 1
+    fi
+    case $bundle in
+        starter) restore_common=1 ;;
+        debian-workstation|arch-workstation)
+            if [[ $bundle != "$ID-workstation" ]]; then
+                printf 'Use --bundle %s-workstation on this distro.\n' "$ID" >&2
+                exit 1
+            fi
+            restore_common=1
+            restore_desktop=1
+            ;;
+        debian-imac12-2-firmware)
+            model=
+            if [[ -r /sys/devices/virtual/dmi/id/product_name ]]; then
+                read -r model < /sys/devices/virtual/dmi/id/product_name
+            fi
+            if [[ $ID != debian || $model != iMac12,2 ]]; then
+                printf 'The firmware bundle requires Debian on an iMac12,2.\n' >&2
+                exit 1
+            fi
+            desktop_options=(--imac12-2)
+            ;;
+    esac
+    install+=(--bundle "$bundle")
+done
+
 if (( dry_run )); then
     ./bin/pm install --dry-run "${install[@]}"
     exit
 fi
 
-if [[ $profile == workstation || $profile == imac ]]; then
+if (( restore_desktop )); then
     bash packages/xfce4/post-install.sh --check-session
 fi
 ./bin/pm install "${install[@]}"
-if [[ $profile != basics ]]; then
+if (( restore_common )); then
     bash packages/common-tools/post-install.sh
 fi
-if [[ $profile == workstation || $profile == imac ]]; then
+if (( restore_desktop )); then
     bash packages/xfce4/post-install.sh "${desktop_options[@]}"
     dbus-run-session -- bash packages/xfce4-terminal/post-install.sh
     bash packages/cliamp/post-install.sh

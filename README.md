@@ -23,8 +23,9 @@ saved configs after each package installs. Open a new shell to use `pm` from
 anywhere. Keep the checkout in a stable location because the config links
 point into it.
 
-To preview the basics, run `~/dotfiles-debian/bootstrap.sh --dry-run`.
-From the checkout, you can also choose exact packages:
+The launcher prints how to continue. Run `~/dotfiles-debian/bootstrap.sh --help`
+to list bundle names and options, or use `--bundle basics --dry-run` to preview
+the default setup. From the checkout, you can also choose exact packages:
 
 ```bash
 ./bin/pm install --dry-run vim tmux
@@ -34,9 +35,10 @@ From the checkout, you can also choose exact packages:
 Bundles are plain lists in [`bundles/`](bundles/). On x86-64, you can combine a
 bundle with individual packages, for example `./bin/pm install --bundle starter restic`.
 For the full desktop and app setup, preview with
-`./bootstrap.sh --profile workstation --dry-run`. Run it without `--dry-run`
-from a text console after signing out of XFCE to apply it. The workstation
-profile chooses the Debian or Arch bundle and applies the saved settings.
+`./bootstrap.sh --bundle debian-workstation --dry-run` on Debian, or use
+`--bundle arch-workstation` on Arch. Run the chosen command without `--dry-run`
+from a text console after signing out of XFCE. Bootstrap installs the selected
+workstation bundle and applies the saved settings.
 On Debian arm64, including a Debian ARM VM in UTM, use the basics and select
 additional packages individually.
 
@@ -79,14 +81,14 @@ AMD Radeon GPU. It installs AMD, Intel, and miscellaneous firmware plus Intel
 microcode. Use it when reinstalling this iMac or after checking the hardware
 on another machine.
 
-The workstation bootstrap profile applies the package bundle and configuration
-follow-ups in order. To run just the package bundle from an existing checkout, use
+Bootstrap applies the workstation bundle and configuration follow-ups in order.
+To run just the package bundle from an existing checkout, use
 `./bin/pm install --bundle debian-workstation`.
 
 To preview both bundles together for the iMac:
 
 ```bash
-./bootstrap.sh --profile imac --dry-run
+./bootstrap.sh --bundle debian-workstation --bundle debian-imac12-2-firmware --dry-run
 ```
 
 The APT setup adds missing entries for the official Debian mirrors in
@@ -112,7 +114,7 @@ migrating its identity.
 ### Back up and restore the iMac system settings
 
 Run these from the checkout as your regular user with your initialized
-repository. The workstation bootstrap profile installs Restic. For a manual
+repository. The workstation bundles install Restic. For a manual
 setup, run `./bin/pm install restic`.
 
 ```bash
@@ -178,12 +180,12 @@ after configuration, such as `lightdm.service`, `sshd.service`, or
 
 Steam is an optional install on Arch. Enable `multilib` and fully update the
 system before running `pm install steam`. The ChatGPT APT package and the
-iMac firmware profile target Debian.
+iMac firmware bundle target Debian.
 
 ## Desktop settings and fonts
 
-The workstation bootstrap profile runs the settings restores in this section. Use the
-commands below to apply them individually.
+Bootstrap runs the settings restores in this section for workstation bundles.
+Use the commands below to apply them individually.
 
 Both workstation bundles link the i3 config, its startup and scratchpad
 scripts, and the three saved workspace layout files. On login, i3 launches

@@ -40,7 +40,19 @@ install_dotfiles() {
         GIT_TERMINAL_PROMPT=0 git clone --branch main -- "$remote" "$checkout"
     fi
 
-    printf '\nRun this to install the basics:\n  %q\n' "$checkout/bootstrap.sh"
+    cat <<'EOF'
+
+Dotfiles are ready in ~/dotfiles-debian.
+
+Install the basics bundle
+  ~/dotfiles-debian/bootstrap.sh
+
+Preview a bundle
+  ~/dotfiles-debian/bootstrap.sh --bundle basics --dry-run
+
+List the bundles and options
+  ~/dotfiles-debian/bootstrap.sh --help
+EOF
 }
 
 install_dotfiles
