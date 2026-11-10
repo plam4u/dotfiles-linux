@@ -30,11 +30,6 @@ case ${ID:-}:${VERSION_CODENAME:-} in
     debian:trixie|arch:*) ;;
     *) printf 'This bootstrap supports Debian 13 and Arch Linux.\n' >&2; exit 1 ;;
 esac
-if [[ $(uname -m) != x86_64 ]]; then
-    printf 'This bootstrap requires an x86-64 system.\n' >&2
-    exit 1
-fi
-
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
 desktop_options=()
@@ -55,6 +50,19 @@ case $profile in
         desktop_options=(--imac12-2)
         ;;
     *) usage >&2; exit 1 ;;
+esac
+
+architecture=$(uname -m)
+case "$ID:$architecture:$profile" in
+    *:x86_64:*|debian:aarch64:basics) ;;
+    debian:aarch64:*)
+        printf 'On Debian ARM64, run ./bootstrap.sh for the basics. The %s profile requires x86-64.\n' "$profile" >&2
+        exit 1
+        ;;
+    *)
+        printf 'This bootstrap supports x86-64 and the basics on Debian ARM64.\n' >&2
+        exit 1
+        ;;
 esac
 
 if (( dry_run )); then

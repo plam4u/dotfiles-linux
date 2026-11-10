@@ -4,8 +4,8 @@
 
 ## Quick start
 
-On Debian 13 or an up-to-date Arch Linux system (x86-64), run these as your
-regular user with `sudo` access.
+On Debian 13 (amd64 or arm64) or an up-to-date Arch Linux system (x86-64),
+run these as your regular user with `sudo` access.
 
 ```bash
 wget -O- https://github.com/plam4u/dotfiles-debian/raw/main/install.sh | bash
@@ -21,19 +21,21 @@ installation. Open a new shell to use `pm` from anywhere. Keep the checkout in
 a stable location because the config links point into it.
 
 To preview the basics, run `~/dotfiles-debian/bootstrap.sh --dry-run`.
-From the checkout, you can also choose exact packages or combine them with
-a bundle:
+From the checkout, you can also choose exact packages:
 
 ```bash
 ./bin/pm install --dry-run vim tmux
-./bin/pm install --bundle starter restic
+./bin/pm install vim tmux restic
 ```
 
-Bundles are plain lists in [`bundles/`](bundles/). For the full desktop and
-app setup, run `./bootstrap.sh --profile workstation --dry-run` to see the
-package plan. Run it without `--dry-run` from a text console after signing
-out of XFCE to apply it. The workstation profile chooses the Debian or Arch
-bundle and applies the saved desktop and app settings.
+Bundles are plain lists in [`bundles/`](bundles/). On x86-64, you can combine a
+bundle with individual packages, for example `./bin/pm install --bundle starter restic`.
+For the full desktop and app setup, preview with
+`./bootstrap.sh --profile workstation --dry-run`. Run it without `--dry-run`
+from a text console after signing out of XFCE to apply it. The workstation
+profile chooses the Debian or Arch bundle and applies the saved settings.
+On Debian arm64, including a Debian ARM VM in UTM, use the basics and select
+additional packages individually.
 
 ## Starter bundle
 

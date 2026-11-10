@@ -11,11 +11,6 @@ install_dotfiles() {
         debian:trixie|arch:*) ;;
         *) printf 'This installer supports Debian 13 and Arch Linux.\n' >&2; exit 1 ;;
     esac
-    if [[ $(uname -m) != x86_64 ]]; then
-        printf 'This installer requires an x86-64 system.\n' >&2
-        exit 1
-    fi
-
     if ! command -v git >/dev/null; then
         case $ID in
             debian)
