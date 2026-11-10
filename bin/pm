@@ -1,0 +1,345 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+    cat <<'EOF'
+Usage:
+  pm add <package>
+  pm install [--dry-run] [--bundle <name>] <package> ...
+  pm stow [--dry-run] [--bundle <name>] <package> ...
+
+Use package names, bundles, or both. Conflicting regular files are saved as backups.
+EOF
+}
+
+die() {
+    printf 'pm: %s\n' "$*" >&2
+    exit 1
+}
+
+valid_name() {
+    [[ $1 =~ ^[a-zA-Z0-9][a-zA-Z0-9._+-]*$ ]]
+}
+
+request_package() {
+    local name=$1
+    valid_name "$name" || die "invalid package name: $name"
+    if [[ ! ${requested[$name]+set} ]]; then
+        packages+=("$name")
+        requested[$name]=1
+    fi
+}
+
+read_bundle() {
+    local name=$1 line
+    valid_name "$name" || die "invalid bundle name: $name"
+    local path="$repo/bundles/$name"
+    [[ -f $path ]] || die "unknown bundle: $name"
+    while IFS= read -r line || [[ -n $line ]]; do
+        [[ $line =~ ^[[:space:]]*(#|$) ]] && continue
+        request_package "$line"
+    done < "$path"
+}
+
+read_package() {
+    local line row_distro installer target
+    local row_pattern=$'^([a-z][a-z0-9-]*)\t([a-z][a-z0-9-]*)\t([^\t]+)$'
+    local has_rows=0
+    installers=()
+    targets=()
+
+    while IFS= read -r line || [[ -n $line ]]; do
+        [[ $line =~ ^[[:space:]]*(#|$) ]] && continue
+        [[ $line =~ $row_pattern ]] || die "$package: expected three tab-separated fields"
+        row_distro=${BASH_REMATCH[1]}
+        installer=${BASH_REMATCH[2]}
+        target=${BASH_REMATCH[3]}
+        has_rows=1
+        [[ $row_distro == "$distro" ]] || continue
+        case $distro:$installer in
+            debian:apt|arch:pacman|*:flatpak)
+                [[ $target =~ ^[a-zA-Z0-9][a-zA-Z0-9.+_:@-]*$ ]] \
+                    || die "$package: invalid $installer target: $target"
+                ;;
+            *:script)
+                [[ $target == install.sh && -f $package_dir/$target ]] \
+                    || die "$package: script row must point to a package-local install.sh"
+                ;;
+            *) die "$package: unsupported installer for $distro: $installer" ;;
+        esac
+        installers+=("$installer")
+        targets+=("$target")
+    done < "$package_dir/install.tsv"
+
+    if (( has_rows && ${#installers[@]} == 0 )); then
+        die "$package: no install mapping for $distro"
+    fi
+    if (( has_rows == 0 )) && [[ ! -d $package_dir/stow ]]; then
+        die "$package: add an install mapping or a stow/ directory"
+    fi
+}
+
+run() {
+    printf '  +'
+    printf ' %q' "$@"
+    printf '\n'
+    if (( ! dry_run )); then
+        "$@"
+    fi
+}
+
+native_install() {
+    local target=$1
+    case $distro in
+        debian)
+            if [[ $(dpkg-query -W -f='${Status}' -- "$target" 2>/dev/null) == 'install ok installed' ]]; then
+                printf '  Already installed: %s\n' "$target"
+                return
+            fi
+            if (( ! apt_updated )); then
+                run sudo apt-get update
+                apt_updated=1
+            fi
+            run sudo apt-get install -y -- "$target"
+            ;;
+        arch)
+            if pacman -Q -- "$target" >/dev/null 2>&1; then
+                printf '  Already installed: %s\n' "$target"
+                return
+            fi
+            run sudo pacman -S --needed --noconfirm -- "$target"
+            ;;
+    esac
+}
+
+install_target() {
+    local installer=$1 target=$2
+    case $installer in
+        apt|pacman) native_install "$target" ;;
+        flatpak)
+            if ! command -v flatpak >/dev/null; then
+                native_install flatpak
+            elif flatpak info --system "$target" >/dev/null 2>&1; then
+                printf '  Already installed from Flatpak: %s\n' "$target"
+                return
+            fi
+            run sudo flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+            run sudo flatpak install --system --noninteractive flathub "$target"
+            ;;
+        script) run bash "$package_dir/$target" ;;
+    esac
+}
+
+stow_command() (
+    # Use package-local ignore rules and keep .stowrc from changing backup policy.
+    cd /
+    HOME=/dev/null LC_ALL=C stow --dir="$package_dir" --target="$target_home" \
+        --no-folding "$@" --stow stow
+)
+
+stow_package() {
+    local action=$1 output line relative target backup number index moved=0
+    local -a conflicts=() backups=()
+    [[ -d $package_dir/stow ]] || return 0
+    command -v stow >/dev/null || die 'GNU Stow is required for packages with a stow/ directory'
+    local target_home
+    target_home=$(realpath -- "$HOME")
+
+    if output=$(stow_command --simulate --verbose=1 2>&1); then
+        case $action in
+            preview) printf '%s\n' "$output" ;;
+            apply) stow_command ;;
+        esac
+        return
+    fi
+
+    # Back up only regular files that Stow itself reported as conflicts.
+    local prefix suffix path_pattern
+    prefix="  * cannot stow $(realpath --relative-to="$target_home" -- "$package_dir")/stow/"
+    suffix=' since neither a link nor a directory and --adopt not specified'
+    path_pattern='^(.+) over existing target \1$'
+    while IFS= read -r line; do
+        [[ $line == '  * '* ]] || continue
+        if [[ $line == "$prefix"*"$suffix" ]]; then
+            relative=${line#"$prefix"}
+            relative=${relative%"$suffix"}
+            if [[ $relative =~ $path_pattern ]]; then
+                relative=${BASH_REMATCH[1]}
+                target="$target_home/$relative"
+                if [[ -f $target && ! -L $target ]]; then
+                    conflicts+=("$relative")
+                    continue
+                fi
+            fi
+        fi
+        printf '%s\n' "$output" >&2
+        return 1
+    done <<< "$output"
+    if (( ${#conflicts[@]} == 0 )); then
+        printf '%s\n' "$output" >&2
+        return 1
+    fi
+    [[ $action == check ]] && return 0
+
+    for relative in "${conflicts[@]}"; do
+        backup="$relative.bak"
+        number=0
+        while [[ -e $target_home/$backup || -L $target_home/$backup \
+            || -e $package_dir/stow/$backup || -L $package_dir/stow/$backup ]]; do
+            backup="$relative.bak.$(( ++number ))"
+        done
+        backups+=("$target_home/$backup")
+        if [[ $action == preview ]]; then
+            printf '  Would back up %s to %s\n' "$target_home/$relative" "$target_home/$backup"
+            printf '  Would link %s to %s\n' "$target_home/$relative" "$package_dir/stow/$relative"
+        fi
+    done
+    if [[ $action == preview ]]; then
+        sed -n '/^LINK: /p; /^MKDIR: /p' <<< "$output"
+        return 0
+    fi
+
+    for index in "${!conflicts[@]}"; do
+        target="$target_home/${conflicts[index]}"
+        backup=${backups[index]}
+        if [[ ! -f $target || -L $target ]] || ! mv -nT -- "$target" "$backup" \
+            || [[ -e $target || -L $target ]]; then
+            printf 'pm: Could not back up %s to %s\n' "$target" "$backup" >&2
+            break
+        fi
+        moved=$(( moved + 1 ))
+        printf '  Backup created: %s\n' "$backup"
+    done
+    if (( moved == ${#conflicts[@]} )) && stow_command; then
+        return 0
+    fi
+
+    # Restore backups where the original path is still vacant after a failure.
+    while (( moved > 0 )); do
+        moved=$(( moved - 1 ))
+        target="$target_home/${conflicts[moved]}"
+        backup=${backups[moved]}
+        if mv -nT -- "$backup" "$target" && [[ ! -e $backup && ! -L $backup ]]; then
+            printf 'pm: Restored %s from its backup\n' "$target" >&2
+        else
+            printf 'pm: Original %s is saved at %s\n' "$target" "$backup" >&2
+        fi
+    done
+    return 1
+}
+
+check_stow_packages() {
+    local package package_dir
+    for package in "${packages[@]}"; do
+        package_dir="$repo/packages/$package"
+        stow_package check
+    done
+}
+
+case ${1:-} in
+    -h|--help|help) usage; exit 0 ;;
+    add|install|stow) subcommand=$1; shift ;;
+    *) usage >&2; exit 1 ;;
+esac
+
+script_path=$(realpath -- "${BASH_SOURCE[0]}")
+repo=$(cd -- "$(dirname -- "$script_path")/.." && pwd -P)
+
+if [[ $subcommand == add ]]; then
+    (( $# == 1 )) && valid_name "$1" || die 'usage: pm add <package>'
+    package_dir="$repo/packages/$1"
+    mkdir -- "$package_dir" || die "could not create package: $1"
+    printf '# distro\tinstaller\ttarget\n' > "$package_dir/install.tsv"
+    printf 'Created %s\n' "$package_dir/install.tsv"
+    exit 0
+fi
+
+(( EUID != 0 )) || die 'run pm as your regular user'
+[[ -r /etc/os-release ]] || die 'cannot read /etc/os-release'
+distro=$(. /etc/os-release; printf '%s' "${ID:-}")
+case $distro in
+    debian|arch) ;;
+    *) die "unsupported distro: $distro" ;;
+esac
+
+declare -A requested=()
+declare -a packages=() installers=() targets=()
+dry_run=0
+apt_updated=0
+
+while (( $# )); do
+    case $1 in
+        --dry-run) dry_run=1 ;;
+        --backup) ;; # Backups are now the default.
+        --bundle)
+            (( $# >= 2 )) || die '--bundle requires a name'
+            read_bundle "$2"
+            shift
+            ;;
+        -*) die "unknown option: $1" ;;
+        *) request_package "$1" ;;
+    esac
+    shift
+done
+
+(( ${#packages[@]} > 0 )) || die 'specify a package or bundle'
+printf 'Distro: %s\n' "$distro"
+
+# Serialize applies targeting the same home, without writing a lock file there.
+if (( ! dry_run )); then
+    exec {home_lock}<"$HOME"
+    flock -x "$home_lock"
+fi
+
+stow_available=0
+if command -v stow >/dev/null; then
+    stow_available=1
+fi
+stow_scheduled=$stow_available
+
+for package in "${packages[@]}"; do
+    package_dir="$repo/packages/$package"
+    [[ -f $package_dir/install.tsv ]] || die "unknown package: $package"
+    if [[ $subcommand == install ]]; then
+        read_package
+    fi
+    if [[ -d $package_dir/stow ]] && (( ! stow_scheduled )); then
+        die "$package: GNU Stow is required. Install stow or put the stow package first."
+    fi
+    if [[ $subcommand == install && $package == stow ]]; then
+        stow_scheduled=1
+    fi
+done
+
+if (( ! dry_run && stow_available )); then
+    check_stow_packages
+fi
+
+for package in "${packages[@]}"; do
+    package_dir="$repo/packages/$package"
+    printf '%s\n' "$package"
+    if [[ $subcommand == install ]]; then
+        read_package
+        for index in "${!installers[@]}"; do
+            install_target "${installers[index]}" "${targets[index]}"
+        done
+        if (( ! dry_run && ! stow_available )) && [[ $package == stow ]]; then
+            command -v stow >/dev/null || die 'the stow package did not make GNU Stow available on PATH'
+            stow_available=1
+            check_stow_packages
+        fi
+    fi
+
+    if (( dry_run )); then
+        if (( stow_available )); then
+            stow_package preview
+        elif [[ -d $package_dir/stow ]]; then
+            printf '  Would link files from %s after installing GNU Stow\n' "$package_dir/stow"
+        fi
+    else
+        stow_package apply
+    fi
+    if [[ $subcommand == install && -f $package_dir/post-install.sh ]]; then
+        printf '  Manual follow-up: bash %q\n' "$package_dir/post-install.sh"
+    fi
+done

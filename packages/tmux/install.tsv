@@ -1,0 +1,5 @@
+# distro	installer	target
+debian	apt	tmux
+debian	apt	xclip
+arch	pacman	tmux
+arch	pacman	xclip

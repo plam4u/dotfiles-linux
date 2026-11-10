@@ -1,0 +1,19 @@
+# Editor swaps, autosaves, and backup files
+*.sw[a-p]
+*~
+\#*\#
+.\#*
+*.bak
+*.bak.[0-9]*
+
+# Temporary files and patch leftovers
+*.tmp
+*.temp
+*.orig
+*.rej
+
+# OS metadata
+.DS_Store
+._*
+Thumbs.db
+[Dd]esktop.ini

@@ -1,0 +1,18 @@
+name: dotfiles-pm-test
+
+services:
+  debian:
+    build:
+      context: ../..
+      dockerfile: tests/containers/Dockerfile
+      target: debian
+    volumes:
+      - ../..:/workspace:ro
+
+  arch:
+    build:
+      context: ../..
+      dockerfile: tests/containers/Dockerfile
+      target: arch
+    volumes:
+      - ../..:/workspace:ro
