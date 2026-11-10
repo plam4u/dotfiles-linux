@@ -81,6 +81,56 @@ dependencies cover the system base. The bundle installs the OpenSSH server.
 Restore any existing SSH server configuration and host keys separately when
 migrating its identity.
 
+### Back up and restore the iMac system settings
+
+Run these from the checkout as your regular user. Install Restic first with
+`sudo apt install restic` and use your initialized repository.
+
+```bash
+./bin/pm-system-settings backup
+```
+
+The backup prints each archived file and directory. To see the contents of the
+latest system-settings backup, including one you already made, run:
+
+```bash
+./bin/pm-system-settings list
+```
+
+When prompted for the repository address, enter the full address. Use the
+same address for backup and restore.
+
+| Repository location | Example address |
+| --- | --- |
+| Local folder on a mounted backup drive | `/mnt/backup/restic-debian-imac` |
+| Mac over SSH (SFTP) | `sftp:macuser@mac-host.local:restic-debian-imac` |
+
+For the SSH example, replace `macuser` and `mac-host.local` with your Mac
+username and hostname. The folder is relative to that user's home directory,
+typically `/Users/macuser/restic-debian-imac`.
+
+The backup covers keyd, the Apple keyboard driver override, NetworkManager
+profiles, and Samba. Save the repository address and Restic password somewhere
+you can access after reinstalling. If the repository is on the Mac, keep a way
+to connect from the fresh system, such as an SSH key available independently
+of the backup. The user and server SSH backups are separate snapshots.
+
+On fresh Debian, install the workstation bundle and make sure you can access
+the backup repository. Then run:
+
+```bash
+./bin/pm-system-settings restore
+```
+
+The commands ask for the repository address unless `RESTIC_REPOSITORY` or
+`RESTIC_REPOSITORY_FILE` is set. Restic asks for the repository password.
+Before asking for confirmation, restore lists the files it will install under
+`/etc` and any entries it will skip, such as old NetworkManager backup copies
+and APT files from earlier snapshots. It backs up changed files and sets
+NetworkManager profile permissions. The workstation bundle sets up the APT
+sources. To test the backup before reinstalling, run restore now and decline
+the confirmation. Reboot after applying the restore on the fresh install.
+
 ## Arch workstation packages
 
 On an up-to-date Arch x86-64 install, run from the checkout:

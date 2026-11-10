@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+    printf 'Usage: %s backup | list | restore\n' "${0##*/}"
+}
+
+die() {
+    printf '%s\n' "$*" >&2
+    exit 1
+}
+
+case ${1:-} in
+    -h|--help) usage; exit 0 ;;
+    backup|list|restore) action=$1 ;;
+    *) usage >&2; exit 1 ;;
+esac
+(( $# == 1 )) || { usage >&2; exit 1; }
+(( EUID != 0 )) || die 'Run this command as your regular user. It will request sudo when needed.'
+command -v restic >/dev/null || die 'Install Restic with sudo apt install restic.'
+
+restic_args=()
+if [[ -z ${RESTIC_REPOSITORY:-} && -z ${RESTIC_REPOSITORY_FILE:-} ]]; then
+    read -r -p 'Restic repository address: ' repository
+    [[ -n $repository ]] || die 'A repository address is required.'
+    restic_args=(-r "$repository")
+fi
+
+settings=(etc/keyd/default.conf etc/modprobe.d/hid_apple.conf etc/samba/smb.conf)
+network=etc/NetworkManager/system-connections
+archive=system-settings.tar
+
+if [[ $action == backup ]]; then
+    sudo -v
+    printf 'Files and directories being archived\n' >&2
+    restic "${restic_args[@]}" backup --tag system-settings \
+        --stdin-filename "$archive" --stdin-from-command -- \
+        sudo -n tar -C / -cvf - -- "${settings[@]}" "$network"
+    exit
+fi
+
+dump_archive() {
+    restic "${restic_args[@]}" dump --path "/$archive" latest "$archive"
+}
+
+if [[ $action == list ]]; then
+    dump_archive | tar -tf -
+    exit
+fi
+
+umask 077
+stage=$(mktemp -d)
+trap 'rm -rf -- "$stage"' EXIT
+dump_archive > "$stage/$archive"
+tar -xf "$stage/$archive" -C "$stage" -- "${settings[@]}" "$network"
+
+for relative in etc etc/keyd etc/modprobe.d etc/samba etc/NetworkManager "$network"; do
+    [[ -d $stage/$relative && ! -L $stage/$relative ]] ||
+        die "Expected a directory in the archive: $relative"
+done
+for relative in "${settings[@]}"; do
+    [[ -f $stage/$relative && ! -L $stage/$relative ]] ||
+        die "Expected a regular file in the archive: $relative"
+    [[ -d /${relative%/*} ]] ||
+        die "Missing /${relative%/*}. Install the Debian workstation packages first."
+done
+[[ -d /$network ]] || die 'Install NetworkManager before restoring its profiles.'
+command -v testparm >/dev/null || die 'Install Samba before restoring its settings.'
+testparm -s "$stage/etc/samba/smb.conf" >/dev/null
+
+shopt -s nullglob dotglob globstar
+profiles=()
+skipped=()
+for file in "$stage/$network"/**/*; do
+    relative=${file#"$stage/"}
+    if [[ ${relative%/*} == "$network" && ${file##*/} != .* &&
+        -f $file && ! -L $file && $file != *~ ]]; then
+        profiles+=("$relative")
+    else
+        skipped+=("$relative")
+    fi
+done
+for relative in "${settings[@]}" "${profiles[@]}"; do
+    [[ ! -L /$relative && ( ! -e /$relative || -f /$relative ) ]] ||
+        die "Review the existing destination: /$relative"
+done
+
+printf '\nSystem files to install, with numbered backups for replacements\n'
+printf '  /%s\n' "${settings[@]}" "${profiles[@]}"
+legacy_apt=$(tar -tf "$stage/$archive" | sed -n 's#^etc/apt\(/\|$\)#  /etc/apt\1#p')
+if [[ -n $legacy_apt ]]; then
+    printf '\nAPT entries to skip because pm sets up the package sources\n%s\n' "$legacy_apt"
+fi
+if (( ${#skipped[@]} )); then
+    printf '\nNetworkManager entries to skip (such as old backups)\n'
+    printf '  /%s\n' "${skipped[@]}"
+fi
+printf '\n'
+if ! read -r -p 'Apply this restore? [y/N] ' answer || [[ $answer != [yY] ]]; then
+    printf 'Restore cancelled.\n'
+    exit 0
+fi
+
+sudo -v
+for relative in "${settings[@]}"; do
+    sudo -n install -vCT --backup=numbered -o root -g root -m 0644 -- "$stage/$relative" "/$relative"
+done
+for relative in "${profiles[@]}"; do
+    sudo -n install -vCT --backup=numbered -o root -g root -m 0600 -- "$stage/$relative" "/$relative"
+done
+
+printf 'Reboot to load the restored system settings.\n'
