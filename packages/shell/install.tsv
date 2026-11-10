@@ -1,0 +1,7 @@
+# distro	installer	target
+debian	apt	bash
+debian	apt	bash-completion
+debian	apt	zsh
+arch	pacman	bash
+arch	pacman	bash-completion
+arch	pacman	zsh

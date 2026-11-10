@@ -5,35 +5,52 @@ The starter packages target Debian 13 and Arch Linux. Make sure your regular
 account can use `sudo` for package installs. On Arch, use a
 fully updated system with synced package databases before running `pm install`.
 
-From a checkout at `~/dotfiles-debian`, add its `bin` directory to your `PATH`.
-Keep the checkout in a stable location because the config links point into it.
+Run the first install from the checkout. Keep the checkout in a stable location
+because the config links point into it.
 
 ```bash
-export PATH="$HOME/dotfiles-debian/bin:$PATH"
-pm install --dry-run --bundle starter
-pm install --bundle starter
+./bin/pm install --dry-run --bundle starter
+./bin/pm install --bundle starter
 ```
 
-Bundles run in file order. `starter` installs GNU Stow first, then tmux and its
-`xclip` helper, Vim, Telegram, and Docker. It also links `.tmux.conf` and
-`.vimrc`. A dry run on a system without Stow shows that linking is planned.
-Stow can check the individual paths once it is installed.
+Bundles run in file order. `starter` installs GNU Stow first, then the shell
+package, tmux and its `xclip` helper, Vim, Telegram, and Docker. It links the
+shell, tmux, and Vim configs. A dry run on a system without Stow shows that
+linking is planned. Stow can check the individual paths once it is installed.
+Use `starter` for a shared Debian or Arch setup and `debian-workstation` for
+the full Debian restore, which includes the same packages.
 
-For a smaller setup, run `pm install stow tmux vim`. Telegram uses system
+For a smaller setup, run `./bin/pm install stow shell tmux vim`. Telegram uses system
 Flathub. Docker uses its vendor APT source on Debian 13 and the native package
 on Arch. The Debian dry run shows the path to Docker's install script.
+
+Both `starter` and `debian-workstation` include `shell`. Open a new Bash or Zsh
+session after installing to use `pm` from any directory. The shared PATH
+snippet finds the checkout through its Stow symlink. Packages can add shell
+fragments by putting `.sh` files under `stow/.bashrc.d/` or `stow/.zshrc.d/`.
 
 ## Debian workstation packages
 
 The `debian-workstation` bundle targets Debian 13 on amd64. It starts with
 the Debian source setup, then installs the recorded desktop, development,
-multimedia, networking, and app packages. The `debian-hardware` bundle adds
-the firmware and Intel microcode from this machine.
+multimedia, networking, and app packages.
+
+The optional `debian-imac12-2-firmware` bundle restores the firmware selection
+from this 27-inch iMac (`iMac12,2`), which has Intel integrated graphics and an
+AMD Radeon GPU. It installs AMD, Intel, and miscellaneous firmware plus Intel
+microcode. Use it when reinstalling this iMac or after checking the hardware
+on another machine.
 
 ```bash
 pm install --dry-run --bundle debian-workstation
 bash packages/debian-apt/install.sh --dry-run
 pm install --bundle debian-workstation
+```
+
+To preview both bundles together for the iMac:
+
+```bash
+pm install --dry-run --bundle debian-workstation --bundle debian-imac12-2-firmware
 ```
 
 The APT setup adds missing entries for the official Debian mirrors in
