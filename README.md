@@ -142,6 +142,29 @@ The script applies the recorded terminal settings through Xfconf and copies
 the shortcut and legacy config files into place, backing up files it changes.
 Open XFCE Terminal afterward to load the restored shortcuts.
 
+## Emacs and terminal apps
+
+Both workstation bundles link the saved Emacs init at
+`~/.config/emacs/init.el`. Emacs keeps Customize changes in a separate local
+`custom.el`. Emacs will use an existing legacy init under `~/.emacs`,
+`~/.emacs.el`, or `~/.emacs.d/` ahead of the XDG location.
+
+The btop, htop, and CLIamp snapshots are restored as writable files under
+`$XDG_CONFIG_HOME` or `~/.config`. Preview from the checkout, close the apps,
+then rerun the desired commands without `--dry-run`. Changed files get numbered
+backups beside the originals.
+
+```bash
+bash packages/common-tools/post-install.sh --dry-run
+bash packages/cliamp/post-install.sh --dry-run
+```
+
+CLIamp restores shuffle, visualizer, equalizer, and YouTube Music preferences.
+Configure account access locally with `cliamp setup`. For native Brave with
+GNOME Keyring, the previous setting was `cookies_from = "brave+gnomekeyring"`
+under `[ytmusic]` in the local config. Keep credentials, browser cookies,
+listening history, and Emacs session files out of Git.
+
 ## Existing config files
 
 `pm install` and `pm stow` save conflicting regular files beside the originals
