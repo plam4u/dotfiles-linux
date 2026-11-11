@@ -1,0 +1,7 @@
+# distro	installer	target
+debian	apt	tig
+debian	apt	xclip
+debian	apt	wl-clipboard
+arch	pacman	tig
+arch	pacman	xclip
+arch	pacman	wl-clipboard
