@@ -11,3 +11,4 @@ nnoremap <leader>q :q<cr>
 nnoremap <leader>x :wqa<cr>
 nnoremap <leader>so :so ~/.vimrc<cr>
 set cursorline
+colorscheme slate
