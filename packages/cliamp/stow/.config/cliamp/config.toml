@@ -3,6 +3,7 @@ shuffle = true
 visualizer = "BarsDot"
 eq_preset = "Electronic"
 eq = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+repeat = "All"
 
 [ytmusic]
 enabled = true
