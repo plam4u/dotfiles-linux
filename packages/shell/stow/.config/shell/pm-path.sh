@@ -6,7 +6,7 @@ _pm_setup_path() {
         checkout="$HOME/dotfiles-linux"
     fi
 
-    for directory in "$HOME/.local/bin" "$checkout/bin"; do
+    for directory in "$HOME/.deno/bin" "$HOME/.local/bin" "$checkout/bin"; do
         case ":${PATH:-}:" in
             *":$directory:"*) ;;
             *) export PATH="$directory${PATH:+:$PATH}" ;;

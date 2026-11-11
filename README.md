@@ -111,6 +111,9 @@ To preview both bundles together for the iMac:
 ./bootstrap.sh --bundle debian-workstation --bundle imac2011 --dry-run
 ```
 
+Desktop restore scripts require `XDG_CONFIG_HOME` to be unset or equal to
+`$HOME/.config`, matching the tracked Stow layout.
+
 The APT setup adds missing entries for the official Debian mirrors in
 `/etc/apt/sources.list.d/pm-debian.sources`. Existing `.list` and `.sources`
 entries are used as coverage and left in place. A changed managed file is
@@ -371,7 +374,8 @@ optional `hardware-model` file contains the exact Linux DMI product name.
 
 Place home files under `stow/` using paths relative to `$HOME`. An optional
 `post-install.sh` is listed as a manual follow-up. Bundle files contain one
-package name per line, with blank lines and comments allowed.
+package name per line, with blank lines and comments allowed. A line such as
+`@base-tools` includes another bundle in place; include cycles are rejected.
 
 See the [container test guide](tests/containers/README.md) for Debian and Arch
 test environments. Keep SSH keys, browser profiles, and other private app data

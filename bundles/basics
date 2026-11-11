@@ -1,15 +1,4 @@
-stow
-shell
-build-essential
-gdb
-git
-curl
-wget
-ripgrep
-fd
-man-db
-manpages-dev
-manpages
+@base-tools
 tmux
 vim
 neovim

@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if [[ ${XDG_CONFIG_HOME:-$HOME/.config} != "$HOME/.config" ]]; then
+    printf 'This restore requires XDG_CONFIG_HOME to be unset or equal to ~/.config.\n' >&2
+    exit 1
+fi
+
 if pgrep -x -u "$UID" xfce4-terminal >/dev/null; then
     printf 'Close XFCE Terminal and run this from another terminal in the same desktop session.\n' >&2
     exit 1

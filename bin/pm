@@ -32,21 +32,27 @@ request_package() {
 
 read_bundle() {
     local name=$1 line
+    [[ ! ${active_bundles[$name]+set} ]] || die "bundle include cycle: $name"
     valid_name "$name" || die "invalid bundle name: $name"
     local path="$repo/bundles/$name"
     [[ -f $path ]] || die "unknown bundle: $name"
+    active_bundles[$name]=1
     while IFS= read -r line || [[ -n $line ]]; do
         [[ $line =~ ^[[:space:]]*(#|$) ]] && continue
-        request_package "$line"
+        if [[ $line == @* ]]; then
+            read_bundle "${line#@}"
+        else
+            request_package "$line"
+        fi
     done < "$path"
+    unset 'active_bundles[$name]'
 }
 
 read_package() {
     local line row_distro installer target row_architecture
     local row_pattern=$'^([a-z][a-z0-9-]*)\t([a-z][a-z0-9-]*)\t([^\t]+)(\t([a-z0-9_]+(,[a-z0-9_]+)*))?$'
     local has_rows=0 has_distro_rows=0 supported_architectures= architecture_matched=0
-    installers=()
-    targets=()
+    local -a installers=() targets=()
 
     while IFS= read -r line || [[ -n $line ]]; do
         [[ $line =~ ^[[:space:]]*(#|$) ]] && continue
@@ -88,6 +94,10 @@ read_package() {
     if (( has_rows == 0 )) && [[ ! -d $package_dir/stow ]]; then
         die "$package: add an install mapping or a stow/ directory"
     fi
+    plan_start[$package]=${#plan_installers[@]}
+    plan_count[$package]=${#installers[@]}
+    plan_installers+=("${installers[@]}")
+    plan_targets+=("${targets[@]}")
 }
 
 run() {
@@ -153,22 +163,8 @@ stow_command() (
         --no-folding "$@" --stow stow
 )
 
-stow_package() {
-    local action=$1 output line relative target backup number index moved=0
-    local -a conflicts=() backups=()
-    [[ -d $package_dir/stow ]] || return 0
-    command -v stow >/dev/null || die 'GNU Stow is required for packages with a stow/ directory'
-    local target_home
-    target_home=$(realpath -- "$HOME")
-
-    if output=$(stow_command --simulate --verbose=1 2>&1); then
-        case $action in
-            preview) printf '%s\n' "$output" ;;
-            apply) stow_command ;;
-        esac
-        return
-    fi
-
+# Helpers use the transaction variables local to stow_package.
+collect_stow_conflicts() {
     # Back up only regular files that Stow itself reported as conflicts.
     local prefix suffix path_pattern
     prefix="  * cannot stow $(realpath --relative-to="$target_home" -- "$package_dir")/stow/"
@@ -195,8 +191,9 @@ stow_package() {
         printf '%s\n' "$output" >&2
         return 1
     fi
-    [[ $action == check ]] && return 0
+}
 
+plan_stow_backups() {
     for relative in "${conflicts[@]}"; do
         backup="$relative.bak"
         number=0
@@ -210,6 +207,42 @@ stow_package() {
             printf '  Would link %s to %s\n' "$target_home/$relative" "$package_dir/stow/$relative"
         fi
     done
+}
+
+restore_stow_backups() {
+    # Restore backups where the original path is still vacant after a failure.
+    while (( moved > 0 )); do
+        moved=$(( moved - 1 ))
+        target="$target_home/${conflicts[moved]}"
+        backup=${backups[moved]}
+        if mv -nT -- "$backup" "$target" && [[ ! -e $backup && ! -L $backup ]]; then
+            printf 'pm: Restored %s from its backup\n' "$target" >&2
+        else
+            printf 'pm: Original %s is saved at %s\n' "$target" "$backup" >&2
+        fi
+    done
+}
+
+stow_package() {
+    local action=$1 output line relative target backup number index moved=0
+    local -a conflicts=() backups=()
+    [[ -d $package_dir/stow ]] || return 0
+    command -v stow >/dev/null || die 'GNU Stow is required for packages with a stow/ directory'
+    local target_home
+    target_home=$(realpath -- "$HOME")
+
+    if output=$(stow_command --simulate --verbose=1 2>&1); then
+        case $action in
+            preview) printf '%s\n' "$output" ;;
+            apply) stow_command ;;
+        esac
+        return
+    fi
+
+    collect_stow_conflicts || return 1
+    [[ $action == check ]] && return 0
+
+    plan_stow_backups
     if [[ $action == preview ]]; then
         sed -n '/^LINK: /p; /^MKDIR: /p' <<< "$output"
         return 0
@@ -230,17 +263,7 @@ stow_package() {
         return 0
     fi
 
-    # Restore backups where the original path is still vacant after a failure.
-    while (( moved > 0 )); do
-        moved=$(( moved - 1 ))
-        target="$target_home/${conflicts[moved]}"
-        backup=${backups[moved]}
-        if mv -nT -- "$backup" "$target" && [[ ! -e $backup && ! -L $backup ]]; then
-            printf 'pm: Restored %s from its backup\n' "$target" >&2
-        else
-            printf 'pm: Original %s is saved at %s\n' "$target" "$backup" >&2
-        fi
-    done
+    restore_stow_backups
     return 1
 }
 
@@ -280,8 +303,8 @@ case $distro in
     *) die "unsupported distro: $distro" ;;
 esac
 
-declare -A requested=() skipped=()
-declare -a packages=() installers=() targets=()
+declare -A requested=() skipped=() active_bundles=() plan_start=() plan_count=()
+declare -a packages=() plan_installers=() plan_targets=()
 dry_run=0
 apt_updated=0
 
@@ -349,9 +372,8 @@ for package in "${packages[@]}"; do
     package_dir="$repo/packages/$package"
     printf '%s\n' "$package"
     if [[ $subcommand == install ]]; then
-        read_package
-        for index in "${!installers[@]}"; do
-            install_target "${installers[index]}" "${targets[index]}"
+        for (( index=plan_start[$package]; index < plan_start[$package]+plan_count[$package]; index++ )); do
+            install_target "${plan_installers[index]}" "${plan_targets[index]}"
         done
         if (( ! dry_run && ! stow_available )) && [[ $package == stow ]]; then
             command -v stow >/dev/null || die 'the stow package did not make GNU Stow available on PATH'

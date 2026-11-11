@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if [[ ${XDG_CONFIG_HOME:-$HOME/.config} != "$HOME/.config" ]]; then
+    printf 'This restore requires XDG_CONFIG_HOME to be unset or equal to ~/.config.\n' >&2
+    exit 1
+fi
+
 package_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 config_dir=${XDG_CONFIG_HOME:-$HOME/.config}
 packages=(xfce4)
