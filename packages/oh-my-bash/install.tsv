@@ -1,0 +1,7 @@
+# distro	installer	target
+debian	apt	git
+debian	apt	ca-certificates
+debian	script	install.sh
+arch	pacman	git
+arch	pacman	ca-certificates
+arch	script	install.sh
