@@ -1,0 +1,13 @@
+# distro	installer	target	architecture (optional)
+debian	apt	git
+debian	apt	build-essential
+debian	apt	libncurses-dev
+debian	apt	libacl1-dev
+debian	apt	libgpm-dev
+debian	script	install.sh	x86_64
+arch	pacman	git
+arch	pacman	base-devel
+arch	pacman	ncurses
+arch	pacman	acl
+arch	pacman	gpm
+arch	script	install.sh	x86_64
