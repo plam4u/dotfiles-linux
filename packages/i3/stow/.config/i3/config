@@ -69,6 +69,17 @@ bindsym $mod+Shift+q kill
 # .desktop file. It is a wrapper around dmenu, so you need that installed.
 bindcode $mod+40 exec --no-startup-id i3-dmenu-desktop
 
+# Handle screenshots
+
+# Select region and copy to clipboard
+bindsym $mod+Shift+s exec --no-startup-id sh -c 'maim -s | xclip -selection clipboard -t image/png'
+
+# Capture entire screen
+bindsym F12 exec --no-startup-id sh -c 'maim | xclip -selection clipboard -t image/png'
+
+# Capture active window
+bindsym $mod+F12 exec --no-startup-id sh -c 'maim -i "$(xdotool getactivewindow)" | xclip -selection clipboard -t image/png'
+
 # change focus
 bindsym $mod+h focus left
 bindsym $mod+j focus down

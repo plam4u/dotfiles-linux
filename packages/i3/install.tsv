@@ -18,6 +18,7 @@ debian	apt	xdotool
 debian	apt	xfce4-settings
 debian	apt	xfce4-terminal
 debian	apt	xss-lock
+debian	apt	maim
 arch	pacman	arandr
 arch	pacman	dex
 arch	pacman	dmenu
@@ -39,3 +40,4 @@ arch	pacman	xorg-server
 arch	pacman	xorg-xinit
 arch	pacman	xorg-xprop
 arch	pacman	xss-lock
+arch	pacman	maim
