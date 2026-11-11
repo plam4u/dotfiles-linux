@@ -1,0 +1,3 @@
+# distro	installer	target
+debian	apt	ca-certificates
+arch	pacman	ca-certificates

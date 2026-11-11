@@ -1,0 +1,2 @@
+# distro	installer	target	architecture
+debian	apt	intel-microcode	x86_64

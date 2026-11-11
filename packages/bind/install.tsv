@@ -1,0 +1,4 @@
+# distro	installer	target
+debian	apt	bind9-dnsutils
+debian	apt	bind9-host
+arch	pacman	bind

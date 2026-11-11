@@ -26,8 +26,8 @@ For commands that write to the checkout, such as `pm add`, make a writable
 copy inside the container.
 
 ```bash
-cp -R /workspace "$HOME/dotfiles-debian"
-cd "$HOME/dotfiles-debian"
+cp -R /workspace "$HOME/dotfiles-linux"
+cd "$HOME/dotfiles-linux"
 export PATH="$PWD/bin:$PATH"
 ```
 

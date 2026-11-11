@@ -49,17 +49,14 @@ fi
 
 install=()
 desktop_options=()
-restore_common=0
 restore_desktop=0
 for bundle in "${bundles[@]}"; do
     case $bundle in
-        starter) restore_common=1 ;;
         debian-workstation|arch-workstation)
             if [[ $bundle != "$ID-workstation" ]]; then
                 printf 'Use --bundle %s-workstation on this distro.\n' "$ID" >&2
                 exit 1
             fi
-            restore_common=1
             restore_desktop=1
             ;;
         imac2011)
@@ -84,15 +81,9 @@ if (( restore_desktop )); then
     bash packages/xfce4/post-install.sh --check-session
 fi
 ./bin/pm install "${install[@]}"
-if (( restore_common )); then
-    bash packages/common-tools/post-install.sh
-fi
 if (( restore_desktop )); then
     bash packages/xfce4/post-install.sh "${desktop_options[@]}"
     dbus-run-session -- bash packages/xfce4-terminal/post-install.sh
-    if [[ -x $HOME/.local/bin/cliamp || -x /usr/local/bin/cliamp ]]; then
-        bash packages/cliamp/post-install.sh
-    fi
     printf '\nSign in again or reboot to load the desktop settings.\n'
 fi
 

@@ -1,6 +1,15 @@
 stow
 shell
-basic-tools
+build-essential
+gdb
+git
+curl
+wget
+ripgrep
+fd
+man-db
+manpages-dev
+manpages
 tmux
 vim
 neovim

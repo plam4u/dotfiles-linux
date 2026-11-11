@@ -8,14 +8,14 @@ On Debian 13 (amd64 or arm64) or an up-to-date Arch Linux system (x86-64),
 run these as your regular user with `sudo` access.
 
 ```bash
-wget -O- https://github.com/plam4u/dotfiles-debian/raw/main/install.sh | bash
-~/dotfiles-debian/bootstrap.sh
+wget -O- https://github.com/plam4u/dotfiles-linux/raw/main/install.sh | bash
+~/dotfiles-linux/bootstrap.sh
 ```
 
 On Arch, you can use `curl -fsSL` in place of `wget -O-`.
 
 The first command installs Git if needed and clones the public repo to
-`~/dotfiles-debian`. The second installs the [basics bundle](bundles/basics).
+`~/dotfiles-linux`. The second installs the [basics bundle](bundles/basics).
 It includes GNU Stow, Bash and Zsh, tmux with xclip, Vim, packaged Neovim,
 Emacs, GCC, Make, GDB, Git, curl, wget, ripgrep, fd, and development man pages.
 On Debian the `fd-find` package provides the `fdfind` command. GNU Stow links
@@ -23,7 +23,7 @@ saved configs after each package installs. Open a new shell to use `pm` from
 anywhere. Keep the checkout in a stable location because the config links
 point into it.
 
-The launcher prints how to continue. Run `~/dotfiles-debian/bootstrap.sh --help`
+The launcher prints how to continue. Run `~/dotfiles-linux/bootstrap.sh --help`
 to list bundle names and options, or use `--bundle basics --dry-run` to preview
 the default setup. From the checkout, you can also choose exact packages:
 
@@ -52,10 +52,12 @@ workstation bundles include the basic tools. The `neovim` package installs
 the distro version. Debian workstation selects `neovim-nightly` and adds the
 optional `emacs-docs` package from Debian's `non-free` component.
 
-`common-tools` contains utilities such as Git, `curl`, `jq`, `fzf`, and
-`ffmpeg`. It has explicit APT and pacman mappings for differences such as
-Debian's `bind9-dnsutils` and `bind9-host`, which Arch supplies through `bind`.
-Use `./bin/pm install common-tools` to install just those utilities.
+The bundles list individual packages. Use `./bin/pm install jq fzf ffmpeg`
+to select just those tools. The `bind` package maps to `bind9-dnsutils` and
+`bind9-host` on Debian and `bind` on Arch.
+The starter and workstation bundles include the separate `lazygit` package,
+which adds the `lg` alias in Bash and Zsh. To install it on its own, run
+`./bin/pm install lazygit`.
 
 Telegram uses system Flathub. Docker uses its vendor APT source on Debian 13
 and the native package on Arch. The Debian dry run shows the path to Docker's
@@ -80,9 +82,9 @@ this setup uses Debian's x86 Steam launcher and 32-bit x86 graphics libraries.
 The optional `imac2011` bundle restores the firmware selection
 from this 27-inch iMac (`iMac12,2`), which has Intel integrated graphics and an
 AMD Radeon GPU. It installs AMD, Intel, and miscellaneous firmware plus Intel
-microcode. It also includes `imac2011-monitoring`, which installs `mbpfan`,
-`lm-sensors`, and `smartmontools`, then enables and starts the `mbpfan`
-systemd service. Fan settings in `/etc/mbpfan.conf` are managed separately.
+microcode. It also includes `mbpfan`, `lm-sensors`, and `smartmontools`.
+The `mbpfan` package enables and starts its systemd service. Fan settings in
+`/etc/mbpfan.conf` are managed separately.
 The bundle also installs `imac2011-keyboard`, which swaps Fn with left Ctrl
 and Option with Command on both sides through the Apple keyboard driver.
 It updates the initramfs. Reboot to load the swaps. Its
@@ -90,8 +92,8 @@ It updates the initramfs. Reboot to load the swaps. Its
 `hid_apple.conf` restored by Restic. Keyd receives the resulting key codes,
 so a `rightmeta` binding moves to the physical right Option key.
 To apply just the keyboard settings, run `./bin/pm install imac2011-keyboard`.
-Select the bundle when reinstalling the iMac. The hardware packages are
-skipped if the detected model differs.
+Select the bundle when reinstalling the iMac. The model-specific packages
+are skipped if the detected model differs.
 
 Bootstrap applies the workstation bundle and configuration follow-ups in order.
 To run just the package bundle from an existing checkout, use
@@ -226,11 +228,12 @@ bash packages/xfce4/post-install.sh --dry-run
 bash packages/xfce4/post-install.sh
 ```
 
-Add `--imac2011` to include the saved display, pointer, keyboard device, and
-power settings for the 27-inch iMac. Changed files get numbered backups next to
-the originals. On Debian, the desktop restore also sets the GNOME color scheme
-to `prefer-dark` and the GTK theme to `Adwaita-dark` for your user. Log in to
-XFCE after restoring the desktop settings.
+Add `--imac2011` to link the saved display, pointer, keyboard device, and
+power settings for the 27-inch iMac. Stow links the desktop files, and the
+restore script generates the panel XML with your home directory. On Debian,
+the script also sets the GNOME color scheme to `prefer-dark` and the GTK
+theme to `Adwaita-dark` for your user. Log in to XFCE after restoring the
+desktop settings.
 
 After installing `xfce4-terminal`, close XFCE Terminal and run its settings
 restore from another terminal in the same desktop session:
@@ -239,9 +242,9 @@ restore from another terminal in the same desktop session:
 bash packages/xfce4-terminal/post-install.sh
 ```
 
-The script applies the recorded terminal settings through Xfconf and copies
-the shortcut and legacy config files into place, backing up files it changes.
-Open XFCE Terminal afterward to load the restored shortcuts.
+Stow links the shortcut and legacy config files. The script applies the
+recorded terminal settings through Xfconf. Open XFCE Terminal afterward to
+load the restored shortcuts.
 
 ## Emacs and terminal apps
 
@@ -250,22 +253,20 @@ Both workstation bundles link the saved Emacs init at
 `custom.el`. Emacs will use an existing legacy init under `~/.emacs`,
 `~/.emacs.el`, or `~/.emacs.d/` ahead of the XDG location.
 
-The btop, htop, and CLIamp snapshots are restored as writable files under
-`$XDG_CONFIG_HOME` or `~/.config`. The workstation bootstrap applies them. For a
-manual restore, preview from the checkout, close the apps, then rerun the
-desired commands without `--dry-run`. Changed files get numbered backups beside
-the originals.
+The btop, htop, and CLIamp packages link their configs under `~/.config`.
+The workstation bootstrap applies them. For a manual restore, close the apps,
+preview the links from the checkout, then rerun without `--dry-run`.
 
 ```bash
-bash packages/common-tools/post-install.sh --dry-run
-bash packages/cliamp/post-install.sh --dry-run
+./bin/pm stow --dry-run btop htop cliamp
 ```
 
 CLIamp restores shuffle, visualizer, equalizer, and YouTube Music preferences.
-Configure account access locally with `cliamp setup`. For native Brave with
-GNOME Keyring, the previous setting was `cookies_from = "brave+gnomekeyring"`
-under `[ytmusic]` in the local config. Keep credentials, browser cookies,
-listening history, and Emacs session files out of Git.
+If you want private CLIamp settings, replace its config symlink with a local
+copy before running `cliamp setup`. For native Brave with GNOME Keyring, the
+previous setting was `cookies_from = "brave+gnomekeyring"` under `[ytmusic]`.
+Keep credentials, browser cookies, listening history, and Emacs session
+files out of Git.
 
 ## Existing config files
 

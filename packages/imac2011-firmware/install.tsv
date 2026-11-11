@@ -1,6 +1,0 @@
-# distro	installer	target
-# Firmware selection from the 27-inch iMac (iMac12,2).
-debian	apt	firmware-amd-graphics
-debian	apt	firmware-intel-graphics
-debian	apt	firmware-misc-nonfree
-debian	apt	intel-microcode	x86_64

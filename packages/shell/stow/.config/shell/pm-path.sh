@@ -3,7 +3,7 @@ _pm_setup_path() {
     snippet=$(realpath -- "$HOME/.config/shell/pm-path.sh") || return
     checkout=${snippet%/packages/shell/stow/.config/shell/pm-path.sh}
     if [ "$checkout" = "$snippet" ]; then
-        checkout="$HOME/dotfiles-debian"
+        checkout="$HOME/dotfiles-linux"
     fi
 
     for directory in "$HOME/.local/bin" "$checkout/bin"; do

@@ -1,5 +1,0 @@
-# distro	installer	target
-debian	apt	mbpfan
-debian	apt	lm-sensors
-debian	apt	smartmontools
-debian	script	install.sh	x86_64

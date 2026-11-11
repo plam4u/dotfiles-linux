@@ -1,4 +1,9 @@
 debian-apt
-imac2011-firmware
-imac2011-monitoring
+firmware-amd-graphics
+firmware-intel-graphics
+firmware-misc-nonfree
+intel-microcode
+mbpfan
+lm-sensors
+smartmontools
 imac2011-keyboard

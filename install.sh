@@ -21,15 +21,15 @@ install_dotfiles() {
         esac
     fi
 
-    local checkout="$HOME/dotfiles-debian"
-    local remote=https://github.com/plam4u/dotfiles-debian.git
+    local checkout="$HOME/dotfiles-linux"
+    local remote=https://github.com/plam4u/dotfiles-linux.git
     if [[ -e $checkout || -L $checkout ]]; then
         local origin=
         if [[ -e $checkout/.git ]]; then
             origin=$(git -C "$checkout" remote get-url origin 2>/dev/null) || origin=
         fi
         case $origin in
-            "$remote"|git@github.com:plam4u/dotfiles-debian.git) ;;
+            "$remote"|git@github.com:plam4u/dotfiles-linux.git) ;;
             *) printf 'Review the existing path before retrying: %s\n' "$checkout" >&2; exit 1 ;;
         esac
         if [[ ! -f $checkout/bootstrap.sh ]]; then
@@ -42,16 +42,16 @@ install_dotfiles() {
 
     cat <<'EOF'
 
-Dotfiles are ready in ~/dotfiles-debian.
+Dotfiles are ready in ~/dotfiles-linux.
 
 Install the basics bundle
-  ~/dotfiles-debian/bootstrap.sh
+  ~/dotfiles-linux/bootstrap.sh
 
 Preview a bundle
-  ~/dotfiles-debian/bootstrap.sh --bundle basics --dry-run
+  ~/dotfiles-linux/bootstrap.sh --bundle basics --dry-run
 
 List the bundles and options
-  ~/dotfiles-debian/bootstrap.sh --help
+  ~/dotfiles-linux/bootstrap.sh --help
 EOF
 }
 

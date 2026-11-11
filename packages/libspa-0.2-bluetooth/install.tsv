@@ -1,0 +1,2 @@
+# distro	installer	target
+debian	apt	libspa-0.2-bluetooth
