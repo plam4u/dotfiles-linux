@@ -83,7 +83,14 @@ AMD Radeon GPU. It installs AMD, Intel, and miscellaneous firmware plus Intel
 microcode. It also includes `imac2011-monitoring`, which installs `mbpfan`,
 `lm-sensors`, and `smartmontools`, then enables and starts the `mbpfan`
 systemd service. Fan settings in `/etc/mbpfan.conf` are managed separately.
-Select this bundle when reinstalling the iMac. Both hardware packages are
+The bundle also installs `imac2011-keyboard`, which swaps Fn with left Ctrl
+and Option with Command on both sides through the Apple keyboard driver.
+It updates the initramfs. Reboot to load the swaps. Its
+`/etc/modprobe.d/zz-imac2011-keyboard.conf` loads after the
+`hid_apple.conf` restored by Restic. Keyd receives the resulting key codes,
+so a `rightmeta` binding moves to the physical right Option key.
+To apply just the keyboard settings, run `./bin/pm install imac2011-keyboard`.
+Select the bundle when reinstalling the iMac. The hardware packages are
 skipped if the detected model differs.
 
 Bootstrap applies the workstation bundle and configuration follow-ups in order.
