@@ -86,11 +86,11 @@ microcode. It also includes `mbpfan`, `lm-sensors`, and `smartmontools`.
 The `mbpfan` package enables and starts its systemd service. Fan settings in
 `/etc/mbpfan.conf` are managed separately.
 The bundle also installs `imac2011-keyboard`, which swaps Fn with left Ctrl
-and Option with Command on both sides through the Apple keyboard driver.
-It updates the initramfs. Reboot to load the swaps. Its
+and left Option with left Command through the Apple keyboard driver.
+Right Command still triggers the keyd navigation layer. The package
+updates the initramfs. Reboot to load the swaps. Its
 `/etc/modprobe.d/zz-imac2011-keyboard.conf` loads after the
-`hid_apple.conf` restored by Restic. Keyd receives the resulting key codes,
-so a `rightmeta` binding moves to the physical right Option key.
+`hid_apple.conf` restored by Restic.
 To apply just the keyboard settings, run `./bin/pm install imac2011-keyboard`.
 Select the bundle when reinstalling the iMac. The model-specific packages
 are skipped if the detected model differs.
