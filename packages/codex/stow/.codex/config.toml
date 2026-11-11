@@ -1,0 +1,82 @@
+model = "gpt-6.1-sol"
+model_reasoning_effort = "medium"
+[marketplaces.openai-primary-runtime]
+source_type = "local"
+source = "/home/plam/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
+[marketplaces.openai-bundled]
+source_type = "local"
+source = "/home/plam/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true
+
+[plugins."codex-app-tools@openai-bundled"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."unified-computer-use@openai-bundled"]
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[mcp_servers.node_repl]
+args = []
+command = "/usr/lib/chatgpt/resources/cua_node/bin/node_repl"
+env_vars = ["BROWSER_USE_ACCESS_EXECUTOR_ID", "BROWSER_USE_ACCESS_PIPE_PATH", "BROWSER_USE_ACCESS_VERIFYING_IDENTITY"]
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = "/usr/lib/chatgpt/resources/cua_node/lib/node_modules"
+NODE_REPL_NODE_PATH = "/usr/lib/chatgpt/resources/cua_node/bin/node"
+NODE_REPL_TRUSTED_CODE_PATHS = "/home/plam/.codex:/usr/lib/chatgpt/resources/cua_node/lib/node_modules"
+CODEX_HOME = "/home/plam/.codex"
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab,mcpapps"
+BROWSER_USE_TINYSKY_ENABLED = "1"
+NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = ""
+NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = ""
+BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
+BROWSER_USE_CODEX_APP_VERSION = "26.1106.51428"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"/home/plam/.codex/plugins/cache/openai-bundled/browser/26.1106.51428/scripts/browser-service.mjs"}'
+CODEX_CLI_PATH = "/usr/lib/chatgpt/resources/codex"
+
+[projects."/home/plam/dotfiles-debian"]
+trust_level = "trusted"
+
+[projects."/home/plam/dotfiles-linux"]
+trust_level = "trusted"
+
+[projects."/home/plam/dotfiles-macos"]
+trust_level = "trusted"
+
+[desktop]
+sansFontSize = 16
+codeFontSize = 14
+appearanceTheme = "dark"
+conversationDetailMode = "STEPS_PROSE"
+open-link-in-target-preference = "external-browser"
+
+[tui]
+mouse_scroll_speed = 5.0
+screen_reader_detection_done = true
+theme = "dark-neon"
+agents_overview_grouping = "project"
+
+[tui.model_availability_nux]
+"gpt-6.1-sol" = 3
