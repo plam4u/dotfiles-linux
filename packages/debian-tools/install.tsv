@@ -26,7 +26,6 @@ debian	apt	pulsemixer
 debian	apt	python3-doc
 debian	apt	reportbug
 debian	apt	samba
-debian	apt	smartmontools
 debian	apt	wireless-tools
 debian	apt	wireplumber
 debian	apt	wpasupplicant

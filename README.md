@@ -80,7 +80,10 @@ this setup uses Debian's x86 Steam launcher and 32-bit x86 graphics libraries.
 The optional `debian-imac12-2-firmware` bundle restores the firmware selection
 from this 27-inch iMac (`iMac12,2`), which has Intel integrated graphics and an
 AMD Radeon GPU. It installs AMD, Intel, and miscellaneous firmware plus Intel
-microcode. Select it when reinstalling this iMac. The firmware package is
+microcode. It also includes `imac12-2-monitoring`, which installs `mbpfan`,
+`lm-sensors`, and `smartmontools`, then enables and starts the `mbpfan`
+systemd service. Fan settings in `/etc/mbpfan.conf` are managed separately.
+Select this bundle when reinstalling the iMac. Both hardware packages are
 skipped if the detected model differs.
 
 Bootstrap applies the workstation bundle and configuration follow-ups in order.
