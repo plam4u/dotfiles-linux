@@ -97,3 +97,9 @@ if (( restore_desktop )); then
 fi
 
 printf '\nBootstrap complete. Open a new shell to use pm from anywhere.\n'
+if [[ $ID == debian ]]; then
+    if (( ! restore_desktop )); then
+        printf '\nFor a full system-settings restore, first run:\n  %q --bundle debian-workstation\n' "$PWD/bootstrap.sh"
+    fi
+    printf '\nIf you have a Restic system-settings backup, restore it with:\n  %q restore\n' "$PWD/bin/pm-system-settings"
+fi

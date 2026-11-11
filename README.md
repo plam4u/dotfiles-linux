@@ -153,8 +153,9 @@ you can access after reinstalling. If the repository is on the Mac, keep a way
 to connect from the fresh system, such as an SSH key available independently
 of the backup. The user and server SSH backups are separate snapshots.
 
-On fresh Debian, install the workstation bundle and make sure you can access
-the backup repository. Then run:
+On fresh Debian, bootstrap prints the Restic restore command. After installing
+the workstation bundle and connecting to the backup repository, run this from
+the checkout:
 
 ```bash
 ./bin/pm-system-settings restore
@@ -220,7 +221,9 @@ bash packages/xfce4/post-install.sh
 
 Add `--imac2011` to include the saved display, pointer, keyboard device, and
 power settings for the 27-inch iMac. Changed files get numbered backups next to
-the originals. Log in to XFCE after restoring the desktop settings.
+the originals. On Debian, the desktop restore also sets the GNOME color scheme
+to `prefer-dark` and the GTK theme to `Adwaita-dark` for your user. Log in to
+XFCE after restoring the desktop settings.
 
 After installing `xfce4-terminal`, close XFCE Terminal and run its settings
 restore from another terminal in the same desktop session:

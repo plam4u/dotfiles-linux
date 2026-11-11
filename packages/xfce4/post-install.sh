@@ -90,3 +90,14 @@ for index in "${!sources[@]}"; do
         staged=
     fi
 done
+
+if ( . /etc/os-release; [[ ${ID:-} == debian ]] ); then
+    if (( dry_run )); then
+        printf 'Would set GNOME color-scheme to prefer-dark and GTK theme to Adwaita-dark.\n'
+    else
+        dbus-run-session -- bash -e -c '
+            gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+            gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
+        '
+    fi
+fi
