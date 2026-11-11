@@ -1,6 +1,7 @@
 if [[ -r ${OSH:-$HOME/.oh-my-bash}/oh-my-bash.sh ]]; then
     export OSH="${OSH:-$HOME/.oh-my-bash}"
-    OSH_THEME="${OSH_THEME:-purity}"
+    # OSH_THEME="${OSH_THEME:-purity}"
+	OSH_THEME="${OSH_THEME-}"
     # Save Powerbash10k settings here. The pb10k show/hide commands change
     # only the current shell and its children.
     # THEME_SHOW_CLOCK=false
