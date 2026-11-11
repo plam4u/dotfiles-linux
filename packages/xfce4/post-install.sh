@@ -11,9 +11,9 @@ for arg in "$@"; do
     case $arg in
         --dry-run) dry_run=1 ;;
         --check-session) check_session=1 ;;
-        --imac12-2) profiles=(desktop imac12-2) ;;
+        --imac2011) profiles=(desktop imac2011) ;;
         -h|--help)
-            printf 'Usage: bash %s [--dry-run] [--imac12-2]\n' "$0"
+            printf 'Usage: bash %s [--dry-run] [--imac2011]\n' "$0"
             exit 0
             ;;
         *) printf 'Unknown option: %s\n' "$arg" >&2; exit 1 ;;

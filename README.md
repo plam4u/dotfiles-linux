@@ -77,10 +77,10 @@ the Debian source setup, then installs the recorded desktop, development,
 multimedia, networking, and app packages. On ARM64 it skips Steam because
 this setup uses Debian's x86 Steam launcher and 32-bit x86 graphics libraries.
 
-The optional `debian-imac12-2-firmware` bundle restores the firmware selection
+The optional `imac2011` bundle restores the firmware selection
 from this 27-inch iMac (`iMac12,2`), which has Intel integrated graphics and an
 AMD Radeon GPU. It installs AMD, Intel, and miscellaneous firmware plus Intel
-microcode. It also includes `imac12-2-monitoring`, which installs `mbpfan`,
+microcode. It also includes `imac2011-monitoring`, which installs `mbpfan`,
 `lm-sensors`, and `smartmontools`, then enables and starts the `mbpfan`
 systemd service. Fan settings in `/etc/mbpfan.conf` are managed separately.
 Select this bundle when reinstalling the iMac. Both hardware packages are
@@ -93,7 +93,7 @@ To run just the package bundle from an existing checkout, use
 To preview both bundles together for the iMac:
 
 ```bash
-./bootstrap.sh --bundle debian-workstation --bundle debian-imac12-2-firmware --dry-run
+./bootstrap.sh --bundle debian-workstation --bundle imac2011 --dry-run
 ```
 
 The APT setup adds missing entries for the official Debian mirrors in
@@ -218,7 +218,7 @@ bash packages/xfce4/post-install.sh --dry-run
 bash packages/xfce4/post-install.sh
 ```
 
-Add `--imac12-2` to include the saved display, pointer, keyboard device, and
+Add `--imac2011` to include the saved display, pointer, keyboard device, and
 power settings for the 27-inch iMac. Changed files get numbered backups next to
 the originals. Log in to XFCE after restoring the desktop settings.
 

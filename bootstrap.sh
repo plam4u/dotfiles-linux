@@ -62,13 +62,13 @@ for bundle in "${bundles[@]}"; do
             restore_common=1
             restore_desktop=1
             ;;
-        debian-imac12-2-firmware)
+        imac2011)
             model=
             if [[ -r /sys/devices/virtual/dmi/id/product_name ]]; then
                 read -r model < /sys/devices/virtual/dmi/id/product_name
             fi
             if [[ $ID == debian && $model == iMac12,2 ]]; then
-                desktop_options=(--imac12-2)
+                desktop_options=(--imac2011)
             fi
             ;;
     esac

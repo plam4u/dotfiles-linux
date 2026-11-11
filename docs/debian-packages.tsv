@@ -57,9 +57,9 @@ feh	3.10.3-1	amd64	Debian	i3
 ffmpeg	7:7.1.5-0+deb13u1	amd64	Debian	common-tools
 file	1:5.46-5	amd64	Debian	common-tools
 findutils	4.10.0-3	amd64	Debian	Debian installer or dependency
-firmware-amd-graphics	20250410-2	all	Debian	imac12-2-firmware
-firmware-intel-graphics	20250410-2	all	Debian	imac12-2-firmware
-firmware-misc-nonfree	20250410-2	all	Debian	imac12-2-firmware
+firmware-amd-graphics	20250410-2	all	Debian	imac2011-firmware
+firmware-intel-graphics	20250410-2	all	Debian	imac2011-firmware
+firmware-misc-nonfree	20250410-2	all	Debian	imac2011-firmware
 flatpak	1.16.6-1~deb13u3	amd64	Debian	telegram (Flatpak runtime)
 fzf	0.60.3-1+b2	amd64	Debian	common-tools
 gcc-14-base	14.2.0-19	amd64	Debian	Debian installer or dependency
@@ -86,7 +86,7 @@ init	1.69~deb13u1	amd64	Debian	Debian installer or dependency
 init-system-helpers	1.69~deb13u1	all	Debian	Debian installer or dependency
 initramfs-tools	0.148.4	all	Debian	Debian installer or dependency
 installation-report	2.97	all	Debian	Debian installer or dependency
-intel-microcode	3.20251111.1~deb13u1	amd64	Debian	imac12-2-firmware
+intel-microcode	3.20251111.1~deb13u1	amd64	Debian	imac2011-firmware
 iproute2	6.15.0-1	amd64	Debian	Debian installer or dependency
 iputils-ping	3:20240905-3	amd64	Debian	Debian installer or dependency
 jq	1.7.1-6+deb13u4	amd64	Debian	common-tools
