@@ -26,7 +26,7 @@ if [[ -z ${RESTIC_REPOSITORY:-} && -z ${RESTIC_REPOSITORY_FILE:-} ]]; then
     restic_args=(-r "$repository")
 fi
 
-settings=(etc/keyd/default.conf etc/modprobe.d/hid_apple.conf etc/samba/smb.conf)
+settings=(etc/modprobe.d/hid_apple.conf etc/samba/smb.conf)
 network=etc/NetworkManager/system-connections
 archive=system-settings.tar
 
@@ -54,7 +54,7 @@ trap 'rm -rf -- "$stage"' EXIT
 dump_archive > "$stage/$archive"
 tar -xf "$stage/$archive" -C "$stage" -- "${settings[@]}" "$network"
 
-for relative in etc etc/keyd etc/modprobe.d etc/samba etc/NetworkManager "$network"; do
+for relative in etc etc/modprobe.d etc/samba etc/NetworkManager "$network"; do
     [[ -d $stage/$relative && ! -L $stage/$relative ]] ||
         die "Expected a directory in the archive: $relative"
 done

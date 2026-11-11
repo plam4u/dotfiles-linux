@@ -95,6 +95,12 @@ To apply just the keyboard settings, run `./bin/pm install imac2011-keyboard`.
 Select the bundle when reinstalling the iMac. The model-specific packages
 are skipped if the detected model differs.
 
+Both workstation bundles install the tracked [keyd config](packages/keyd/default.conf)
+to `/etc/keyd/default.conf`. It maps Caps Lock to left Ctrl and defines
+the navigation layer. Run `./bin/pm install keyd` to apply it again. The
+installer saves a numbered backup of a changed file and reloads keyd if
+it is running.
+
 Bootstrap applies the workstation bundle and configuration follow-ups in order.
 To run just the package bundle from an existing checkout, use
 `./bin/pm install --bundle debian-workstation`.
@@ -124,8 +130,8 @@ your `PATH`.
 See the [APT inventory](docs/debian-packages.tsv) for the original package
 versions, architectures, and restore paths. Debian's installer and APT
 dependencies cover the system base. The bundle installs the OpenSSH server.
-Restore any existing SSH server configuration and host keys separately when
-migrating its identity.
+See [Restore SSH from Restic](#restore-ssh-from-restic) to recover your user
+keys and migrate the server's configuration and host keys.
 
 ### Back up and restore the iMac system settings
 
@@ -156,8 +162,9 @@ For the SSH example, replace `macuser` and `mac-host.local` with your Mac
 username and hostname. The folder is relative to that user's home directory,
 typically `/Users/macuser/restic-debian-imac`.
 
-The backup covers keyd, the Apple keyboard driver override, NetworkManager
-profiles, and Samba. Save the repository address and Restic password somewhere
+The backup covers the Apple keyboard driver override, NetworkManager
+profiles, and Samba. Older snapshots may contain a keyd config. Restore
+uses the other system files and leaves keyd managed by its package. Save the repository address and Restic password somewhere
 you can access after reinstalling. If the repository is on the Mac, keep a way
 to connect from the fresh system, such as an SSH key available independently
 of the backup. The user and server SSH backups are separate snapshots.
@@ -178,6 +185,61 @@ and APT files from earlier snapshots. It backs up changed files and sets
 NetworkManager profile permissions. The workstation bundle sets up the APT
 sources. To test the backup before reinstalling, run restore now and decline
 the confirmation. Reboot after applying the restore on the fresh install.
+
+### Restore SSH from Restic
+
+List the snapshots in your SSH backup repository:
+
+```bash
+repo="$HOME/restic-debian-imac27"
+restic -r "$repo" snapshots
+```
+
+For the APACER8GB USB drive, use
+`repo=/media/plam/APACER8GB/restic-debian-imac27`. Add `--no-lock` to the
+Restic commands if the drive is mounted read-only.
+
+**User keys and config (`~/.ssh`)**. Choose the snapshot with your old home
+directory's `.ssh` path. The example uses snapshot `fc7d4421` and path
+`/home/plam/.ssh` from the iMac backup. Substitute yours if they differ and
+run as your regular user:
+
+```bash
+user_stage=$(mktemp -d)
+restic -r "$repo" restore fc7d4421 --target "$user_stage" &&
+    mkdir -p -m 700 "$HOME/.ssh" &&
+    cp -ai -- "$user_stage/home/plam/.ssh/." "$HOME/.ssh/"
+```
+
+Review any overwrite prompts. Run `ssh-add` to load standard key filenames
+into your agent. For a custom filename, pass the private key path to
+`ssh-add`.
+
+**Server config and host keys (`/etc/ssh`)**. Choose the snapshot tagged
+`ssh-server` with path `/etc-ssh.tar`. The iMac backup uses `f3b425a8`.
+Download the archive and check its layout:
+
+```bash
+server_stage=$(mktemp -d)
+restic -r "$repo" dump f3b425a8 /etc-ssh.tar > "$server_stage/etc-ssh.tar" &&
+    tar -tf "$server_stage/etc-ssh.tar" | head -20
+```
+
+If the archive contains `etc/ssh/` or `/etc/ssh/`, use the commands below.
+If it contains `ssh/` at the top level, use `"$server_stage/ssh/."` as the
+source when copying files into `/etc/ssh/`.
+
+```bash
+sudo tar -xpf "$server_stage/etc-ssh.tar" -C "$server_stage" &&
+    sudo cp -a -- /etc/ssh "$server_stage/ssh-before-restore" &&
+    sudo cp -a -- "$server_stage/etc/ssh/." /etc/ssh/ &&
+    sudo /usr/sbin/sshd -t &&
+    sudo systemctl reload ssh
+```
+
+If you're restoring over SSH, keep your current session open and test a
+second connection after the reload. The pre-restore copy is in
+`"$server_stage/ssh-before-restore"`.
 
 ## Arch workstation packages
 

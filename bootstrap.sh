@@ -93,4 +93,5 @@ if [[ $ID == debian ]]; then
         printf '\nFor a full system-settings restore, first run:\n  %q --bundle debian-workstation\n' "$PWD/bootstrap.sh"
     fi
     printf '\nIf you have a Restic system-settings backup, restore it with:\n  %q restore\n' "$PWD/bin/pm-system-settings"
+    printf '\nFor SSH keys and configs, see "Restore SSH from Restic" in:\n  %s/README.md\n' "$PWD"
 fi
