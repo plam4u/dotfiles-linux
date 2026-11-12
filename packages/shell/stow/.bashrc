@@ -8,10 +8,6 @@ case $- in
       *) return;;
 esac
 
-if [ -r "$HOME/.config/shell/env.sh" ]; then
-    . "$HOME/.config/shell/env.sh"
-fi
-
 shopt -s autocd
 
 # don't put duplicate lines or lines starting with space in the history.
@@ -78,19 +74,6 @@ xterm*|rxvt*)
     ;;
 esac
 
-if [ -r "$HOME/.config/shell/rc.sh" ]; then
-    . "$HOME/.config/shell/rc.sh"
-fi
-
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
-
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -102,13 +85,18 @@ if ! shopt -oq posix; then
   fi
 fi
 
-if [ -r "$HOME/.local/share/bash-completion/completions/deno.bash" ]; then
-    . "$HOME/.local/share/bash-completion/completions/deno.bash"
-fi
-
 for pm_fragment in "$HOME"/.bashrc.d/*.sh; do
     if [ -f "$pm_fragment" ] && [ -r "$pm_fragment" ]; then
         . "$pm_fragment"
     fi
 done
 unset pm_fragment
+
+# Alias definitions.
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi

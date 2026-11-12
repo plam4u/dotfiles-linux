@@ -64,15 +64,18 @@ and the native package on Arch. The Debian dry run shows the path to Docker's
 install script.
 
 Open a new Bash or Zsh session after installing `shell` to use `pm` from any
-directory. The shared PATH snippet finds the checkout through its Stow
-symlink. Packages can add shell fragments by putting `.sh` files under
-`stow/.bashrc.d/` or `stow/.zshrc.d/`.
+directory. Packages add shell fragments under `stow/.bashrc.d/` and
+`stow/.zshrc.d/`. These fragments load in filename order. Shared implementation
+lives outside `stow/`, in each package's `share/` directory; the fragments locate
+it through their Stow symlinks.
 
-Shared environment defaults and PATH setup live in
-`packages/shell/stow/.config/shell/env.sh`, loaded by `.profile`, `.bashrc`, and
-`.zshrc`. Shared interactive aliases and color setup live alongside it in
-`rc.sh`, loaded by Bash and Zsh. Keep shell-specific settings in their respective
-startup files or fragment directories.
+The shell package's `00-shell.sh` fragments load `share/shell.sh` for common
+PATH setup, editor defaults, aliases, and colors. `.profile` also loads the Bash
+fragment for login environment setup; aliases and colors only run interactively.
+Deno owns its PATH and completion setup in its own fragments and
+`share/deno.sh`. Zsh loads fragments before `compinit` so packages can register
+completion directories. Neovim nightly uses `~/.local/bin/nvim` and needs no
+shell fragment.
 
 The shell package also restores `.profile` for login shells. Both workstation
 bundles include the pinned Deno 2.9.8 installer for Linux x86-64 and ARM64. It uses

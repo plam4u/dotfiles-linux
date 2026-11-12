@@ -1,15 +1,10 @@
-if [ -r "$HOME/.config/shell/env.sh" ]; then
-    . "$HOME/.config/shell/env.sh"
-fi
+for pm_fragment in "$HOME"/.zshrc.d/*.sh(N); do
+    if [ -f "$pm_fragment" ] && [ -r "$pm_fragment" ]; then
+        . "$pm_fragment"
+    fi
+done
+unset pm_fragment
 
-if [ -r "$HOME/.config/shell/rc.sh" ]; then
-    . "$HOME/.config/shell/rc.sh"
-fi
-
-# Add deno completions to search path
-if [[ -d "$HOME/.zsh/completions" && ":$FPATH:" != *":$HOME/.zsh/completions:"* ]]; then
-    fpath=("$HOME/.zsh/completions" "${fpath[@]}")
-fi
 # Set up the prompt
 
 autoload -Uz promptinit
@@ -46,10 +41,3 @@ zstyle ':completion:*' verbose true
 
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
-
-for pm_fragment in "$HOME"/.zshrc.d/*.sh(N); do
-    if [ -f "$pm_fragment" ] && [ -r "$pm_fragment" ]; then
-        . "$pm_fragment"
-    fi
-done
-unset pm_fragment

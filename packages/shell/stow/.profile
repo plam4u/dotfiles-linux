@@ -1,5 +1,5 @@
-if [ -r "$HOME/.config/shell/env.sh" ]; then
-    . "$HOME/.config/shell/env.sh"
+if [ -r "$HOME/.bashrc.d/00-shell.sh" ]; then
+    . "$HOME/.bashrc.d/00-shell.sh"
 fi
 
 # Load the interactive Bash settings when Bash starts as a login shell.

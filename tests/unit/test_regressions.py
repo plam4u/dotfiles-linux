@@ -102,18 +102,68 @@ stow_package apply
             self.assertNotEqual(result.returncode, 0)
             self.assertIn('requires XDG_CONFIG_HOME', result.stderr)
 
-    def test_deno_on_path(self):
-        with tempfile.TemporaryDirectory() as directory:
-            home = Path(directory)
-            snippet = home / '.config/shell/pm-path.sh'
-            snippet.parent.mkdir(parents=True)
-            snippet.symlink_to(ROOT / 'packages/shell/stow/.config/shell/pm-path.sh')
-            binary = home / '.deno/bin/deno'
-            binary.parent.mkdir(parents=True)
-            binary.write_text('#!/bin/sh\nexit 0\n')
-            binary.chmod(0o755)
-            result = self.bash('. "$HOME/.config/shell/pm-path.sh"; command -v deno', env={**os.environ, 'HOME': directory, 'PATH': '/usr/bin:/bin'})
-            self.assertEqual(result.stdout.strip(), str(binary))
+    def test_package_shell_fragments(self):
+        for shell in ('bash', 'zsh'):
+            with self.subTest(shell=shell), tempfile.TemporaryDirectory() as directory:
+                home = Path(directory)
+                env = {k: v for k, v in os.environ.items() if k not in ('EDITOR', 'VISUAL')}
+                env.update(HOME=directory, PATH='/usr/bin:/bin', TERM='xterm')
+
+                def stow(package, delete=False):
+                    result = subprocess.run(['stow', '--no-folding',
+                                             '--dir=' + str(ROOT / 'packages' / package),
+                                             '--target=' + directory,
+                                             '--delete' if delete else '--stow', 'stow'],
+                                            env=env, capture_output=True, text=True)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+
+                def run(script):
+                    flags = ['--noprofile', '--norc'] if shell == 'bash' else ['-f']
+                    return subprocess.run([shell, *flags, '-i', '-c', script],
+                                          env=env, capture_output=True, text=True)
+
+                stow('shell')
+                # Generic startup works without Deno or its fragments installed.
+                startup = '. "$HOME/.' + shell + 'rc"; '
+                result = run(startup + 'printf "%s|%s|%s" "$EDITOR" "$VISUAL" "$PATH"')
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn('vim|vim|', result.stdout)
+                self.assertNotIn(str(home / '.deno/bin'), result.stdout)
+
+                binary = home / '.deno/bin/deno'
+                binary.parent.mkdir(parents=True)
+                binary.write_text('#!/bin/sh\nexit 0\n')
+                binary.chmod(0o755)
+                completion = home / '.local/share/bash-completion/completions/deno.bash'
+                completion.parent.mkdir(parents=True)
+                completion.write_text('DENO_COMPLETION_LOADED=yes\n')
+                (home / '.zsh/completions').mkdir(parents=True)
+                stow('deno')
+                result = run(startup + 'first_path=$PATH; ' + startup +
+                             '[ "$PATH" = "$first_path" ] || exit 1; '
+                             'command -v deno; alias ll; ' +
+                             ('[ "$DENO_COMPLETION_LOADED" = yes ]' if shell == 'bash' else
+                              '[[ ":$FPATH:" == *":$HOME/.zsh/completions:"* ]]'))
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn(str(binary), result.stdout)
+                self.assertIn('ls -l', result.stdout)
+                env.update(EDITOR='nano', VISUAL='code --wait')
+                result = run(startup + 'printf "%s|%s" "$EDITOR" "$VISUAL"')
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn('nano|code --wait', result.stdout)
+                stow('deno', delete=True)
+                result = run(startup + 'printf "%s" "$PATH"')
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertNotIn(str(binary.parent), result.stdout)
+
+                # Login environment remains available without interactive settings.
+                for login_shell in ('sh', 'bash'):
+                    result = subprocess.run([login_shell, '-c',
+                                             '. "$HOME/.profile"; printf "%s|%s" "$EDITOR" "$PATH"'],
+                                            env=env, capture_output=True, text=True)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertIn('nano|', result.stdout)
+                    self.assertIn(str(ROOT / 'bin'), result.stdout)
 
 
 if __name__ == '__main__':
