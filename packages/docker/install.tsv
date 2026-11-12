@@ -1,5 +1,7 @@
 # distro	installer	target
+debian	script	debian.sh
 debian	script	install.sh
 arch	pacman	docker
 arch	pacman	docker-buildx
 arch	pacman	docker-compose
+arch	script	install.sh

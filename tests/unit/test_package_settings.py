@@ -24,10 +24,15 @@ class PackageSettings(unittest.TestCase):
         self.mock_bin.mkdir()
         self.log = self.root / 'commands'
         shutil.copytree(ROOT / 'packages/samba', self.repo / 'packages/samba')
+        self.release = self.root / 'os-release'
+        self.release.write_text('ID=debian\n')
+        for name in ('install.sh', 'uninstall.sh'):
+            script = self.repo / 'packages/samba' / name
+            script.write_text(script.read_text().replace('/etc/os-release', shlex.quote(str(self.release))))
         self.env = dict(os.environ)
         self.env.update(HOME=str(self.home),
                         PATH=str(self.mock_bin) + ':' + os.environ['PATH'],
-                        SETTINGS_TEST_LOG=str(self.log))
+                        SETTINGS_TEST_LOG=str(self.log), SAMBA_TEST_ACCOUNT=str(self.root / 'samba-account'))
         self.mock('sudo', '''
 import subprocess
 import sys
@@ -42,10 +47,29 @@ sys.exit(subprocess.run(args).returncode)
 import os
 from pathlib import Path
 import sys
-if sys.argv[1] == 'is-active':
-    sys.exit(0 if sys.argv[-1] == 'smbd.service' else 3)
+if sys.argv[1] == 'cat':
+    sys.exit(0)
 with Path(os.environ['SETTINGS_TEST_LOG']).open('a') as log:
     log.write(' '.join(sys.argv[1:]) + '\\n')
+''')
+        self.mock('pdbedit', '''
+import os
+from pathlib import Path
+import sys
+if Path(os.environ['SAMBA_TEST_ACCOUNT']).exists():
+    print(sys.argv[-1] + ':1000:Test User')
+else:
+    sys.exit(1)
+''')
+        self.mock('smbpasswd', '''
+import os
+from pathlib import Path
+import sys
+if os.environ.get('SAMBA_TEST_PASSWORD_FAIL'):
+    sys.exit(1)
+Path(os.environ['SAMBA_TEST_ACCOUNT']).touch()
+with Path(os.environ['SETTINGS_TEST_LOG']).open('a') as log:
+    log.write('smbpasswd ' + ' '.join(sys.argv[1:]) + '\\n')
 ''')
 
     def mock(self, name, code):
@@ -74,11 +98,27 @@ with Path(os.environ['SETTINGS_TEST_LOG']).open('a') as log:
         self.assertNotIn('@HOME@', config)
         self.assertEqual(destination.with_name('smb.conf.~1~').read_text(), 'previous config')
         self.assertTrue((self.home / 'Public').is_dir())
-        self.assertEqual(self.log.read_text(), 'reload smbd.service\n')
+        self.assertEqual(self.log.read_text(), f'smbpasswd -a {username}\nenable --now smbd.service\nreload smbd.service\n')
         self.run_command('bash', str(script))
         self.assertFalse(destination.with_name('smb.conf.~2~').exists())
+        self.assertEqual(self.log.read_text().count('smbpasswd'), 1)
         self.run_command('bash', str(package / 'uninstall.sh'))
         self.assertEqual(destination.read_text(), config)
+        self.assertTrue(self.log.read_text().endswith('disable --now smbd.service\n'))
+
+    @unittest.skipUnless(shutil.which('testparm'), 'requires Samba testparm')
+    def test_samba_arch_activation_and_password_failure(self):
+        self.release.write_text('ID=arch\n')
+        script = self.repo / 'packages/samba/install.sh'
+        destination = self.root / 'etc/samba/smb.conf'
+        script.write_text(script.read_text().replace('/etc/samba/smb.conf', shlex.quote(str(destination))))
+        self.env['SAMBA_TEST_PASSWORD_FAIL'] = '1'
+        result = subprocess.run(['bash', str(script)], env=self.env, text=True, capture_output=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(self.log.exists())
+        del self.env['SAMBA_TEST_PASSWORD_FAIL']
+        self.run_command('bash', str(script))
+        self.assertIn('enable --now smb.service', self.log.read_text())
 
     def test_bootstrap_links_restore_guide_without_package_checklists(self):
         script = self.repo / 'bootstrap.sh'

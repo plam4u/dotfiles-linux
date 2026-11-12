@@ -13,10 +13,9 @@ install_config() {
 }
 
 install_config "$package_dir/defaults/keyd.conf" /etc/keyd/default.conf
-if systemctl is-active --quiet keyd.service; then
-    keyd_command=$(command -v keyd.rvaiya || command -v keyd)
-    sudo "$keyd_command" reload
-fi
+sudo systemctl enable --now keyd.service
+keyd_command=$(command -v keyd.rvaiya || command -v keyd)
+sudo "$keyd_command" reload
 
 # Apple driver preferences apply only to the supported Debian iMac.
 . /etc/os-release

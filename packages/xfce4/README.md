@@ -8,6 +8,10 @@ bash packages/xfce4/post-install.sh --dry-run
 bash packages/xfce4/post-install.sh
 ```
 
+Installation enables LightDM and graphical login for the next boot, allowing
+the offline restore to finish before first sign-in. Reboot afterward to enter
+the configured desktop.
+
 Apply the restore from a text console before graphical login or after signing
 out of XFCE. The script refuses to apply while XFCE or Xfconf is running.
 `XDG_CONFIG_HOME` must be unset or equal to `~/.config`.

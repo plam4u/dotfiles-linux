@@ -1,5 +1,6 @@
 # distro	installer	target
 debian	apt	task-xfce-desktop
+debian	apt	lightdm
 debian	apt	xfce4-goodies
 debian	apt	xfce4-power-manager
 debian	apt	dbus-daemon
@@ -7,6 +8,7 @@ debian	apt	dconf-gsettings-backend
 debian	apt	gsettings-desktop-schemas
 debian	apt	libglib2.0-bin
 debian	apt	python3
+debian	script	install.sh
 arch	pacman	xorg-server
 arch	pacman	xorg-xinit
 arch	pacman	lightdm
@@ -19,3 +21,4 @@ arch	pacman	xfce4-taskmanager
 arch	pacman	xorg-xkill
 arch	pacman	adwaita-cursors
 arch	pacman	python
+arch	script	install.sh

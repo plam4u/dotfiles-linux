@@ -1,2 +1,4 @@
 # distro	installer	target
+arch	pacman	bluez
 arch	pacman	bluez-utils
+arch	script	install.sh

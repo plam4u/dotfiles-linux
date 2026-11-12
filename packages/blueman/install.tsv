@@ -1,3 +1,7 @@
 # distro	installer	target
+debian	apt	bluez
 debian	apt	blueman
+debian	script	install.sh
+arch	pacman	bluez
 arch	pacman	blueman
+arch	script	install.sh

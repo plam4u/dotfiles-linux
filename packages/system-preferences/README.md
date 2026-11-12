@@ -14,7 +14,8 @@ the timezone and appearance scripts in manifest order.
 
 `keyboard.sh` installs `defaults/keyd.conf` at `/etc/keyd/default.conf`. It maps
 Caps Lock to left Ctrl and Right Command/Meta to a navigation layer, saves
-numbered backups of changed configuration, and reloads keyd if it is running.
+numbered backups of changed configuration, enables and starts keyd, and reloads
+its configuration.
 
 On Debian x86-64 `iMac12,2`, the script also installs
 `/etc/modprobe.d/imac2011-keyboard.conf`: Fn swaps with left Ctrl, and left Option
@@ -51,7 +52,8 @@ with its owning package.
 
 ## Uninstall
 
-Uninstall removes keyboard configuration only when it still matches the saved
-defaults and rebuilds the initramfs if the Apple driver file was removed. Edited
+Uninstall stops and disables keyd. It removes keyboard configuration only when
+it still matches the saved defaults and rebuilds the initramfs if the Apple
+driver file was removed. Edited
 files and backups remain. Timezone and appearance settings remain in effect.
 The manifest's keyd dependency is also removed.

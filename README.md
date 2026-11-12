@@ -85,9 +85,7 @@ in [packages/](packages/).
 | chatgpt | [Desktop application](packages/chatgpt/README.md) |
 | cliamp | [Player configuration and private settings](packages/cliamp/README.md) |
 | codex | [Terminal agent installation and sign-in](packages/codex/README.md) |
-| docker | [Installation and service startup](packages/docker/README.md) |
 | restic | [Private SSH recovery](packages/restic/README.md) |
-| samba | [File sharing and account setup](packages/samba/README.md) |
 | shell | [Shell startup and PATH](packages/shell/README.md) |
 | steam | [Installation requirements](packages/steam/README.md) |
 | system-preferences | [Keyboard, timezone and appearance](packages/system-preferences/README.md) |

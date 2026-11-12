@@ -38,7 +38,14 @@ class Keyboard(unittest.TestCase):
             path.write_text(text)
         self.mock('uname', "import os\nprint(os.environ['KEYBOARD_ARCH'])\n")
         self.mock('keyd.rvaiya', '')
-        self.mock('systemctl', "import os, sys\nsys.exit(int(os.environ.get('KEYBOARD_INACTIVE', '0')))\n")
+        self.mock('systemctl', '''
+import os
+from pathlib import Path
+import sys
+if sys.argv[1] != 'cat':
+    with Path(os.environ['KEYBOARD_LOG']).open('a') as log:
+        log.write('systemctl ' + ' '.join(sys.argv[1:]) + '\\n')
+''')
         self.mock('sudo', '''
 import os
 from pathlib import Path
@@ -115,16 +122,16 @@ sys.exit(subprocess.run(args).returncode)
         self.run_script('uninstall.sh')
         self.assertEqual(self.keyd.read_text(), 'edited config')
         self.assertEqual(self.apple.read_text(), 'edited driver options')
-        self.assertEqual(self.commands(), before)
+        self.assertEqual(self.commands(), before + ['systemctl disable --now keyd.service'])
         for destination, name in ((self.keyd, 'keyd.conf'), (self.apple, 'imac2011-keyboard.conf')):
             destination.unlink()
             destination.symlink_to(self.package / 'defaults' / name)
         self.run_script('uninstall.sh')
         self.assertTrue(self.keyd.is_symlink())
         self.assertTrue(self.apple.is_symlink())
-        self.assertEqual(self.commands(), before)
+        self.assertEqual(self.commands(), before + ['systemctl disable --now keyd.service'] * 2)
 
-    def test_install_refuses_symlink_and_skips_reload_when_inactive(self):
+    def test_install_refuses_symlink_and_activates_keyd(self):
         self.keyd.parent.mkdir(parents=True)
         target = self.root / 'private-config'
         target.write_text('private')
@@ -132,9 +139,9 @@ sys.exit(subprocess.run(args).returncode)
         self.run_script('keyboard.sh', succeeds=False)
         self.assertEqual(target.read_text(), 'private')
         self.keyd.unlink()
-        self.env['KEYBOARD_INACTIVE'] = '1'
         self.run_script('keyboard.sh')
-        self.assertNotIn('keyd.rvaiya reload', self.commands())
+        self.assertLess(self.commands().index('systemctl enable --now keyd.service'),
+                        self.commands().index('keyd.rvaiya reload'))
 
 
 if __name__ == '__main__':

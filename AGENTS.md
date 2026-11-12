@@ -17,6 +17,10 @@ This repository manages Linux packages and dotfiles for Debian 13 and Arch.
 
 Each package must install independently on a minimal supported system, without assuming that another repository package or bundle has already been installed. Declare all dependencies in its `install.tsv`, before the scripts that use them; install dependencies explicitly in the package installer when they cannot be expressed in the manifest. Only basic system tools, Git, and a downloader such as wget or curl may be assumed available. Do not assume that both downloaders or development tools, interpreters, and desktop utilities are installed.
 
+Installing a package expresses intent to use it. Leave it configured and ready to use: enable and start its required services, apply routine setup, and reload running services after configuration changes. Do not leave ordinary activation commands as README instructions or manual follow-ups. Use existing socket, session, or D-Bus activation when it already provides this behavior. Uninstall should stop and disable services enabled by the package before removing their dependencies.
+
+If activation would consume substantial resources, ask the user whether and how to enable it instead of silently leaving it disabled. Manual steps are appropriate only when they require user input, authentication, a session change, or a reboot; prompt within the owning installer when practical. Preserve correctness: do not load an unconfigured firewall policy or start competing network/audio backends merely because their utilities are installed.
+
 Keep configuration, setup instructions, manual follow-up steps, and detailed documentation with the package that owns them. Package installers should report their own required follow-up steps. Bootstrap owns bundle orchestration and critical overall setup guidance, not a checklist of unrelated package configuration. The root README can introduce workflows and link to package documentation. Do not mix topics, packages, or documentation, or duplicate instructions across them, unless the relationship is critical to completing the requested setup.
 
 ## Build, Test, and Development Commands

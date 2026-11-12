@@ -4,6 +4,9 @@ set -euo pipefail
 package_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
 . "$package_dir/../../share/uninstall.sh"
 
+if systemctl cat keyd.service >/dev/null 2>&1; then
+    sudo systemctl disable --now keyd.service
+fi
 remove_matching_file "$package_dir/defaults/keyd.conf" /etc/keyd/default.conf
 
 config=/etc/modprobe.d/imac2011-keyboard.conf

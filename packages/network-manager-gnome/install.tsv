@@ -1,3 +1,7 @@
 # distro	installer	target
+debian	apt	network-manager
 debian	apt	network-manager-gnome
+debian	script	install.sh
+arch	pacman	networkmanager
 arch	pacman	network-manager-applet
+arch	script	install.sh

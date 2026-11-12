@@ -1,3 +1,5 @@
 # distro	installer	target
 debian	apt	task-ssh-server
+debian	script	install.sh
 arch	pacman	openssh
+arch	script	install.sh

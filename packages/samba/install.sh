@@ -19,9 +19,12 @@ fi
 mkdir -p -- "$HOME/Public"
 sudo install -vDCT --backup=numbered -o root -g root -m 0644 -- \
     "$work_dir/smb.conf" "$destination"
-for service in smbd.service smb.service; do
-    if systemctl is-active --quiet "$service"; then
-        sudo systemctl reload "$service"
-    fi
-done
-printf 'Set your Samba password with: sudo smbpasswd -a %q\n' "$(id -un)"
+. /etc/os-release
+service=smbd.service
+[[ $ID != arch ]] || service=smb.service
+user=$(id -un)
+if ! sudo pdbedit -L -u "$user" | cut -d: -f1 | grep -Fx "$user" >/dev/null; then
+    sudo smbpasswd -a "$user"
+fi
+sudo systemctl enable --now "$service"
+sudo systemctl reload "$service"
