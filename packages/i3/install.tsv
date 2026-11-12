@@ -13,6 +13,7 @@ debian	apt	psmisc
 debian	apt	pulseaudio-utils
 debian	apt	rofi
 debian	apt	suckless-tools
+debian	apt	tmux
 debian	apt	x11-utils
 debian	apt	xdotool
 debian	apt	xfce4-settings
@@ -33,6 +34,7 @@ arch	pacman	network-manager-applet
 arch	pacman	picom
 arch	pacman	psmisc
 arch	pacman	rofi
+arch	pacman	tmux
 arch	pacman	xdotool
 arch	pacman	xfce4-settings
 arch	pacman	xfce4-terminal

@@ -218,9 +218,9 @@ assign [class="^md\.obsidian\.Obsidian$"] workspace number 6
 # ---------------------------------------------
 # Scratchpad
 # ---------------------------------------------
-for_window [class="^ScratchTerminal$"] floating enable, move scratchpad, resize set 1800 1000
+for_window [class="^ScratchTerminal$"] floating enable, resize set 1900 1300, move scratchpad
 
-bindsym $mod+grave [class="^ScratchTerminal$"] scratchpad show
+bindsym $mod+grave [class="^ScratchTerminal$"] scratchpad show; [class="^ScratchTerminal$" workspace="__focused__"] move position center
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
