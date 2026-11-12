@@ -467,6 +467,9 @@ else
         if [[ $subcommand == install && -f $package_dir/post-install.sh ]]; then
             printf '  Manual follow-up: bash %q\n' "$package_dir/post-install.sh"
         fi
+        if [[ $subcommand == install && -f $package_dir/README.md ]]; then
+            printf '  Package instructions: %s/README.md\n' "$package_dir"
+        fi
     done
 fi
 

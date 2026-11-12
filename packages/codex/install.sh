@@ -21,4 +21,4 @@ if [[ -e $destination || -L $destination ]]; then
 fi
 npm install --global --prefix "$HOME/.local" @openai/codex@latest
 "$destination" --version
-printf 'Run codex to sign in. The shell package adds ~/.local/bin to PATH.\n'
+printf 'Run %q to sign in. Add ~/.local/bin to PATH to use codex by name.\n' "$destination"

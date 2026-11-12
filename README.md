@@ -1,434 +1,168 @@
 # Linux dotfiles with pm
 
-`pm` installs packages and links configuration files into your home directory.
+`pm` installs Linux packages and links configuration into your home directory
+with GNU Stow. Supported systems are Debian 13 on x86-64 or ARM64 and Arch Linux
+on x86-64. Run commands as your regular user with `sudo` access.
 
 ## Quick start
-
-On Debian 13 (amd64 or arm64) or an up-to-date Arch Linux system (x86-64),
-run these as your regular user with `sudo` access.
 
 ```bash
 wget -O- https://github.com/plam4u/dotfiles-linux/raw/main/install.sh | bash
 ~/dotfiles-linux/bootstrap.sh
 ```
 
-On Arch, you can use `curl -fsSL` in place of `wget -O-`.
+You can use `curl -fsSL` in place of `wget -O-`. The installer installs Git if
+needed and clones the repository to `~/dotfiles-linux`. Bootstrap installs the
+[basics bundle](bundles/basics). Keep the checkout in a stable location because
+configuration symlinks point into it.
 
-The first command installs Git if needed and clones the public repo to
-`~/dotfiles-linux`. The second installs the [basics bundle](bundles/basics).
-It includes GNU Stow, Bash and Zsh, tmux with xclip, Vim, packaged Neovim,
-Emacs, GCC, Make, GDB, Git, curl, wget, ripgrep, fd, and development man pages.
-On Debian the `fd-find` package provides the `fdfind` command. GNU Stow links
-saved configs after each package installs. Open a new shell to use `pm` from
-anywhere. Keep the checkout in a stable location because the config links
-point into it.
-
-The launcher prints how to continue. Run `~/dotfiles-linux/bootstrap.sh --help`
-to list bundle names and options, or use `--bundle basics --dry-run` to preview
-the default setup. From the checkout, you can also choose exact packages:
+From the checkout, preview installation before applying it:
 
 ```bash
 ./bin/pm install --dry-run vim tmux
-./bin/pm install vim tmux restic
+./bin/pm install vim tmux
 ```
 
-Bundles are plain lists in [`bundles/`](bundles/). You can combine a
-bundle with individual packages, for example `./bin/pm install --bundle starter restic`.
-For the full desktop and app setup, preview with
-`./bootstrap.sh --bundle debian-workstation --dry-run` on Debian, or use
-`--bundle arch-workstation` on Arch. Run the chosen command without `--dry-run`
-from a text console after signing out of XFCE. Bootstrap installs the selected
-workstation bundle and applies the saved settings.
-On Debian ARM64, including a Debian VM in UTM, you can use `basics`, `starter`,
-or `debian-workstation`. Bootstrap installs the compatible packages and
-lists skipped packages with reasons. Dry runs show the same planned skips.
+GNU Stow is required for configuration linking. On a minimal system, install it
+first with `./bin/pm install stow`, or list `stow` before packages with saved
+configuration. Bundles include it in their setup order.
 
-## Starter bundle
+Package configuration and required follow-up steps are documented in each
+package's README; `pm install` prints its path when available.
+See the [package guide](#package-guide). Installing one package
+does not imply that an unrelated package or bundle is installed.
 
-Bundles run in file order. `starter` includes the basics plus common tools,
-Telegram, and Docker. A dry run on a system without Stow shows that linking is
-planned. Stow can check the individual paths once it is installed. Both
-workstation bundles include the basic tools. The `neovim` package installs
-the distro version. Debian workstation selects `neovim-nightly` and adds the
-optional `emacs-docs` package from Debian's `non-free` component.
+## Bundles and bootstrap
 
-The bundles list individual packages. Use `./bin/pm install jq fzf ffmpeg`
-to select just those tools. The `bind` package maps to `bind9-dnsutils` and
-`bind9-host` on Debian and `bind` on Arch.
-The starter and workstation bundles include the separate `lazygit` package,
-which adds the `lg` alias in Bash and Zsh. To install it on its own, run
-`./bin/pm install lazygit`.
+Bundles are ordered package lists in [bundles/](bundles/). A line such as
+`@base-tools` includes another bundle. Repeated packages run once.
 
-Telegram uses system Flathub. Docker uses its vendor APT source on Debian 13
-and the native package on Arch. The Debian dry run shows the path to Docker's
-install script.
+| Bundle | Purpose |
+| --- | --- |
+| [basics](bundles/basics) | Default command-line tools and configuration |
+| [starter](bundles/starter) | Basics plus additional tools and applications |
+| [debian-workstation](bundles/debian-workstation) | Debian desktop and application setup |
+| [arch-workstation](bundles/arch-workstation) | Arch desktop and application setup |
+| [imac2011](bundles/imac2011) | Debian iMac hardware selection and system preferences |
 
-Open a new Bash or Zsh session after installing `shell` to use `pm` from any
-directory. Packages add shell fragments under `stow/.bashrc.d/` and
-`stow/.zshrc.d/`. These fragments load in filename order. Shared implementation
-lives outside `stow/`, in each package's `share/` directory; the fragments locate
-it through their Stow symlinks.
-
-The shell package's `00-shell.sh` fragments load `share/shell.sh` for common
-PATH setup, editor defaults, aliases, and colors. `.profile` also loads the Bash
-fragment for login environment setup; aliases and colors only run interactively.
-Deno owns its PATH and completion setup in its own fragments and
-`share/deno.sh`. Zsh loads fragments before `compinit` so packages can register
-completion directories. Neovim nightly uses `~/.local/bin/nvim` and needs no
-shell fragment.
-
-The shell package also restores `.profile` for login shells. Both workstation
-bundles include the pinned Deno 2.9.8 installer for Linux x86-64 and ARM64. It uses
-`~/.deno/bin` and generates missing Bash and Zsh completions.
-
-## Debian workstation packages
-
-The `debian-workstation` bundle targets Debian 13. It starts with
-the Debian source setup, then installs the recorded desktop, development,
-multimedia, networking, and app packages. On ARM64 it skips Steam because
-this setup uses Debian's x86 Steam launcher and 32-bit x86 graphics libraries.
-
-The optional `imac2011` bundle restores the firmware selection
-from this 27-inch iMac (`iMac12,2`), which has Intel integrated graphics and an
-AMD Radeon GPU. It installs AMD, Intel, and miscellaneous firmware plus Intel
-microcode. It also includes `mbpfan`, `lm-sensors`, and `smartmontools`.
-The `mbpfan` package enables and starts its systemd service. Fan settings in
-`/etc/mbpfan.conf` are managed separately.
-The bundle also includes `system-preferences`. On this Debian x86-64 iMac,
-its `keyboard.sh` swaps Fn with left Ctrl and left Option with left Command
-through the Apple keyboard driver. Right Command still triggers the keyd
-navigation layer. The script updates the initramfs when the driver options
-change. Reboot to load the swaps. The driver options are managed entirely
-by `system-preferences`.
-To apply just the keyboard settings, first install keyd with
-`./bin/pm install keyd`, then run `bash packages/system-preferences/keyboard.sh`.
-Select the bundle when reinstalling the iMac. The model-specific packages
-are skipped if the detected model differs.
-
-Both workstation bundles include `system-preferences`, which installs keyd and
-the tracked [keyd config](packages/system-preferences/defaults/keyd.conf) to
-`/etc/keyd/default.conf`. It maps Caps Lock to left Ctrl and defines the navigation
-layer. The keyboard script saves numbered backups of changed files and reloads
-keyd if it is running. The separate `keyd` package installs only the tool.
-
-Bootstrap applies the workstation bundle and configuration follow-ups in order.
-To run just the package bundle from an existing checkout, use
-`./bin/pm install --bundle debian-workstation`.
-
-To preview both bundles together for the iMac:
+The [Debian inventory](docs/debian-packages.tsv) records the original package
+versions and architectures.
 
 ```bash
+./bootstrap.sh --help
+./bootstrap.sh --bundle debian-workstation --dry-run
+./bootstrap.sh --bundle arch-workstation --dry-run
 ./bootstrap.sh --bundle debian-workstation --bundle imac2011 --dry-run
 ```
 
+Choose the workstation bundle for your distribution. To apply it, sign out of
+the graphical session, switch to a text console and rerun without `--dry-run`.
+Bootstrap installs the bundle and runs the coordinated desktop restore steps.
 Desktop restore scripts require `XDG_CONFIG_HOME` to be unset or equal to
-`$HOME/.config`, matching the tracked Stow layout.
+`$HOME/.config`. Sign in again or reboot afterward.
 
-The APT setup adds missing entries for the official Debian mirrors in
-`/etc/apt/sources.list.d/pm-debian.sources`. Existing `.list` and `.sources`
-entries are used as coverage and left in place. A changed managed file is
-backed up. Backports stays available for explicit use. Telegram is installed
-via Flatpak. Steam enables the Debian `i386` architecture before installing
-the required 32-bit graphics packages.
-
-Brave, ChatGPT, and Docker use their own APT repositories. Obsidian uses its
-checksummed upstream Debian package on x86-64 and Flathub on ARM64. CLIamp
-uses the checksummed upstream build for the current architecture. The user
-copy of yt-dlp also uses a checksummed upstream release. `neovim-nightly`
-uses the checksummed nightly archive when it matches the recorded build, with a
-source build from the recorded commit as a fallback. CLIamp, Neovim, and the
-upstream yt-dlp copy install under `~/.local/`. Ensure `~/.local/bin` is on
-your `PATH`.
-
-See the [APT inventory](docs/debian-packages.tsv) for the original package
-versions, architectures, and restore paths. Debian's installer and APT
-dependencies cover the system base. The bundle installs the OpenSSH server.
-Private settings still need restoring after bootstrap. Bootstrap prints the
-remaining steps for user SSH keys/configuration and
-SSH server configuration/host keys. Follow the full commands in
-[the Restic package](packages/restic/README.md).
-
-### Samba configuration
-
-The `samba` package installs the saved configuration, including the `Public`
-share at `~/Public`, using the installing user's home and username. It validates
-the configuration with `testparm`, saves numbered backups of changed files, and
-reloads Samba if it is running. Install or reapply it with:
+You can combine bundles and individual packages:
 
 ```bash
-./bin/pm install --dry-run samba
-./bin/pm install samba
-sudo smbpasswd -a "$(id -un)"
+./bin/pm install --bundle starter jq
 ```
 
-Set up Samba passwords/accounts separately from the tracked configuration.
-Start `smbd.service` on Debian or
-`smb.service` on Arch when you want to serve shares. Uninstall keeps the Samba
-configuration, accounts and shared files.
+`pm` reports packages skipped for an unsupported distribution, architecture or
+hardware model. Dry runs show the same planned skips. Debian ARM64 systems,
+including VMs, can use `basics`, `starter` or `debian-workstation`.
 
-### SSH settings in Restic
+Private settings are not restored automatically. After reinstalling, complete
+SSH recovery using the [Restic package instructions](packages/restic/README.md).
 
-The `restic` package installs Restic and documents how to restore user SSH keys
-and configuration and SSH server configuration and host keys:
+## Package guide
+
+Run the documented package commands from the repository root. Packages without
+a README can be inspected through their `install.tsv` and configuration files
+in [packages/](packages/).
+
+| Package | Instructions |
+| --- | --- |
+| chatgpt | [Desktop application](packages/chatgpt/README.md) |
+| cliamp | [Player configuration and private settings](packages/cliamp/README.md) |
+| codex | [Terminal agent installation and sign-in](packages/codex/README.md) |
+| docker | [Installation and service startup](packages/docker/README.md) |
+| restic | [Private SSH recovery](packages/restic/README.md) |
+| samba | [File sharing and account setup](packages/samba/README.md) |
+| shell | [Shell startup and PATH](packages/shell/README.md) |
+| steam | [Installation requirements](packages/steam/README.md) |
+| system-preferences | [Keyboard, timezone and appearance](packages/system-preferences/README.md) |
+| xfce4 | [Desktop restore](packages/xfce4/README.md) |
+| xfce4-terminal | [Terminal settings restore](packages/xfce4-terminal/README.md) |
+
+## Configuration linking and backups
+
+`pm install` installs dependencies and scripts before linking a package's
+configuration. `pm stow` runs only the linking step:
 
 ```bash
-./bin/pm install restic
-restic -r REPOSITORY snapshots
+./bin/pm stow --dry-run tmux vim
+./bin/pm stow tmux vim
 ```
 
-User SSH settings and SSH server settings use separate snapshots. See
-[packages/restic/README.md](packages/restic/README.md) for all restore steps.
-Keyboard preferences and Samba configuration come from their packages.
-
-## Arch workstation packages
-
-On an up-to-date Arch x86-64 install, run from the checkout:
-
-```bash
-./bin/pm install --dry-run --bundle arch-workstation
-./bin/pm install --bundle arch-workstation
-```
-
-`arch-workstation` installs the shared tools, Arch development and desktop
-dependencies, XFCE, i3, OpenSSH, and Docker with Compose and Buildx. Arch uses
-its repository versions of Obsidian, Neovim, and yt-dlp. CLIamp uses the pinned
-upstream binary. Brave and Telegram use Flathub. Start the services you use
-after configuration, such as `lightdm.service`, `sshd.service`, or
-`docker.service`.
-
-Steam is an optional install on Arch. Enable `multilib` and fully update the
-system before running `pm install steam`. The ChatGPT APT package and the
-iMac firmware bundle target Debian.
-
-## Desktop settings and fonts
-
-Bootstrap runs the settings restores in this section for workstation bundles.
-Use the commands below to apply them individually.
-
-Both workstation bundles link the i3 config, its startup and scratchpad
-scripts, and the three saved workspace layout files. On login, i3 launches
-Flatpak Telegram and uses the available Brave install. The WhatsApp launcher
-runs when its desktop entry has been restored or recreated.
-
-Both bundles install JetBrains Mono Nerd Font 3.5.1 and the saved MesloLGS NF
-Regular, Bold, and Italic fonts from pinned, checksum-verified downloads. To
-install only the fonts, run `./bin/pm install fonts`. They are installed under
-`${XDG_DATA_HOME:-$HOME/.local/share}/fonts`.
-
-The XFCE desktop restore includes both panels and their launchers, keyboard
-shortcuts, appearance and window manager settings, and Thunar preferences and
-the **Open Terminal Here** action. Launcher buttons use your XFCE preferred
-applications. The panel's directory menu opens the restoring user's home.
-
-Preview the restore from the checkout. Apply it from a text console as your
-regular user before your first graphical login or after logging out of the
-graphical session.
-
-```bash
-bash packages/xfce4/post-install.sh --dry-run
-bash packages/xfce4/post-install.sh
-```
-
-Add `--imac2011` to link the saved display, pointer, keyboard device, and
-power settings for the 27-inch iMac. Stow links the desktop files, and the
-restore script generates the panel XML with your home directory. It then runs
-`system-preferences/appearance.sh` to apply the shared desktop appearance on
-Debian and Arch. Log in to XFCE after restoring the desktop settings.
-
-After installing `xfce4-terminal`, close XFCE Terminal and run its settings
-restore from another terminal in the same desktop session:
-
-```bash
-bash packages/xfce4-terminal/post-install.sh
-```
-
-Stow links the shortcut and legacy config files. The script applies the
-recorded terminal settings through Xfconf. Open XFCE Terminal afterward to
-load the restored shortcuts.
-
-## Emacs and terminal apps
-
-Both workstation bundles link the saved Emacs init at
-`~/.config/emacs/init.el`. Emacs keeps Customize changes in a separate local
-`custom.el`. Emacs will use an existing legacy init under `~/.emacs`,
-`~/.emacs.el`, or `~/.emacs.d/` ahead of the XDG location.
-
-The btop, htop, and CLIamp packages link their configs under `~/.config`.
-The workstation bootstrap applies them. For a manual restore, close the apps,
-preview the links from the checkout, then rerun without `--dry-run`.
-
-```bash
-./bin/pm stow --dry-run btop htop cliamp
-```
-
-CLIamp restores shuffle, visualizer, equalizer, and YouTube Music preferences.
-If you want private CLIamp settings, replace its config symlink with a local
-copy before running `cliamp setup`. For native Brave with GNOME Keyring, the
-previous setting was `cookies_from = "brave+gnomekeyring"` under `[ytmusic]`.
-Keep credentials, browser cookies, listening history, and Emacs session
-files out of Git.
-
-## Existing config files
-
-### Disable Light Locker
-
-Install the optional config-only package to disable Light Locker autostart for
-your user:
-
-```bash
-./bin/pm install disable-light-locker
-```
-
-It links `~/.config/autostart/light-locker.desktop` with `Hidden=true`.
-Use this with `XDG_CONFIG_HOME` unset or equal to `~/.config`.
-The change takes effect at the next login; it does not stop a running locker.
-
-To remove the override and allow the system Light Locker autostart entry again,
-run from the checkout:
-
-```bash
-./bin/pm uninstall disable-light-locker
-```
-
-Removing this override allows Light Locker to start at the next login if its
-system autostart entry is installed and enabled. If installation backed up an
-existing user override, that backup remains beside the original path and is
-not restored automatically.
-
-### Back up conflicting files
-
-`pm install` and `pm stow` save conflicting regular files beside the originals
-before GNU Stow links the package copies. `pm` prints each backup path. A backup
-uses the `.bak` suffix, then `.bak.1`, `.bak.2`, and so on if earlier names are
-taken. `pm stow` runs only the config step.
-
-```bash
-pm stow --dry-run tmux vim
-pm stow tmux vim
-```
-
-Review directory conflicts and unrelated symlinks manually. If you linked
-`.vimrc` from the old `vim-config` package, unlink that symlink before running
-`pm stow vim`. `pm` calls GNU Stow with per-file links and package-local ignore
-rules, independently of your personal Stow settings.
+Conflicting regular files are saved beside the originals with `.bak`, then
+`.bak.1`, `.bak.2` and so on. `pm` prints each backup path. Review directory
+conflicts and unrelated symlinks manually. GNU Stow uses per-file links and
+package-local ignore rules, independently of personal Stow settings.
 
 ## Uninstall packages
 
 ```bash
-pm uninstall --dry-run vim tmux
-pm uninstall vim tmux
-pm uninstall --bundle starter
+./bin/pm uninstall --dry-run vim tmux
+./bin/pm uninstall vim tmux
+./bin/pm uninstall --bundle starter
 ```
 
-`pm uninstall` reads the matching distro and architecture rows in `install.tsv`.
-It first removes the selected packages' Stow links, leaving regular files,
-unrelated symlinks, and backups intact. It then processes packages and their
-install rows in reverse order, using `apt-get remove`, `pacman -R`, or system
-Flatpak uninstall. Native targets and Flatpak apps that are already absent are
-skipped. Removal errors stop the command; earlier removals are not rolled back.
+Uninstall first removes selected Stow links, leaving regular files, unrelated
+symlinks and backups intact. It processes packages in reverse order, running
+each package's optional `uninstall.sh` once before removing its manifest
+packages in reverse order. Missing uninstall scripts produce a warning; already
+absent native packages and Flatpak applications are skipped. Errors stop the
+command, without rolling back earlier removals.
 
-For each package with script rows, `pm` runs its optional `uninstall.sh` once as
-your regular user, before removing its dependencies. If it is missing, `pm`
-prints a warning and continues with the remaining removals. A dry run previews
-commands and config unlinking without executing uninstall scripts.
-
-Removal follows the manifest, including targets that were installed before
-`pm` or are shared with other packages. There is no ownership tracking, purge,
-or automatic dependency cleanup. Native package managers still enforce their
-removal rules. Backups and app data such as browser profiles, Docker data,
-and Steam libraries remain. The initial script uninstallers remove known
-installation paths and preserve changed system config files; they do not
-restore earlier backups. Shared setup such as Steam's i386 architecture,
-Docker's signing key, and the upstream ChatGPT Arch repository remains.
-
-## System preferences
-
-The `system-preferences` package is included in both workstation bundles and the
-`imac2011` bundle. It applies system and desktop defaults on Debian and Arch.
-Its manifest installs keyd before running `keyboard.sh`, which applies the keyd
-remappings and, on a Debian x86-64 `iMac12,2`, the Apple driver options.
-Its `timezone.sh` script sets the system timezone to
-`Europe/Madrid`. Its `appearance.sh` script sets the GNOME dark color scheme,
-Adwaita-dark GTK theme, and shared XFCE appearance: cursor theme, font rendering,
-scaling, window decorations, opacity, shadows, and compositing. Desktop settings
-are applied for the current user when their settings tools are installed.
-Application-specific themes and fonts remain in their owning packages.
-Apply the package explicitly:
-
-```bash
-./bin/pm install --dry-run system-preferences
-./bin/pm install system-preferences
-```
-
-To preview or apply just appearance, without changing the timezone:
-
-```bash
-bash packages/system-preferences/appearance.sh --dry-run
-bash packages/system-preferences/appearance.sh
-```
-
-Appearance updates preserve other Xfconf properties and save numbered backups of
-changed channel files. Stow links are replaced with regular files before writing
-so the checkout stays unchanged. The XFCE desktop restore reapplies appearance
-after linking its other settings.
-
-Keep separate preferences in separate scripts, listed in `install.tsv` in the
-order they should run. Uninstalling this package removes the keyboard configs
-only if they still match the saved defaults, and rebuilds the initramfs if the
-Apple driver config was removed. It leaves edited files, backups, timezone and
-appearance settings intact. The manifest's keyd dependency is also removed.
+Removal follows the manifest, including dependencies installed before `pm` or
+shared with other packages. There is no ownership tracking, purge or automatic
+dependency cleanup. Package managers still enforce their removal rules. Backup
+files are not restored automatically. Package-specific cleanup and retained
+application data are described in the owning package's documentation.
 
 ## Add a package
 
-`pm add <name>` creates a commented `packages/<name>/install.tsv`. Add
-tab-separated `distro`, `installer`, and `target` fields, with one target per
-row. Supported installers are `apt`, `pacman`, `flatpak` (Flathub), and `script`
-(a `.sh` file in the package directory, conventionally `install.sh`). Script
-targets must be filenames without directory components; a package can list
-multiple scripts to split setup into logical units.
-Add an optional `uninstall.sh` beside `install.sh` to reverse its setup. It
-should tolerate already-removed files, preserve user data, and use `sudo`
-where system changes require it. No extra manifest row is needed.
+```bash
+./bin/pm add example
+```
 
-One `pm` package can install multiple system packages. `pm` processes every row
-for the detected distro in file order, then links the config. For example, the
-`tmux` package installs `tmux` and `xclip` on both Debian and Arch. A comment-only
-table with a `stow/` directory is a config-only package.
+This creates `packages/example/install.tsv`. Use literal tabs between `distro`,
+`installer` and `target`, with an optional fourth architecture field. Supported
+installers are `apt`, `pacman`, `flatpak` for system Flathub, and `script` for a
+package-local `.sh` file. Script targets are filenames without directory
+components; multiple scripts can split setup into logical units.
 
-For an architecture-specific installer, add a fourth tab-separated field
-with one or more comma-separated architectures as reported by `uname -m`
-(for example, `x86_64,aarch64`). Rows with no fourth field apply to every
-architecture. If a distro has architecture-specific rows, at least one must
-match for the package to install. This lets a package select a different
-installer for each architecture and share dependencies across them. Packages
-with install rows and no matching distro or architecture are reported as
-skipped, including their config links. For machine-specific packages, an
-optional `hardware-model` file contains the exact Linux DMI product name.
+Declare each package's dependencies before scripts that use them. Packages must
+install independently of bundles and other repository packages; do not rely on
+an earlier bundle entry to supply a required tool. See [AGENTS.md](AGENTS.md)
+for the package independence, documentation and simplicity rules.
 
-Place home files under `stow/` using paths relative to `$HOME`. An optional
-`post-install.sh` is listed as a manual follow-up. Bundle files contain one
-package name per line, with blank lines and comments allowed. A line such as
-`@base-tools` includes another bundle in place; include cycles are rejected.
+Each matching row runs in file order, then configuration is linked. A
+comment-only manifest with a `stow/` directory is a config-only package.
+Place home files under `stow/`, relative to `$HOME`. Shared package-owned shell
+code belongs in `share/`, outside the Stow tree.
 
-See the [container test guide](tests/containers/README.md) for Debian and Arch
-test environments. Keep SSH keys, browser profiles, and other private app data
-in your encrypted backup.
+Architecture fields use comma-separated `uname -m` values such as
+`x86_64,aarch64`; an omitted field applies to all architectures. A package with
+architecture-specific rows for the selected distribution needs at least one
+match. Unsupported packages are skipped along with their configuration links.
+An optional `hardware-model` file specifies the exact Linux DMI product name.
 
-The ChatGPT package supports Debian x86-64/ARM64 through APT and Arch through
-OpenAI's installer. On Arch, the upstream installer prompts for a full system
-upgrade. Use `./bin/pm install chatgpt` on either Linux distribution.
+Add an optional `uninstall.sh` to reverse managed setup. It runs as the regular
+user and should preserve edited files and user data, using `sudo` where needed.
+An optional `post-install.sh` is printed as a manual follow-up. Put detailed
+setup instructions and follow-up explanations in the package's `README.md`.
 
-On macOS with Homebrew installed, run `bash packages/chatgpt/install.sh` from
-the checkout. This package script uses the ChatGPT cask for Intel or Apple
-Silicon. The repository's general bootstrap and pm commands currently target
-Linux.
-
-Install the terminal coding agent with `./bin/pm install codex`, then run
-`codex` and sign in. Debian and Arch install Node.js and npm, then install
-`@openai/codex` under `~/.local`. The `shell` package puts its binary on PATH.
-The package skips installation when `codex` is already available. To update
-this npm installation, run
-`npm install --global --prefix "$HOME/.local" @openai/codex@latest`.
-
-On macOS with Homebrew installed, run `bash packages/codex/install.sh` from
-the checkout. It installs the Codex cask.
+See the [container test guide](tests/containers/README.md) for disposable Debian
+and Arch environments. Keep credentials, private keys and private application
+state out of Git.

@@ -32,5 +32,5 @@ export PATH="$PWD/bin:$PATH"
 ```
 
 Use both containers to test distro detection, native package installation,
-dry runs, config backups, and repeat installs. Use VMs for Telegram desktop
-integration and Docker Engine startup.
+dry runs, config backups, and repeat installs. Use VMs for desktop integration
+and system service startup.

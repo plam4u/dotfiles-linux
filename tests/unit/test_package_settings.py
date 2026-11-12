@@ -80,7 +80,7 @@ with Path(os.environ['SETTINGS_TEST_LOG']).open('a') as log:
         self.run_command('bash', str(package / 'uninstall.sh'))
         self.assertEqual(destination.read_text(), config)
 
-    def test_bootstrap_lists_all_private_restore_steps_on_both_distros(self):
+    def test_bootstrap_links_restore_guide_without_package_checklists(self):
         script = self.repo / 'bootstrap.sh'
         release = self.root / 'os-release'
         script.write_text((ROOT / 'bootstrap.sh').read_text().replace('/etc/os-release', shlex.quote(str(release))))
@@ -92,9 +92,10 @@ with Path(os.environ['SETTINGS_TEST_LOG']).open('a') as log:
             with self.subTest(distro=distro):
                 release.write_text(f'ID={distro}\nVERSION_CODENAME=trixie\n')
                 result = self.run_command('bash', str(script))
-                for text in ('Setup is not complete', '~/.ssh', '/etc/ssh',
-                             'packages/restic/README.md', 'smbpasswd'):
+                for text in ('setup is not complete', 'packages/restic/README.md'):
                     self.assertIn(text, result.stdout)
+                for text in ('Samba', 'smbpasswd', 'restic -r', '~/.ssh', '/etc/ssh'):
+                    self.assertNotIn(text, result.stdout)
 
 
 if __name__ == '__main__':

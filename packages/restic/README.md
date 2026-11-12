@@ -1,22 +1,16 @@
 # Restore private SSH settings
 
-Package installation does not restore private settings. Complete these steps
-on the new machine after installing the workstation bundle:
+Install this package with `./bin/pm install restic` from the repository root.
+Installation does not restore private settings. To recover SSH settings:
 
 1. Restore user SSH keys and configuration to `~/.ssh`.
 2. Restore SSH server configuration and host keys to `/etc/ssh`.
-3. Set your Samba password separately if you use file sharing.
-
-Keyboard preferences and Samba configuration come from their packages.
-Create your Samba account with
-`sudo smbpasswd -a "$(id -un)"`.
 
 ## Connect to the backup repository
 
-Run as your regular user from the repository checkout. Install Restic first:
+Run as your regular user from the repository checkout:
 
 ```bash
-./bin/pm install restic
 export RESTIC_REPOSITORY='/mnt/backup/restic-debian-imac'
 restic snapshots
 ```
