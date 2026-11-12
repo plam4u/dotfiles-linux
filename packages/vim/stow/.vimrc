@@ -7,6 +7,10 @@ let mapleader = " "
 vnoremap y y:call system("xclip -selection clipboard", @")<cr>
 nnoremap H :bp<cr>
 nnoremap L :bn<cr>
+inoremap jk <esc>
+inoremap kj <esc>
+nnoremap <leader>ls :ls<cr>
+nnoremap <leader>bd :bd<cr>
 nnoremap <leader>so :so ~/.vimrc<cr>
 nnoremap <leader>w :w<cr>
 nnoremap <leader>q :q<cr>
