@@ -21,7 +21,7 @@ sudo install -vDCT --backup=numbered -o root -g root -m 0644 -- \
     "$work_dir/smb.conf" "$destination"
 . /etc/os-release
 service=smbd.service
-[[ $ID != arch ]] || service=smb.service
+[[ $ID != arch && $ID != omarchy ]] || service=smb.service
 user=$(id -un)
 if ! sudo pdbedit -L -u "$user" | cut -d: -f1 | grep -Fx "$user" >/dev/null; then
     sudo smbpasswd -a "$user"

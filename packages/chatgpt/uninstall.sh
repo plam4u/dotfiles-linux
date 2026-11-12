@@ -8,7 +8,7 @@ fi
 package_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
 . "$package_dir/../../share/uninstall.sh"
 . /etc/os-release
-if [[ $ID == arch ]]; then
+if [[ $ID == arch || $ID == omarchy ]]; then
     remove_native_packages chatgpt
     printf 'The repository configured by the upstream ChatGPT installer is left in place.\n'
 else

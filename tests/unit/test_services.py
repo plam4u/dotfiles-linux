@@ -34,6 +34,7 @@ class Services(unittest.TestCase):
             shutil.copytree(ROOT / 'packages' / package, directory)
             for script in directory.glob('*.sh'):
                 script.write_text(script.read_text().replace('/etc/os-release', str(self.release)))
+        self.mock('dpkg', "print('amd64')")
         self.mock('sudo', '''
 import os
 import sys
@@ -86,7 +87,7 @@ with Path(os.environ['SERVICE_TEST_LOG']).open('a') as log:
         return self.log.read_text().splitlines() if self.log.exists() else []
 
     def test_services_start_after_dependencies_and_stop_before_removal(self):
-        for distro in ('debian', 'arch'):
+        for distro in ('debian', 'arch', 'omarchy'):
             with self.subTest(distro=distro):
                 self.release.write_text(f'ID={distro}\nVERSION_CODENAME=trixie\n')
                 self.log.unlink(missing_ok=True)

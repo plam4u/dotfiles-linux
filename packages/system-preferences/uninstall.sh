@@ -13,7 +13,8 @@ config=/etc/modprobe.d/imac2011-keyboard.conf
 if [[ ! -L $config && -f $config ]] &&
     cmp -s -- "$package_dir/defaults/imac2011-keyboard.conf" "$config"; then
     sudo rm -v -- "$config"
-    sudo /usr/sbin/update-initramfs -u
+    . "$package_dir/share/initramfs.sh"
+    rebuild_initramfs
     printf 'Reboot to load the remaining Apple keyboard settings.\n'
 elif [[ -e $config || -L $config ]]; then
     printf 'Keeping changed file: %s\n' "$config" >&2

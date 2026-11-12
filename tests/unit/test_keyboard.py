@@ -29,8 +29,7 @@ class Keyboard(unittest.TestCase):
         self.env = {**os.environ, 'PATH': str(self.mock_bin) + ':' + os.environ['PATH'],
                     'KEYBOARD_LOG': str(self.log), 'KEYBOARD_ARCH': 'x86_64'}
         # Redirect system paths only in the isolated copy of the scripts.
-        for name in ('keyboard.sh', 'uninstall.sh'):
-            path = self.package / name
+        for path in self.package.rglob('*.sh'):
             text = path.read_text().replace('/etc/keyd/', str(self.config / 'keyd') + '/')
             text = text.replace('/etc/modprobe.d/', str(self.config / 'modprobe.d') + '/')
             text = text.replace('/etc/os-release', str(self.release))
@@ -38,6 +37,8 @@ class Keyboard(unittest.TestCase):
             path.write_text(text)
         self.mock('uname', "import os\nprint(os.environ['KEYBOARD_ARCH'])\n")
         self.mock('keyd.rvaiya', '')
+        self.mock('mkinitcpio', '')
+        self.mock('limine-mkinitcpio', '')
         self.mock('systemctl', '''
 import os
 from pathlib import Path
@@ -57,7 +58,7 @@ if args[0] == 'install':
     for option in ('-o', '-g'):
         index = args.index(option)
         del args[index:index + 2]
-elif Path(args[0]).name in ('keyd', 'keyd.rvaiya', 'update-initramfs'):
+elif Path(args[0]).name in ('keyd', 'keyd.rvaiya', 'update-initramfs', 'mkinitcpio', 'limine-mkinitcpio'):
     with Path(os.environ['KEYBOARD_LOG']).open('a') as log:
         log.write(' '.join([Path(args[0]).name, *args[1:]]) + '\\n')
     sys.exit(0)
@@ -101,9 +102,8 @@ sys.exit(subprocess.run(args).returncode)
         self.run_script('uninstall.sh')
         self.assertEqual(self.commands().count('update-initramfs -u'), 2)
 
-    def test_apple_settings_require_debian_x86_imac(self):
+    def test_apple_settings_require_x86_imac(self):
         for distro, architecture, model in (('debian', 'x86_64', 'other'),
-                                            ('arch', 'x86_64', 'iMac12,2'),
                                             ('debian', 'aarch64', 'iMac12,2')):
             with self.subTest(distro=distro, architecture=architecture, model=model):
                 self.release.write_text('ID=' + distro + '\n')
@@ -113,6 +113,17 @@ sys.exit(subprocess.run(args).returncode)
                 self.assertTrue(self.keyd.exists())
                 self.assertFalse(self.apple.exists())
         self.assertNotIn('update-initramfs -u', self.commands())
+
+    def test_apple_settings_rebuild_arch_and_omarchy_boot_images(self):
+        for distro, command in (('arch', 'mkinitcpio -P'), ('omarchy', 'limine-mkinitcpio')):
+            with self.subTest(distro=distro):
+                self.release.write_text('ID=' + distro + '\n')
+                self.run_script('keyboard.sh')
+                self.assertTrue(self.apple.exists())
+                self.assertIn(command, self.commands())
+                self.run_script('uninstall.sh')
+                self.assertFalse(self.apple.exists())
+                self.assertEqual(self.commands().count(command), 2)
 
     def test_uninstall_preserves_edits_and_symlinks(self):
         self.run_script('keyboard.sh')

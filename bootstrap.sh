@@ -40,8 +40,8 @@ if (( EUID == 0 )); then
 fi
 . /etc/os-release
 case ${ID:-}:${VERSION_CODENAME:-} in
-    debian:trixie|arch:*) ;;
-    *) printf 'This bootstrap supports Debian 13 and Arch Linux.\n' >&2; exit 1 ;;
+    debian:trixie|arch:*|omarchy:*) ;;
+    *) printf 'This bootstrap supports Debian 13, Arch Linux and Omarchy.\n' >&2; exit 1 ;;
 esac
 if (( ! ${#bundles[@]} )); then
     bundles=(basics)
@@ -53,6 +53,10 @@ restore_desktop=0
 for bundle in "${bundles[@]}"; do
     case $bundle in
         debian-workstation|arch-workstation)
+            if [[ $ID == omarchy && $bundle == arch-workstation ]]; then
+                install+=(--bundle "$bundle")
+                continue
+            fi
             if [[ $bundle != "$ID-workstation" ]]; then
                 printf 'Use --bundle %s-workstation on this distro.\n' "$ID" >&2
                 exit 1
@@ -64,7 +68,7 @@ for bundle in "${bundles[@]}"; do
             if [[ -r /sys/devices/virtual/dmi/id/product_name ]]; then
                 read -r model < /sys/devices/virtual/dmi/id/product_name
             fi
-            if [[ $ID == debian && $model == iMac12,2 ]]; then
+            if [[ $model == iMac12,2 ]]; then
                 desktop_options=(--imac2011)
             fi
             ;;
@@ -88,7 +92,7 @@ if (( restore_desktop )); then
 fi
 
 printf '\nPackage installation complete. Manage packages with:\n  %q\n' "$PWD/bin/pm"
-if (( ! restore_desktop )); then
+if (( ! restore_desktop )) && [[ $ID != omarchy ]]; then
     printf '\nFor the full workstation setup, first run:\n  %q --bundle %s-workstation\n' "$PWD/bootstrap.sh" "$ID"
 fi
 printf '\nAfter reinstalling, setup is not complete until you restore private settings.\n'

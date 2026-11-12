@@ -2,7 +2,7 @@
 
 `pm` installs Linux packages and links configuration into your home directory
 with GNU Stow. Supported systems are Debian 13 on x86-64 or ARM64 and Arch Linux
-on x86-64. Run commands as your regular user with `sudo` access.
+or Omarchy on x86-64. Run commands as your regular user with `sudo` access.
 
 ## Quick start
 
@@ -42,8 +42,8 @@ Bundles are ordered package lists in [bundles/](bundles/). A line such as
 | [basics](bundles/basics) | Default command-line tools and configuration |
 | [starter](bundles/starter) | Basics plus additional tools and applications |
 | [debian-workstation](bundles/debian-workstation) | Debian desktop and application setup |
-| [arch-workstation](bundles/arch-workstation) | Arch desktop and application setup |
-| [imac2011](bundles/imac2011) | Debian iMac hardware selection and system preferences |
+| [arch-workstation](bundles/arch-workstation) | Arch desktop setup; Omarchy-aware workstation tools |
+| [imac2011](bundles/imac2011) | iMac hardware support and system preferences |
 
 The [Debian inventory](docs/debian-packages.tsv) records the original package
 versions and architectures.
@@ -55,7 +55,8 @@ versions and architectures.
 ./bootstrap.sh --bundle debian-workstation --bundle imac2011 --dry-run
 ```
 
-Choose the workstation bundle for your distribution. To apply it, sign out of
+On Omarchy, use the workflow below. On plain Arch or Debian, choose the
+workstation bundle for your distribution. To apply it, sign out of
 the graphical session, switch to a text console and rerun without `--dry-run`.
 Bootstrap installs the bundle and runs the coordinated desktop restore steps.
 Desktop restore scripts require `XDG_CONFIG_HOME` to be unset or equal to
@@ -73,6 +74,30 @@ including VMs, can use `basics`, `starter` or `debian-workstation`.
 
 Private settings are not restored automatically. After reinstalling, complete
 SSH recovery using the [Restic package instructions](packages/restic/README.md).
+
+## Omarchy
+
+Omarchy uses the Arch package mappings and pacman. Selecting `arch-workstation`
+automatically selects [omarchy-workstation](bundles/omarchy-workstation), which
+installs the shared workstation tools while keeping Omarchy's Hyprland desktop,
+login manager and theme. Plain Arch keeps the Xfce/i3 workstation setup.
+
+Preview all four bundles together, then remove `--dry-run` to install:
+
+```bash
+./bootstrap.sh --bundle arch-workstation --bundle imac2011 --bundle basics --bundle starter --dry-run
+```
+
+Repeated packages run once. On Omarchy, this command can run from the graphical
+session; it does not run the offline Xfce restore. Debian-only entries are
+reported as skipped. The iMac fan daemon and Apple driver settings apply only
+to `iMac12,2`; see [iMac hardware support](packages/mbpfan/README.md) and
+[keyboard preferences](packages/system-preferences/README.md).
+
+The shell package retains Omarchy's Bash initialization and then loads personal
+overrides. Existing shell and Git files are backed up before linking the saved
+configuration. See [shell startup](packages/shell/README.md) and
+[tmux clipboard support](packages/tmux/README.md).
 
 ## Package guide
 

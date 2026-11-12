@@ -3,7 +3,7 @@ set -euo pipefail
 
 . /etc/os-release
 service=smbd.service
-[[ $ID != arch ]] || service=smb.service
+[[ $ID != arch && $ID != omarchy ]] || service=smb.service
 if systemctl cat "$service" >/dev/null 2>&1; then
     sudo systemctl disable --now "$service"
 fi

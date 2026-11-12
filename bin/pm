@@ -33,6 +33,10 @@ request_package() {
 
 read_bundle() {
     local name=$1 line
+    if [[ ${platform:-} == omarchy && $name == arch-workstation ]]; then
+        printf 'Using omarchy-workstation for arch-workstation on Omarchy.\n'
+        name=omarchy-workstation
+    fi
     [[ ! ${active_bundles[$name]+set} ]] || die "bundle include cycle: $name"
     valid_name "$name" || die "invalid bundle name: $name"
     local path="$repo/bundles/$name"
@@ -344,7 +348,9 @@ fi
 [[ -r /etc/os-release ]] || die 'cannot read /etc/os-release'
 distro=$(. /etc/os-release; printf '%s' "${ID:-}")
 architecture=$(uname -m)
+platform=$distro
 case $distro in
+    omarchy) distro=arch ;;
     debian|arch) ;;
     *) die "unsupported distro: $distro" ;;
 esac

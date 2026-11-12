@@ -12,7 +12,7 @@ remove_native_packages() {
                     installed+=("$target")
                 fi
                 ;;
-            arch)
+            arch|omarchy)
                 if pacman -Q -- "$target" >/dev/null 2>&1 || pacman -Qg -- "$target" >/dev/null 2>&1; then
                     installed+=("$target")
                 fi
@@ -23,7 +23,7 @@ remove_native_packages() {
     if (( ${#installed[@]} )); then
         case $ID in
             debian) sudo apt-get remove -y -- "${installed[@]}" ;;
-            arch) sudo pacman -R --noconfirm -- "${installed[@]}" ;;
+            arch|omarchy) sudo pacman -R --noconfirm -- "${installed[@]}" ;;
         esac
     fi
 }

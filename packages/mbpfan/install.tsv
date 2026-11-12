@@ -1,3 +1,8 @@
 # distro	installer	target	architecture
 debian	apt	mbpfan
 debian	script	install.sh	x86_64
+arch	pacman	base-devel	x86_64
+arch	pacman	git	x86_64
+arch	pacman	kmod	x86_64
+arch	script	arch.sh	x86_64
+arch	script	install.sh	x86_64

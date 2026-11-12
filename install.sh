@@ -8,8 +8,8 @@ install_dotfiles() {
     fi
     . /etc/os-release
     case ${ID:-}:${VERSION_CODENAME:-} in
-        debian:trixie|arch:*) ;;
-        *) printf 'This installer supports Debian 13 and Arch Linux.\n' >&2; exit 1 ;;
+        debian:trixie|arch:*|omarchy:*) ;;
+        *) printf 'This installer supports Debian 13, Arch Linux and Omarchy.\n' >&2; exit 1 ;;
     esac
     if ! command -v git >/dev/null; then
         case $ID in
@@ -17,7 +17,7 @@ install_dotfiles() {
                 sudo apt-get update
                 sudo apt-get install -y git ca-certificates
                 ;;
-            arch) sudo pacman -S --needed --noconfirm git ;;
+            arch|omarchy) sudo pacman -S --needed --noconfirm git ;;
         esac
     fi
 

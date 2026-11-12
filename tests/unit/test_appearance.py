@@ -17,6 +17,10 @@ class Appearance(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
+        self.release = self.root / 'os-release'
+        self.release.write_text('ID=debian\n')
+        self.script = self.root / 'appearance.sh'
+        self.script.write_text(SCRIPT.read_text().replace('/etc/os-release', str(self.release)))
         self.mock_bin = self.root / 'bin'
         self.mock_bin.mkdir()
         self.config = self.root / 'config'
@@ -88,10 +92,16 @@ else:
         path.chmod(0o755)
 
     def run_script(self, *args):
-        result = subprocess.run(['bash', str(SCRIPT), *args], env=self.env,
+        result = subprocess.run(['bash', str(self.script), *args], env=self.env,
                                 capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         return result
+
+    def test_omarchy_preserves_its_active_theme(self):
+        self.release.write_text('ID=omarchy\n')
+        result = self.run_script()
+        self.assertIn('Keeping the active Omarchy theme', result.stdout)
+        self.assertFalse(self.log.exists())
 
     def test_apply_preserves_templates_other_settings_and_repeat(self):
         self.run_script()

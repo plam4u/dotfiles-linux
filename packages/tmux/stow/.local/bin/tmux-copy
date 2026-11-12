@@ -1,0 +1,10 @@
+#!/bin/sh
+# Prefer the native clipboard of the attached graphical session.
+if [ -n "${WAYLAND_DISPLAY:-}" ]; then
+    exec wl-copy --type text/plain
+elif [ -n "${DISPLAY:-}" ]; then
+    exec xclip -selection clipboard -in >/dev/null
+else
+    # tmux keeps its own copy buffer even without a graphical clipboard.
+    cat >/dev/null
+fi

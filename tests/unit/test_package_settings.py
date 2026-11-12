@@ -128,10 +128,16 @@ with Path(os.environ['SETTINGS_TEST_LOG']).open('a') as log:
         pm = self.repo / 'bin/pm'
         pm.write_text('#!/usr/bin/env bash\nexit 0\n')
         pm.chmod(0o755)
-        for distro in ('debian', 'arch'):
+        for distro in ('debian', 'arch', 'omarchy'):
             with self.subTest(distro=distro):
                 release.write_text(f'ID={distro}\nVERSION_CODENAME=trixie\n')
                 result = self.run_command('bash', str(script))
+                if distro == 'omarchy':
+                    self.assertNotIn('--bundle omarchy-workstation', result.stdout)
+                    preview = subprocess.run(['bash', str(script), '--bundle', 'arch-workstation', '--dry-run'],
+                                              env=self.env, text=True, capture_output=True)
+                    self.assertEqual(preview.returncode, 0, preview.stderr)
+                    self.run_command('bash', str(script), '--bundle', 'arch-workstation', '--bundle', 'imac2011')
                 for text in ('setup is not complete', 'packages/restic/README.md'):
                     self.assertIn(text, result.stdout)
                 for text in ('Samba', 'smbpasswd', 'restic -r', '~/.ssh', '/etc/ssh'):

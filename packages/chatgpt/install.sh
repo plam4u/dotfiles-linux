@@ -14,7 +14,13 @@ if [[ $(uname -s) == Darwin ]]; then
 fi
 
 . /etc/os-release
-if [[ $ID == arch ]]; then
+if [[ $ID == arch || $ID == omarchy ]]; then
+    if [[ $ID == omarchy ]]; then
+        package_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
+        install -vDCT --backup=numbered -m 0644 -- \
+            "$package_dir/defaults/codex-flags.conf" \
+            "${XDG_CONFIG_HOME:-$HOME/.config}/codex-flags.conf"
+    fi
     if pacman -Q chatgpt >/dev/null 2>&1; then
         printf 'Already installed: ChatGPT\n'
         exit 0

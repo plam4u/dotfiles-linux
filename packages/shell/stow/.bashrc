@@ -1,3 +1,8 @@
+# Load Omarchy's login environment even in non-interactive shells.
+if [ -r /usr/share/omarchy/default/bash/env-bootstrap ]; then
+    . /usr/share/omarchy/default/bash/env-bootstrap
+fi
+
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
@@ -68,6 +73,11 @@ for pm_fragment in "$HOME"/.bashrc.d/*.sh; do
 done
 unset pm_fragment
 
+# Retain Omarchy's aliases, prompt, functions and development tools.
+if [ -n "${OMARCHY_PATH:-}" ] && [ -r "$OMARCHY_PATH/default/bash/rc" ]; then
+    . "$OMARCHY_PATH/default/bash/rc"
+fi
+
 # Load personal alias overrides after package fragments.
 
 if [ -f ~/.bash_aliases ]; then
@@ -77,4 +87,6 @@ fi
 # Save commands and reload history after each command
 PROMPT_COMMAND="history -a; history -n${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
 
-fastfetch
+if command -v fastfetch >/dev/null 2>&1; then
+    fastfetch
+fi

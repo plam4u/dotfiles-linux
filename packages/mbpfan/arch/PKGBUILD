@@ -1,0 +1,44 @@
+# Source pinned to the upstream 2.4.0 release commit; no AUR helper is required.
+pkgname=mbpfan
+pkgver=2.4.0
+pkgrel=2
+pkgdesc='Fan control for Intel Macs'
+arch=('x86_64')
+url='https://github.com/linux-on-mac/mbpfan'
+license=('GPL-3.0-or-later')
+depends=('glibc')
+makedepends=('git')
+source=('git+https://github.com/linux-on-mac/mbpfan.git#commit=a9c324db67470a222b20d8ddaa9b4e1e488e9771'
+        'hwmon.patch' 'test-hwmon.c' 'check-hwmon.sh')
+sha256sums=('SKIP'
+            '321ca109a71006a4ea17e47420ed6bc888bd62fe6768b9409f5221a8dc99ee54'
+            '14bfea1cbc5419bf6fee8647c0686493af0842a8e8f7ba86b5eb6fc968f7fcff'
+            '4a792da2f81db6196db6dc7a80d223a57837f95fe76848260d5da3f5019130a2'
+)
+backup=('etc/mbpfan.conf')
+options=('!debug')
+
+prepare() {
+    patch -d "$srcdir/mbpfan" -Np1 -i "$srcdir/hwmon.patch"
+}
+
+check() {
+    cc -std=c99 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=500 \
+        -I "$srcdir/mbpfan/src" "$srcdir/test-hwmon.c" \
+        "$srcdir/mbpfan/src/"{settings,strmap,util}.c -lm -o "$srcdir/test-hwmon"
+    bash "$srcdir/check-hwmon.sh" "$srcdir/test-hwmon"
+}
+
+build() {
+    make -C "$srcdir/mbpfan" bin/mbpfan
+}
+
+package() {
+    cd "$srcdir/mbpfan"
+    install -Dm755 bin/mbpfan "$pkgdir/usr/bin/mbpfan"
+    install -Dm644 mbpfan.conf "$pkgdir/etc/mbpfan.conf"
+    install -Dm644 mbpfan.depend.conf "$pkgdir/usr/lib/modules-load.d/mbpfan.conf"
+    install -Dm644 mbpfan.service "$pkgdir/usr/lib/systemd/system/mbpfan.service"
+    sed -i 's|/usr/sbin/mbpfan|/usr/bin/mbpfan|' "$pkgdir/usr/lib/systemd/system/mbpfan.service"
+    install -Dm644 mbpfan.8.gz "$pkgdir/usr/share/man/man8/mbpfan.8.gz"
+}

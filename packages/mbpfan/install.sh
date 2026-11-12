@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-sudo systemctl enable --now mbpfan
+sudo systemctl reset-failed mbpfan.service
+sudo systemctl enable mbpfan.service
+sudo systemctl restart mbpfan.service
