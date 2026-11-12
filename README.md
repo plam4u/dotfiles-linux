@@ -68,6 +68,12 @@ directory. The shared PATH snippet finds the checkout through its Stow
 symlink. Packages can add shell fragments by putting `.sh` files under
 `stow/.bashrc.d/` or `stow/.zshrc.d/`.
 
+Shared environment defaults and PATH setup live in
+`packages/shell/stow/.config/shell/env.sh`, loaded by `.profile`, `.bashrc`, and
+`.zshrc`. Shared interactive aliases and color setup live alongside it in
+`rc.sh`, loaded by Bash and Zsh. Keep shell-specific settings in their respective
+startup files or fragment directories.
+
 The shell package also restores `.profile` for login shells. Both workstation
 bundles include the pinned Deno 2.9.8 installer for Linux x86-64 and ARM64. It uses
 `~/.deno/bin` and generates missing Bash and Zsh completions.

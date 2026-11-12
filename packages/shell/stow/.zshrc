@@ -1,3 +1,11 @@
+if [ -r "$HOME/.config/shell/env.sh" ]; then
+    . "$HOME/.config/shell/env.sh"
+fi
+
+if [ -r "$HOME/.config/shell/rc.sh" ]; then
+    . "$HOME/.config/shell/rc.sh"
+fi
+
 # Add deno completions to search path
 if [[ -d "$HOME/.zsh/completions" && ":$FPATH:" != *":$HOME/.zsh/completions:"* ]]; then
     fpath=("$HOME/.zsh/completions" "${fpath[@]}")
@@ -27,7 +35,6 @@ zstyle ':completion:*' completer _expand _complete _correct _approximate
 zstyle ':completion:*' format 'Completing %d'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' menu select=2
-eval "$(dircolors -b)"
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' list-colors ''
 zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
@@ -39,12 +46,6 @@ zstyle ':completion:*' verbose true
 
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
-if [ -r "$HOME/.deno/env" ]; then
-    . "$HOME/.deno/env"
-fi
-if [ -r "$HOME/.config/shell/pm-path.sh" ]; then
-    . "$HOME/.config/shell/pm-path.sh"
-fi
 
 for pm_fragment in "$HOME"/.zshrc.d/*.sh(N); do
     if [ -f "$pm_fragment" ] && [ -r "$pm_fragment" ]; then
