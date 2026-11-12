@@ -1,0 +1,2 @@
+# distro	installer	target
+# Config-only package: disable the system Light Locker autostart entry.

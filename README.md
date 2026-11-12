@@ -335,6 +335,33 @@ files out of Git.
 
 ## Existing config files
 
+### Disable Light Locker
+
+Install the optional config-only package to disable Light Locker autostart for
+your user:
+
+```bash
+./bin/pm install disable-light-locker
+```
+
+It links `~/.config/autostart/light-locker.desktop` with `Hidden=true`.
+Use this with `XDG_CONFIG_HOME` unset or equal to `~/.config`.
+The change takes effect at the next login; it does not stop a running locker.
+
+To remove the override and allow the system Light Locker autostart entry again,
+run from the checkout:
+
+```bash
+stow --dir="$PWD/packages/disable-light-locker" --target="$HOME" --no-folding --delete stow
+```
+
+`pm` currently has no uninstall command. Removing this override allows Light
+Locker to start at the next login if its system autostart entry is installed
+and enabled. If installation backed up an existing user override, that backup
+remains beside the original path and is not restored automatically.
+
+### Back up conflicting files
+
 `pm install` and `pm stow` save conflicting regular files beside the originals
 before GNU Stow links the package copies. `pm` prints each backup path. A backup
 uses the `.bak` suffix, then `.bak.1`, `.bak.2`, and so on if earlier names are
