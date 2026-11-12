@@ -18,6 +18,39 @@ class Regressions(unittest.TestCase):
     def bash(self, script, **kwargs):
         return subprocess.run(['bash', '-c', script], text=True, capture_output=True, **kwargs)
 
+    def test_named_package_scripts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            package_dir = Path(directory)
+            (package_dir / 'timezone.sh').write_text('printf "timezone applied\\n"\n')
+            (package_dir / 'locale.sh').write_text('printf "locale applied\\n"\n')
+            setup = PM_FUNCTIONS + '''
+package=preferences
+package_dir=$1
+distro=debian
+architecture=x86_64
+dry_run=0
+declare -A skipped=() plan_start=() plan_count=()
+plan_installers=()
+plan_targets=()
+read_package
+for index in "${!plan_targets[@]}"; do
+    install_target "${plan_installers[index]}" "${plan_targets[index]}"
+done
+'''
+            manifest = package_dir / 'install.tsv'
+            manifest.write_text('debian\tscript\ttimezone.sh\ndebian\tscript\tlocale.sh\n')
+            result = subprocess.run(['bash', '-c', setup, 'test', directory],
+                                    text=True, capture_output=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertLess(result.stdout.index('timezone applied'), result.stdout.index('locale applied'))
+            for target in ('../timezone.sh', '/tmp/timezone.sh', 'missing.sh'):
+                with self.subTest(target=target):
+                    manifest.write_text(f'debian\tscript\t{target}\n')
+                    result = subprocess.run(['bash', '-c', setup, 'test', directory],
+                                            text=True, capture_output=True)
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn('package-local .sh file', result.stderr)
+
     def test_verified_binary_install_and_cleanup(self):
         for outcome in ('success', 'checksum mismatch', 'download failure'):
             with self.subTest(outcome=outcome), tempfile.TemporaryDirectory(prefix='pm install ') as directory:

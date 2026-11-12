@@ -71,8 +71,8 @@ read_package() {
                     || die "$package: invalid $installer target: $target"
                 ;;
             *:script)
-                [[ $target == install.sh && -f $package_dir/$target ]] \
-                    || die "$package: script row must point to a package-local install.sh"
+                [[ $target =~ ^[a-zA-Z0-9][a-zA-Z0-9._+-]*\.sh$ && -f $package_dir/$target ]] \
+                    || die "$package: script row must point to a package-local .sh file"
                 ;;
             *) die "$package: unsupported installer for $distro: $installer" ;;
         esac

@@ -415,12 +415,28 @@ installation paths and preserve changed system config files; they do not
 restore earlier backups. Shared setup such as Steam's i386 architecture,
 Docker's signing key, and the upstream ChatGPT Arch repository remains.
 
+## System preferences
+
+The optional `system-preferences` package applies machine-wide defaults on Debian
+and Arch. Its `timezone.sh` script sets the system timezone to `Europe/Madrid`.
+Apply it explicitly:
+
+```bash
+./bin/pm install --dry-run system-preferences
+./bin/pm install system-preferences
+```
+
+Keep separate preferences in separate scripts, listed in `install.tsv` in the
+order they should run. Uninstalling this package leaves the timezone unchanged.
+
 ## Add a package
 
 `pm add <name>` creates a commented `packages/<name>/install.tsv`. Add
 tab-separated `distro`, `installer`, and `target` fields, with one target per
 row. Supported installers are `apt`, `pacman`, `flatpak` (Flathub), and `script`
-(an `install.sh` in the package directory).
+(a `.sh` file in the package directory, conventionally `install.sh`). Script
+targets must be filenames without directory components; a package can list
+multiple scripts to split setup into logical units.
 Add an optional `uninstall.sh` beside `install.sh` to reverse its setup. It
 should tolerate already-removed files, preserve user data, and use `sudo`
 where system changes require it. No extra manifest row is needed.
