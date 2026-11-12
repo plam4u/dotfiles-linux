@@ -3,6 +3,7 @@ import hashlib
 import importlib.util
 import os
 from pathlib import Path
+import shlex
 import subprocess
 import tempfile
 import unittest
@@ -206,6 +207,15 @@ stow_package apply
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertIn('vim|vim|', result.stdout)
                 self.assertNotIn(str(home / '.deno/bin'), result.stdout)
+
+                stow('tree')
+                env['DOTFILES_ROOT'] = '/stale-checkout'
+                result = run(startup + startup +
+                             'sh -c \'test "$DOTFILES_ROOT" = "$1"\' sh ' +
+                             shlex.quote(str(ROOT)) + ' && alias tt')
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn('tt=', result.stdout)
+                self.assertIn('tree', result.stdout)
 
                 binary = home / '.deno/bin/deno'
                 binary.parent.mkdir(parents=True)

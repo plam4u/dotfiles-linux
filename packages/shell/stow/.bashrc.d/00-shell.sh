@@ -1,7 +1,7 @@
-if pm_package_dir=$(realpath -- "$HOME/.bashrc.d/00-shell.sh"); then
-    pm_package_dir=${pm_package_dir%/stow/.bashrc.d/00-shell.sh}
-    . "$pm_package_dir/share/shell.sh"
-fi
-unset pm_package_dir
+DOTFILES_ROOT=$(realpath -- "$HOME/.bashrc.d/00-shell.sh")
+DOTFILES_ROOT=${DOTFILES_ROOT%/packages/shell/stow/*}
+export DOTFILES_ROOT
+
+. "$DOTFILES_ROOT/packages/shell/share/shell.sh"
 
 alias so="source ~/.bashrc"

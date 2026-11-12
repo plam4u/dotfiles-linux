@@ -1,8 +1,4 @@
-if pm_package_dir=$(realpath -- "$HOME/.zshrc.d/deno.sh"); then
-    pm_package_dir=${pm_package_dir%/stow/.zshrc.d/deno.sh}
-    . "$pm_package_dir/share/deno.sh"
-fi
-unset pm_package_dir
+. "$DOTFILES_ROOT/packages/deno/share/deno.sh"
 
 # Run before compinit so Zsh discovers the generated completion.
 if [[ -d "$HOME/.zsh/completions" && ":$FPATH:" != *":$HOME/.zsh/completions:"* ]]; then

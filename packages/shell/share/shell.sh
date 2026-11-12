@@ -9,7 +9,7 @@ fi
 export EDITOR="${EDITOR:-vim}"
 export VISUAL="${VISUAL:-$EDITOR}"
 
-for pm_directory in "$HOME/.local/bin" "${pm_package_dir%/packages/shell}/bin"; do
+for pm_directory in "$HOME/.local/bin" "$DOTFILES_ROOT/bin"; do
     case ":${PATH:-}:" in
         *":$pm_directory:"*) ;;
         *) export PATH="$pm_directory${PATH:+:$PATH}" ;;
