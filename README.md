@@ -304,10 +304,9 @@ bash packages/xfce4/post-install.sh
 
 Add `--imac2011` to link the saved display, pointer, keyboard device, and
 power settings for the 27-inch iMac. Stow links the desktop files, and the
-restore script generates the panel XML with your home directory. On Debian,
-the script also sets the GNOME color scheme to `prefer-dark` and the GTK
-theme to `Adwaita-dark` for your user. Log in to XFCE after restoring the
-desktop settings.
+restore script generates the panel XML with your home directory. It then runs
+`system-preferences/appearance.sh` to apply the shared desktop appearance on
+Debian and Arch. Log in to XFCE after restoring the desktop settings.
 
 After installing `xfce4-terminal`, close XFCE Terminal and run its settings
 restore from another terminal in the same desktop session:
@@ -417,17 +416,34 @@ Docker's signing key, and the upstream ChatGPT Arch repository remains.
 
 ## System preferences
 
-The optional `system-preferences` package applies machine-wide defaults on Debian
-and Arch. Its `timezone.sh` script sets the system timezone to `Europe/Madrid`.
-Apply it explicitly:
+The optional `system-preferences` package applies system and desktop defaults on
+Debian and Arch. Its `timezone.sh` script sets the system timezone to
+`Europe/Madrid`. Its `appearance.sh` script sets the GNOME dark color scheme,
+Adwaita-dark GTK theme, and shared XFCE appearance: cursor theme, font rendering,
+scaling, window decorations, opacity, shadows, and compositing. Desktop settings
+are applied for the current user when their settings tools are installed.
+Application-specific themes and fonts remain in their owning packages.
+Apply the package explicitly:
 
 ```bash
 ./bin/pm install --dry-run system-preferences
 ./bin/pm install system-preferences
 ```
 
+To preview or apply just appearance, without changing the timezone:
+
+```bash
+bash packages/system-preferences/appearance.sh --dry-run
+bash packages/system-preferences/appearance.sh
+```
+
+Appearance updates preserve other Xfconf properties and save numbered backups of
+changed channel files. Stow links are replaced with regular files before writing
+so the checkout stays unchanged. The XFCE desktop restore reapplies appearance
+after linking its other settings.
+
 Keep separate preferences in separate scripts, listed in `install.tsv` in the
-order they should run. Uninstalling this package leaves the timezone unchanged.
+order they should run. Uninstalling this package leaves the preferences unchanged.
 
 ## Add a package
 
