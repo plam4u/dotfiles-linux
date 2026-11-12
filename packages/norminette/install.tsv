@@ -1,0 +1,7 @@
+# distro	installer	target
+debian	apt	pipx
+debian	apt	python3-setuptools
+debian	script	install.sh
+arch	pacman	python-pipx
+arch	pacman	python-setuptools
+arch	script	install.sh
