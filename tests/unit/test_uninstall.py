@@ -155,6 +155,19 @@ esac
         self.assertEqual(self.commands(), ['script two', 'apt-get remove -y -- two',
                                           'script one', 'apt-get remove -y -- one'])
 
+    def test_multiple_script_rows_run_uninstaller_once_before_dependencies(self):
+        package = self.package('preferences',
+                               'debian\tscript\tkeyboard.sh\ndebian\tapt\tkeyd\n'
+                               'debian\tscript\tappearance.sh\n',
+                               script='printf "cleanup\\n" >> "$PM_TEST_LOG"\n')
+        for name in ('keyboard.sh', 'appearance.sh'):
+            (package / name).write_text('exit 99\n')
+        result = self.pm('uninstall', '--dry-run', 'preferences')
+        self.assertEqual(result.stdout.count('/uninstall.sh'), 1)
+        self.assertEqual(self.commands(), [])
+        self.pm('uninstall', 'preferences')
+        self.assertEqual(self.commands(), ['cleanup', 'apt-get remove -y -- keyd'])
+
     def test_validation_and_real_failures_stop_removal(self):
         self.package('example', 'debian\tapt\tpresent\ndebian\tscript\tinstall.sh\n',
                      script='exit 23\n', config=True)

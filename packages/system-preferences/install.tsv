@@ -1,5 +1,9 @@
 # distro	installer	target
+debian	apt	keyd
+debian	script	keyboard.sh
 debian	script	timezone.sh
 debian	script	appearance.sh
+arch	pacman	keyd
+arch	script	keyboard.sh
 arch	script	timezone.sh
 arch	script	appearance.sh

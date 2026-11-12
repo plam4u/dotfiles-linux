@@ -423,7 +423,15 @@ if [[ $subcommand == uninstall ]]; then
         [[ ! ${skipped[$package]+set} ]] || continue
         package_dir="$repo/packages/$package"
         printf '%s\n' "$package"
+        # One package uninstaller handles all of its script rows, before dependencies.
+        for (( index=plan_start[$package]; index < plan_start[$package]+plan_count[$package]; index++ )); do
+            if [[ ${plan_installers[index]} == script ]]; then
+                uninstall_target script "${plan_targets[index]}"
+                break
+            fi
+        done
         for (( index=plan_start[$package]+plan_count[$package]-1; index >= plan_start[$package]; index-- )); do
+            [[ ${plan_installers[index]} != script ]] || continue
             uninstall_target "${plan_installers[index]}" "${plan_targets[index]}"
         done
     done

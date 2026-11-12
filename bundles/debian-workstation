@@ -38,7 +38,6 @@ gdb-doc
 glibc-doc
 glibc-doc-reference
 inetutils-telnet
-keyd
 libspa-0.2-bluetooth
 logrotate
 make-doc
@@ -64,6 +63,7 @@ emacs-docs
 fonts
 xfce4
 xfce4-terminal
+system-preferences
 i3
 openssh-server
 brave-browser

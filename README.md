@@ -94,21 +94,23 @@ AMD Radeon GPU. It installs AMD, Intel, and miscellaneous firmware plus Intel
 microcode. It also includes `mbpfan`, `lm-sensors`, and `smartmontools`.
 The `mbpfan` package enables and starts its systemd service. Fan settings in
 `/etc/mbpfan.conf` are managed separately.
-The bundle also installs `imac2011-keyboard`, which swaps Fn with left Ctrl
-and left Option with left Command through the Apple keyboard driver.
-Right Command still triggers the keyd navigation layer. The package
-updates the initramfs. Reboot to load the swaps. Its
-`/etc/modprobe.d/zz-imac2011-keyboard.conf` loads after the
+The bundle also includes `system-preferences`. On this Debian x86-64 iMac,
+its `keyboard.sh` swaps Fn with left Ctrl and left Option with left Command
+through the Apple keyboard driver. Right Command still triggers the keyd
+navigation layer. The script updates the initramfs when the driver options
+change. Reboot to load the swaps. Its
+`/etc/modprobe.d/imac2011-keyboard.conf` loads after the
 `hid_apple.conf` restored by Restic.
-To apply just the keyboard settings, run `./bin/pm install imac2011-keyboard`.
+To apply just the keyboard settings, first install keyd with
+`./bin/pm install keyd`, then run `bash packages/system-preferences/keyboard.sh`.
 Select the bundle when reinstalling the iMac. The model-specific packages
 are skipped if the detected model differs.
 
-Both workstation bundles install the tracked [keyd config](packages/keyd/default.conf)
-to `/etc/keyd/default.conf`. It maps Caps Lock to left Ctrl and defines
-the navigation layer. Run `./bin/pm install keyd` to apply it again. The
-installer saves a numbered backup of a changed file and reloads keyd if
-it is running.
+Both workstation bundles include `system-preferences`, which installs keyd and
+the tracked [keyd config](packages/system-preferences/defaults/keyd.conf) to
+`/etc/keyd/default.conf`. It maps Caps Lock to left Ctrl and defines the navigation
+layer. The keyboard script saves numbered backups of changed files and reloads
+keyd if it is running. The separate `keyd` package installs only the tool.
 
 Bootstrap applies the workstation bundle and configuration follow-ups in order.
 To run just the package bundle from an existing checkout, use
@@ -176,7 +178,8 @@ typically `/Users/macuser/restic-debian-imac`.
 
 The backup covers the Apple keyboard driver override, NetworkManager
 profiles, and Samba. Older snapshots may contain a keyd config. Restore
-uses the other system files and leaves keyd managed by its package. Save the repository address and Restic password somewhere
+uses the other system files and leaves keyd configuration managed by
+`system-preferences`. Save the repository address and Restic password somewhere
 you can access after reinstalling. If the repository is on the Mac, keep a way
 to connect from the fresh system, such as an SSH key available independently
 of the backup. The user and server SSH backups are separate snapshots.
@@ -400,10 +403,10 @@ install rows in reverse order, using `apt-get remove`, `pacman -R`, or system
 Flatpak uninstall. Native targets and Flatpak apps that are already absent are
 skipped. Removal errors stop the command; earlier removals are not rolled back.
 
-For each script row, `pm` runs the package's optional `uninstall.sh` as your
-regular user. If it is missing, `pm` prints a warning and continues with the
-remaining removals. A dry run previews commands and config unlinking without
-executing uninstall scripts.
+For each package with script rows, `pm` runs its optional `uninstall.sh` once as
+your regular user, before removing its dependencies. If it is missing, `pm`
+prints a warning and continues with the remaining removals. A dry run previews
+commands and config unlinking without executing uninstall scripts.
 
 Removal follows the manifest, including targets that were installed before
 `pm` or are shared with other packages. There is no ownership tracking, purge,
@@ -416,8 +419,11 @@ Docker's signing key, and the upstream ChatGPT Arch repository remains.
 
 ## System preferences
 
-The optional `system-preferences` package applies system and desktop defaults on
-Debian and Arch. Its `timezone.sh` script sets the system timezone to
+The `system-preferences` package is included in both workstation bundles and the
+`imac2011` bundle. It applies system and desktop defaults on Debian and Arch.
+Its manifest installs keyd before running `keyboard.sh`, which applies the keyd
+remappings and, on a Debian x86-64 `iMac12,2`, the Apple driver options.
+Its `timezone.sh` script sets the system timezone to
 `Europe/Madrid`. Its `appearance.sh` script sets the GNOME dark color scheme,
 Adwaita-dark GTK theme, and shared XFCE appearance: cursor theme, font rendering,
 scaling, window decorations, opacity, shadows, and compositing. Desktop settings
@@ -443,7 +449,10 @@ so the checkout stays unchanged. The XFCE desktop restore reapplies appearance
 after linking its other settings.
 
 Keep separate preferences in separate scripts, listed in `install.tsv` in the
-order they should run. Uninstalling this package leaves the preferences unchanged.
+order they should run. Uninstalling this package removes the keyboard configs
+only if they still match the saved defaults, and rebuilds the initramfs if the
+Apple driver config was removed. It leaves edited files, backups, timezone and
+appearance settings intact. The manifest's keyd dependency is also removed.
 
 ## Add a package
 

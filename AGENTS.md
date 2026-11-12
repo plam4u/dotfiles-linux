@@ -26,7 +26,9 @@ There is no compilation step for the package manager. Run commands from the repo
 
 ## Coding Style & Naming Conventions
 
-Always prefer the simplest code when the distinction is not critical. Add complexity only when needed for critical correctness, safety, or required behavior. Avoid guards and abstractions for harmless cases, such as defining aliases in non-interactive shells.
+Correctness comes first; simplicity comes next. This is a personal-use repository: once a package installs and Stows its intended configuration correctly, prefer the simplest implementation. Add complexity only for required behavior or concrete safety needs. Avoid guards and abstractions for harmless cases, such as defining aliases in non-interactive shells.
+
+Do not add legacy file handling, migration code, backward-compatibility shims, or fallbacks for retired package layouts unless explicitly requested. When renaming or moving configuration, update the current scripts, manifests, documentation, and relevant tests directly. Do not detect, migrate, rename, or clean up old paths, and do not add tests for those paths. Preserve user data and normal configuration backups without building migration machinery.
 
 Use four-space indentation in shell and Python code. Follow existing Bash conventions: quote paths, use local function variables, and use `set -euo pipefail` in standalone installers. Manifests require literal tabs, not spaces. Prefer lowercase, hyphenated package names.
 

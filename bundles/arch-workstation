@@ -31,7 +31,6 @@ bluez
 bluez-utils
 cmake
 cron
-keyd
 logrotate
 mesa-utils
 network-manager-gnome
@@ -53,6 +52,7 @@ emacs
 fonts
 xfce4
 xfce4-terminal
+system-preferences
 i3
 openssh-server
 brave-browser
