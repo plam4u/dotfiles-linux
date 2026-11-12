@@ -12,6 +12,16 @@ the timezone and appearance scripts in manifest order.
 
 ## Keyboard
 
+Stow links `~/.local/bin/keyboard-layout.sh`, which runs:
+
+```sh
+setxkbmap -layout us -variant altgr-intl
+```
+
+An XDG autostart entry runs it at graphical login in XFCE and in the repository's
+i3 setup (through dex). To apply it immediately, run `~/.local/bin/keyboard-layout.sh`.
+The manifest installs `setxkbmap` on both supported distributions.
+
 `keyboard.sh` installs `defaults/keyd.conf` at `/etc/keyd/default.conf`. It maps
 Caps Lock to left Ctrl and Right Command/Meta to a navigation layer, saves
 numbered backups of changed configuration, enables and starts keyd, and reloads

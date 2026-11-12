@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Keyboard layout
+Exec=sh -c "exec ~/.local/bin/keyboard-layout.sh"
+Terminal=false
