@@ -16,7 +16,7 @@ if ! xfconf-query --list >/dev/null; then
 fi
 
 package_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
-config_home=${XDG_CONFIG_HOME:-$HOME/.config}
+config_home="$HOME/.config"
 channel_file="$config_home/xfce4/xfconf/xfce-perchannel-xml/xfce4-terminal.xml"
 
 if [[ -L $channel_file || ( -e $channel_file && ! -f $channel_file ) ]]; then

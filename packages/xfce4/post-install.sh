@@ -7,7 +7,7 @@ if [[ ${XDG_CONFIG_HOME:-$HOME/.config} != "$HOME/.config" ]]; then
 fi
 
 package_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-config_dir=${XDG_CONFIG_HOME:-$HOME/.config}
+config_dir="$HOME/.config"
 packages=(xfce4)
 dry_run=0
 check_session=0

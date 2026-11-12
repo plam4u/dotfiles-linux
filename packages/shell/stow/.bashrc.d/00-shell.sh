@@ -1,11 +1,7 @@
-_pm_source_shell() {
-    local package_dir
-    package_dir=$(realpath -- "$HOME/.bashrc.d/00-shell.sh") || return
-    package_dir=${package_dir%/stow/.bashrc.d/00-shell.sh}
-    . "$package_dir/share/shell.sh"
-}
-
-_pm_source_shell
-unset -f _pm_source_shell
+if pm_package_dir=$(realpath -- "$HOME/.bashrc.d/00-shell.sh"); then
+    pm_package_dir=${pm_package_dir%/stow/.bashrc.d/00-shell.sh}
+    . "$pm_package_dir/share/shell.sh"
+fi
+unset pm_package_dir
 
 alias so="source ~/.bashrc"

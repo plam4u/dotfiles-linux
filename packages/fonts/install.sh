@@ -13,20 +13,12 @@ jetbrains_url=https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/J
 jetbrains_sha=04d5e8f903693f9dd13e16f867e994834e681eb3c72c0d337a770dcda09010cf
 meslo_url=https://raw.githubusercontent.com/romkatv/powerlevel10k-media/145eb9fbc2f42ee408dacd9b22d8e6e0e553f83d
 
-fetch_font() {
-    local url=$1 digest=$2 destination=$3
-    if ! download_verified "$url" "$digest" "$destination"; then
-        printf 'Could not download or verify %s.\n' "${url##*/}" >&2
-        exit 1
-    fi
-}
-
-fetch_font "$jetbrains_url" "$jetbrains_sha" "$work_dir/JetBrainsMono.tar.xz"
+download_verified "$jetbrains_url" "$jetbrains_sha" "$work_dir/JetBrainsMono.tar.xz"
 tar -xJf "$work_dir/JetBrainsMono.tar.xz" -C "$work_dir/JetBrainsMono" --wildcards '*.ttf'
 
 while read -r style digest; do
     filename="MesloLGS%20NF%20$style.ttf"
-    fetch_font "$meslo_url/$filename" "$digest" "$work_dir/MesloLGS/$filename"
+    download_verified "$meslo_url/$filename" "$digest" "$work_dir/MesloLGS/$filename"
 done <<'FONTS'
 Regular d97946186e97f8d7c0139e8983abf40a1d2d086924f2c5dbf1c29bd8f2c6e57d
 Bold b6c0199cf7c7483c8343ea020658925e6de0aeb318b89908152fcb4d19226003

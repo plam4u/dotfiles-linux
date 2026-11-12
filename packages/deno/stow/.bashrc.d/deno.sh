@@ -1,12 +1,8 @@
-_pm_source_deno() {
-    local package_dir
-    package_dir=$(realpath -- "$HOME/.bashrc.d/deno.sh") || return
-    package_dir=${package_dir%/stow/.bashrc.d/deno.sh}
-    . "$package_dir/share/deno.sh"
-}
-
-_pm_source_deno
-unset -f _pm_source_deno
+if pm_package_dir=$(realpath -- "$HOME/.bashrc.d/deno.sh"); then
+    pm_package_dir=${pm_package_dir%/stow/.bashrc.d/deno.sh}
+    . "$pm_package_dir/share/deno.sh"
+fi
+unset pm_package_dir
 
 if [ -r "$HOME/.local/share/bash-completion/completions/deno.bash" ]; then
     . "$HOME/.local/share/bash-completion/completions/deno.bash"

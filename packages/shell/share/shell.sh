@@ -9,20 +9,13 @@ fi
 export EDITOR="${EDITOR:-vim}"
 export VISUAL="${VISUAL:-$EDITOR}"
 
-_pm_setup_path() {
-    local checkout directory
-    checkout=${package_dir%/packages/shell}
-
-    for directory in "$HOME/.local/bin" "$checkout/bin"; do
-        case ":${PATH:-}:" in
-            *":$directory:"*) ;;
-            *) export PATH="$directory${PATH:+:$PATH}" ;;
-        esac
-    done
-}
-
-_pm_setup_path
-unset -f _pm_setup_path
+for pm_directory in "$HOME/.local/bin" "${pm_package_dir%/packages/shell}/bin"; do
+    case ":${PATH:-}:" in
+        *":$pm_directory:"*) ;;
+        *) export PATH="$pm_directory${PATH:+:$PATH}" ;;
+    esac
+done
+unset pm_directory
 
 # Aliases and colors are only needed in interactive shells.
 case $- in

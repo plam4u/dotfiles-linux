@@ -4,7 +4,10 @@ download_verified() {
     local url=$1 digest=$2 destination=$3
     curl --fail --silent --show-error --location --proto '=https' \
         --output "$destination" "$url" &&
-        printf '%s  %s\n' "$digest" "$destination" | sha256sum --check --status
+        printf '%s  %s\n' "$digest" "$destination" | sha256sum --check --status || {
+            printf 'Could not download or verify %s.\n' "${url##*/}" >&2
+            return 1
+        }
 }
 
 install_vendor_package() {
@@ -39,7 +42,7 @@ install_vendor_package() {
     sudo apt-get install -y --no-remove -- "$package"
 }
 
-install_user_binary() {
+install_user_binary() (
     local name=$1 url=$2 digest=$3
     local destination="$HOME/.local/bin/$name"
     if [[ -x $destination && -f $destination ]]; then
@@ -53,12 +56,7 @@ install_user_binary() {
 
     local work_dir
     work_dir=$(mktemp -d)
-    (
-        trap 'rm -r -- "$work_dir"' EXIT
-        if ! download_verified "$url" "$digest" "$work_dir/$name"; then
-            printf 'Could not download or verify %s.\n' "$name" >&2
-            exit 1
-        fi
-        install -D -m 0755 -- "$work_dir/$name" "$destination"
-    )
-}
+    trap 'rm -r -- "$work_dir"' EXIT
+    download_verified "$url" "$digest" "$work_dir/$name" || return 1
+    install -D -m 0755 -- "$work_dir/$name" "$destination"
+)

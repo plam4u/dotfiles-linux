@@ -1,4 +1,5 @@
 """Run with python3 -B -m unittest discover -s tests/unit -v."""
+import hashlib
 import importlib.util
 import os
 from pathlib import Path
@@ -16,6 +17,49 @@ PM_FUNCTIONS = (ROOT / 'bin/pm').read_text().split('case ${1:-} in')[0]
 class Regressions(unittest.TestCase):
     def bash(self, script, **kwargs):
         return subprocess.run(['bash', '-c', script], text=True, capture_output=True, **kwargs)
+
+    def test_verified_binary_install_and_cleanup(self):
+        for outcome in ('success', 'checksum mismatch', 'download failure'):
+            with self.subTest(outcome=outcome), tempfile.TemporaryDirectory(prefix='pm install ') as directory:
+                home = Path(directory)
+                payload = home / 'payload'
+                payload.write_text('#!/bin/sh\nexit 0\n')
+                staging = home / 'staging'
+                staging.mkdir()
+                digest = hashlib.sha256(payload.read_bytes()).hexdigest()
+                if outcome == 'checksum mismatch':
+                    digest = '0' * 64
+                env = {**os.environ, 'HOME': directory, 'TMPDIR': str(staging),
+                       'PM_PAYLOAD': str(payload), 'PM_CURL_FAIL': str(int(outcome == 'download failure'))}
+                script = """
+. "$1"
+trap 'printf caller > "$HOME/trap"' EXIT
+curl() {
+    [[ $PM_CURL_FAIL == 0 ]] || return 22
+    cp -- "$PM_PAYLOAD" "${@: -2:1}"
+}
+# Conditional callers disable errexit; verification must still prevent installation.
+if install_user_binary tool https://example.invalid/tool "$2"; then exit 0; else exit 1; fi
+"""
+                def install():
+                    return subprocess.run(
+                        ['bash', '-eu', '-c', script, 'test', str(ROOT / 'share/install.sh'), digest],
+                        env=env, capture_output=True, text=True)
+                result = install()
+                binary = home / '.local/bin/tool'
+                self.assertEqual(list(staging.iterdir()), [])
+                self.assertEqual((home / 'trap').read_text(), 'caller')
+                if outcome == 'success':
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertEqual(binary.read_bytes(), payload.read_bytes())
+                    self.assertTrue(os.access(binary, os.X_OK))
+                    binary.write_text('existing executable')
+                    self.assertEqual(install().returncode, 0)
+                    self.assertEqual(binary.read_text(), 'existing executable')
+                else:
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertFalse(binary.exists())
+                    self.assertIn('Could not download or verify tool.', result.stderr)
 
     def test_architecture_coverage(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -104,7 +148,7 @@ stow_package apply
 
     def test_package_shell_fragments(self):
         for shell in ('bash', 'zsh'):
-            with self.subTest(shell=shell), tempfile.TemporaryDirectory() as directory:
+            with self.subTest(shell=shell), tempfile.TemporaryDirectory(prefix='pm shell ') as directory:
                 home = Path(directory)
                 env = {k: v for k, v in os.environ.items() if k not in ('EDITOR', 'VISUAL')}
                 env.update(HOME=directory, PATH='/usr/bin:/bin', TERM='xterm')

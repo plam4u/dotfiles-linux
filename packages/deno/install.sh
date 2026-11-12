@@ -21,12 +21,9 @@ else
         aarch64) digest=d49596c20b9788cf8f5d8ddf644103d4bde56ed239753f0bdb92ba9361d51905 ;;
         *) printf 'No pinned Deno archive for %s.\n' "$architecture" >&2; exit 1 ;;
     esac
-    if ! download_verified \
+    download_verified \
         "https://github.com/denoland/deno/releases/download/v2.9.8/deno-$architecture-unknown-linux-gnu.zip" \
-        "$digest" "$work_dir/deno.zip"; then
-        printf 'Could not download or verify Deno 2.9.8.\n' >&2
-        exit 1
-    fi
+        "$digest" "$work_dir/deno.zip"
     unzip -p "$work_dir/deno.zip" deno > "$work_dir/deno"
     install -D -m 0755 -- "$work_dir/deno" "$deno"
 fi
