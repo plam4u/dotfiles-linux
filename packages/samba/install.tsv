@@ -1,3 +1,5 @@
 # distro	installer	target
 debian	apt	samba
+debian	script	install.sh
 arch	pacman	samba
+arch	script	install.sh

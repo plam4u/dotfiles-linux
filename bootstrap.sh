@@ -87,11 +87,14 @@ if (( restore_desktop )); then
     printf '\nSign in again or reboot to load the desktop settings.\n'
 fi
 
-printf '\nBootstrap complete. Open a new shell to use pm from anywhere.\n'
-if [[ $ID == debian ]]; then
-    if (( ! restore_desktop )); then
-        printf '\nFor a full system-settings restore, first run:\n  %q --bundle debian-workstation\n' "$PWD/bootstrap.sh"
-    fi
-    printf '\nIf you have a Restic system-settings backup, restore it with:\n  %q restore\n' "$PWD/bin/pm-system-settings"
-    printf '\nFor SSH keys and configs, see "Restore SSH from Restic" in:\n  %s/README.md\n' "$PWD"
+printf '\nPackage installation complete. Open a new shell to use pm from anywhere.\n'
+if (( ! restore_desktop )); then
+    printf '\nFor the full workstation setup, first run:\n  %q --bundle %s-workstation\n' "$PWD/bootstrap.sh" "$ID"
 fi
+printf '\nSetup is not complete: restore your private settings from Restic.\n'
+printf '  1. Install Restic if needed: %q install restic\n' "$PWD/bin/pm"
+printf '  2. Locate your backup repository and password. Run restic -r REPOSITORY snapshots.\n'
+printf '  3. Restore your user SSH keys and configuration to ~/.ssh from the selected snapshot.\n'
+printf '  4. Restore SSH server configuration and host keys to /etc/ssh from the ssh-server snapshot, then validate and reload SSH.\n'
+printf 'Full restore commands and repository examples:\n  %s/packages/restic/README.md\n' "$PWD"
+printf '\nSamba configuration comes from its package. After installing it, set your Samba password with:\n  sudo smbpasswd -a %q\n' "$(id -un)"

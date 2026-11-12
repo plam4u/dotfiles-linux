@@ -98,9 +98,8 @@ The bundle also includes `system-preferences`. On this Debian x86-64 iMac,
 its `keyboard.sh` swaps Fn with left Ctrl and left Option with left Command
 through the Apple keyboard driver. Right Command still triggers the keyd
 navigation layer. The script updates the initramfs when the driver options
-change. Reboot to load the swaps. Its
-`/etc/modprobe.d/imac2011-keyboard.conf` loads after the
-`hid_apple.conf` restored by Restic.
+change. Reboot to load the swaps. The driver options are managed entirely
+by `system-preferences`.
 To apply just the keyboard settings, first install keyd with
 `./bin/pm install keyd`, then run `bash packages/system-preferences/keyboard.sh`.
 Select the bundle when reinstalling the iMac. The model-specific packages
@@ -144,117 +143,42 @@ your `PATH`.
 See the [APT inventory](docs/debian-packages.tsv) for the original package
 versions, architectures, and restore paths. Debian's installer and APT
 dependencies cover the system base. The bundle installs the OpenSSH server.
-See [Restore SSH from Restic](#restore-ssh-from-restic) to recover your user
-keys and migrate the server's configuration and host keys.
+Private settings still need restoring after bootstrap. Bootstrap prints the
+remaining steps for user SSH keys/configuration and
+SSH server configuration/host keys. Follow the full commands in
+[the Restic package](packages/restic/README.md).
 
-### Back up and restore the iMac system settings
+### Samba configuration
 
-Run these from the checkout as your regular user with your initialized
-repository. The workstation bundles install Restic. For a manual
-setup, run `./bin/pm install restic`.
-
-```bash
-./bin/pm-system-settings backup
-```
-
-The backup prints each archived file and directory. To see the contents of the
-latest system-settings backup, including one you already made, run:
+The `samba` package installs the saved configuration, including the `Public`
+share at `~/Public`, using the installing user's home and username. It validates
+the configuration with `testparm`, saves numbered backups of changed files, and
+reloads Samba if it is running. Install or reapply it with:
 
 ```bash
-./bin/pm-system-settings list
+./bin/pm install --dry-run samba
+./bin/pm install samba
+sudo smbpasswd -a "$(id -un)"
 ```
 
-When prompted for the repository address, enter the full address. Use the
-same address for backup and restore.
+Set up Samba passwords/accounts separately from the tracked configuration.
+Start `smbd.service` on Debian or
+`smb.service` on Arch when you want to serve shares. Uninstall keeps the Samba
+configuration, accounts and shared files.
 
-| Repository location | Example address |
-| --- | --- |
-| Local folder on a mounted backup drive | `/mnt/backup/restic-debian-imac` |
-| Mac over SSH (SFTP) | `sftp:macuser@mac-host.local:restic-debian-imac` |
+### SSH settings in Restic
 
-For the SSH example, replace `macuser` and `mac-host.local` with your Mac
-username and hostname. The folder is relative to that user's home directory,
-typically `/Users/macuser/restic-debian-imac`.
-
-The backup covers the Apple keyboard driver override, NetworkManager
-profiles, and Samba. Older snapshots may contain a keyd config. Restore
-uses the other system files and leaves keyd configuration managed by
-`system-preferences`. Save the repository address and Restic password somewhere
-you can access after reinstalling. If the repository is on the Mac, keep a way
-to connect from the fresh system, such as an SSH key available independently
-of the backup. The user and server SSH backups are separate snapshots.
-
-On fresh Debian, bootstrap prints the Restic restore command. After installing
-the workstation bundle and connecting to the backup repository, run this from
-the checkout:
+The `restic` package installs Restic and documents how to restore user SSH keys
+and configuration and SSH server configuration and host keys:
 
 ```bash
-./bin/pm-system-settings restore
+./bin/pm install restic
+restic -r REPOSITORY snapshots
 ```
 
-The commands ask for the repository address unless `RESTIC_REPOSITORY` or
-`RESTIC_REPOSITORY_FILE` is set. Restic asks for the repository password.
-Before asking for confirmation, restore lists the files it will install under
-`/etc` and any entries it will skip, such as old NetworkManager backup copies
-and APT files from earlier snapshots. It backs up changed files and sets
-NetworkManager profile permissions. The workstation bundle sets up the APT
-sources. To test the backup before reinstalling, run restore now and decline
-the confirmation. Reboot after applying the restore on the fresh install.
-
-### Restore SSH from Restic
-
-List the snapshots in your SSH backup repository:
-
-```bash
-repo="$HOME/restic-debian-imac27"
-restic -r "$repo" snapshots
-```
-
-For the APACER8GB USB drive, use
-`repo=/media/plam/APACER8GB/restic-debian-imac27`. Add `--no-lock` to the
-Restic commands if the drive is mounted read-only.
-
-**User keys and config (`~/.ssh`)**. Choose the snapshot with your old home
-directory's `.ssh` path. The example uses snapshot `fc7d4421` and path
-`/home/plam/.ssh` from the iMac backup. Substitute yours if they differ and
-run as your regular user:
-
-```bash
-user_stage=$(mktemp -d)
-restic -r "$repo" restore fc7d4421 --target "$user_stage" &&
-    mkdir -p -m 700 "$HOME/.ssh" &&
-    cp -ai -- "$user_stage/home/plam/.ssh/." "$HOME/.ssh/"
-```
-
-Review any overwrite prompts. Run `ssh-add` to load standard key filenames
-into your agent. For a custom filename, pass the private key path to
-`ssh-add`.
-
-**Server config and host keys (`/etc/ssh`)**. Choose the snapshot tagged
-`ssh-server` with path `/etc-ssh.tar`. The iMac backup uses `f3b425a8`.
-Download the archive and check its layout:
-
-```bash
-server_stage=$(mktemp -d)
-restic -r "$repo" dump f3b425a8 /etc-ssh.tar > "$server_stage/etc-ssh.tar" &&
-    tar -tf "$server_stage/etc-ssh.tar" | head -20
-```
-
-If the archive contains `etc/ssh/` or `/etc/ssh/`, use the commands below.
-If it contains `ssh/` at the top level, use `"$server_stage/ssh/."` as the
-source when copying files into `/etc/ssh/`.
-
-```bash
-sudo tar -xpf "$server_stage/etc-ssh.tar" -C "$server_stage" &&
-    sudo cp -a -- /etc/ssh "$server_stage/ssh-before-restore" &&
-    sudo cp -a -- "$server_stage/etc/ssh/." /etc/ssh/ &&
-    sudo /usr/sbin/sshd -t &&
-    sudo systemctl reload ssh
-```
-
-If you're restoring over SSH, keep your current session open and test a
-second connection after the reload. The pre-restore copy is in
-`"$server_stage/ssh-before-restore"`.
+User SSH settings and SSH server settings use separate snapshots. See
+[packages/restic/README.md](packages/restic/README.md) for all restore steps.
+Keyboard preferences and Samba configuration come from their packages.
 
 ## Arch workstation packages
 
