@@ -13,6 +13,12 @@ This repository manages Linux packages and dotfiles for Debian 13 and Arch.
 - `bundles/`: ordered package lists; `@name` includes another bundle.
 - `tests/unit/`: Python regression tests; `tests/containers/`: disposable distro environments.
 
+## Package Independence & Documentation
+
+Each package must install independently on a minimal supported system, without assuming that another repository package or bundle has already been installed. Declare all dependencies in its `install.tsv`, before the scripts that use them; install dependencies explicitly in the package installer when they cannot be expressed in the manifest. Only basic system tools, Git, and a downloader such as wget or curl may be assumed available. Do not assume that both downloaders or development tools, interpreters, and desktop utilities are installed.
+
+Keep configuration, setup instructions, manual follow-up steps, and detailed documentation with the package that owns them. Package installers should report their own required follow-up steps. Bootstrap owns bundle orchestration and critical overall setup guidance, not a checklist of unrelated package configuration. The root README can introduce workflows and link to package documentation. Do not mix topics, packages, or documentation, or duplicate instructions across them, unless the relationship is critical to completing the requested setup.
+
 ## Build, Test, and Development Commands
 
 There is no compilation step for the package manager. Run commands from the repository root:
