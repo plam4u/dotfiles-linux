@@ -5,9 +5,12 @@ xfce4-terminal \
     --disable-server \
     --class=DevTerminal \
     --command="tmux new-session -A -s main" &
-if command -v chatgpt >/dev/null; then
-    chatgpt &
-fi
+# if command -v chatgpt >/dev/null; then
+#     chatgpt &
+# fi
+
+# ChatGPT PWA
+gtk-launch "brave-cadlkienfkclaiaibeoongdcgmdikeeg-Default.desktop" &
 
 # Workspace 2: Browser
 if command -v brave-browser >/dev/null; then
