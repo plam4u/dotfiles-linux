@@ -6,6 +6,7 @@ usage() {
 Usage:
   pm add <package>
   pm install [--dry-run] [--bundle <name>] <package> ...
+  pm uninstall [--dry-run] [--bundle <name>] <package> ...
   pm stow [--dry-run] [--bundle <name>] <package> ...
 
 Use package names, bundles, or both. Conflicting regular files are saved as backups.
@@ -156,12 +157,57 @@ install_target() {
     esac
 }
 
+uninstall_target() {
+    local installer=$1 target=$2
+    case $installer in
+        apt)
+            if [[ $(dpkg-query -W -f='${db:Status-Status}' -- "$target" 2>/dev/null) != installed ]]; then
+                printf '  Not installed: %s\n' "$target"
+                return
+            fi
+            run sudo apt-get remove -y -- "$target"
+            ;;
+        pacman)
+            if ! pacman -Q -- "$target" >/dev/null 2>&1 && ! pacman -Qg -- "$target" >/dev/null 2>&1; then
+                printf '  Not installed: %s\n' "$target"
+                return
+            fi
+            run sudo pacman -R --noconfirm -- "$target"
+            ;;
+        flatpak)
+            if ! command -v flatpak >/dev/null || ! flatpak info --system "$target" >/dev/null 2>&1; then
+                printf '  Not installed from Flatpak: %s\n' "$target"
+                return
+            fi
+            run sudo flatpak uninstall --system --noninteractive "$target"
+            ;;
+        script)
+            if [[ -f $package_dir/uninstall.sh ]]; then
+                run bash "$package_dir/uninstall.sh"
+            else
+                printf 'pm: Warning: %s: missing uninstall.sh; skipping script removal.\n' "$package" >&2
+            fi
+            ;;
+    esac
+}
+
 stow_command() (
     # Use package-local ignore rules and keep .stowrc from changing backup policy.
     cd /
     HOME=/dev/null LC_ALL=C stow --dir="$package_dir" --target="$target_home" \
-        --no-folding "$@" --stow stow
+        --no-folding "$@" stow
 )
+
+unstow_package() {
+    [[ -d $package_dir/stow ]] || return 0
+    local target_home
+    target_home=$(realpath -- "$HOME")
+    if (( dry_run )); then
+        stow_command --delete --simulate --verbose=1
+    else
+        stow_command --delete --verbose=1
+    fi
+}
 
 # Helpers use the transaction variables local to stow_package.
 collect_stow_conflicts() {
@@ -278,7 +324,7 @@ check_stow_packages() {
 
 case ${1:-} in
     -h|--help|help) usage; exit 0 ;;
-    add|install|stow) subcommand=$1; shift ;;
+    add|install|uninstall|stow) subcommand=$1; shift ;;
     *) usage >&2; exit 1 ;;
 esac
 
@@ -341,9 +387,9 @@ stow_scheduled=$stow_available
 for package in "${packages[@]}"; do
     package_dir="$repo/packages/$package"
     [[ -f $package_dir/install.tsv ]] || die "unknown package: $package"
-    if [[ $subcommand == install ]]; then
+    if [[ $subcommand == install || $subcommand == uninstall ]]; then
         read_package
-        if [[ ! ${skipped[$package]+set} && -f $package_dir/hardware-model ]]; then
+        if [[ $subcommand == install && ! ${skipped[$package]+set} && -f $package_dir/hardware-model ]]; then
             read -r required_model < "$package_dir/hardware-model"
             model=
             if [[ -r /sys/devices/virtual/dmi/id/product_name ]]; then
@@ -356,6 +402,7 @@ for package in "${packages[@]}"; do
     fi
     [[ ! ${skipped[$package]+set} ]] || continue
     if [[ -d $package_dir/stow ]] && (( ! stow_scheduled )); then
+        [[ $subcommand != uninstall ]] || die "$package: GNU Stow is required to remove config links"
         die "$package: GNU Stow is required. Install stow or put the stow package first."
     fi
     if [[ $subcommand == install && $package == stow ]]; then
@@ -363,38 +410,57 @@ for package in "${packages[@]}"; do
     fi
 done
 
-if (( ! dry_run && stow_available )); then
-    check_stow_packages
-fi
-
-for package in "${packages[@]}"; do
-    [[ ! ${skipped[$package]+set} ]] || continue
-    package_dir="$repo/packages/$package"
-    printf '%s\n' "$package"
-    if [[ $subcommand == install ]]; then
-        for (( index=plan_start[$package]; index < plan_start[$package]+plan_count[$package]; index++ )); do
-            install_target "${plan_installers[index]}" "${plan_targets[index]}"
+if [[ $subcommand == uninstall ]]; then
+    # Unlink everything while GNU Stow is still installed, even if it is selected.
+    for package in "${packages[@]}"; do
+        [[ ! ${skipped[$package]+set} ]] || continue
+        package_dir="$repo/packages/$package"
+        unstow_package
+    done
+    # Undo scripts before removing the tools they depend on.
+    for (( package_index=${#packages[@]}-1; package_index >= 0; package_index-- )); do
+        package=${packages[package_index]}
+        [[ ! ${skipped[$package]+set} ]] || continue
+        package_dir="$repo/packages/$package"
+        printf '%s\n' "$package"
+        for (( index=plan_start[$package]+plan_count[$package]-1; index >= plan_start[$package]; index-- )); do
+            uninstall_target "${plan_installers[index]}" "${plan_targets[index]}"
         done
-        if (( ! dry_run && ! stow_available )) && [[ $package == stow ]]; then
-            command -v stow >/dev/null || die 'the stow package did not make GNU Stow available on PATH'
-            stow_available=1
-            check_stow_packages
-        fi
+    done
+else
+    if (( ! dry_run && stow_available )); then
+        check_stow_packages
     fi
 
-    if (( dry_run )); then
-        if (( stow_available )); then
-            stow_package preview
-        elif [[ -d $package_dir/stow ]]; then
-            printf '  Would link files from %s after installing GNU Stow\n' "$package_dir/stow"
+    for package in "${packages[@]}"; do
+        [[ ! ${skipped[$package]+set} ]] || continue
+        package_dir="$repo/packages/$package"
+        printf '%s\n' "$package"
+        if [[ $subcommand == install ]]; then
+            for (( index=plan_start[$package]; index < plan_start[$package]+plan_count[$package]; index++ )); do
+                install_target "${plan_installers[index]}" "${plan_targets[index]}"
+            done
+            if (( ! dry_run && ! stow_available )) && [[ $package == stow ]]; then
+                command -v stow >/dev/null || die 'the stow package did not make GNU Stow available on PATH'
+                stow_available=1
+                check_stow_packages
+            fi
         fi
-    else
-        stow_package apply
-    fi
-    if [[ $subcommand == install && -f $package_dir/post-install.sh ]]; then
-        printf '  Manual follow-up: bash %q\n' "$package_dir/post-install.sh"
-    fi
-done
+
+        if (( dry_run )); then
+            if (( stow_available )); then
+                stow_package preview
+            elif [[ -d $package_dir/stow ]]; then
+                printf '  Would link files from %s after installing GNU Stow\n' "$package_dir/stow"
+            fi
+        else
+            stow_package apply
+        fi
+        if [[ $subcommand == install && -f $package_dir/post-install.sh ]]; then
+            printf '  Manual follow-up: bash %q\n' "$package_dir/post-install.sh"
+        fi
+    done
+fi
 
 if (( ${#skipped[@]} )); then
     if (( dry_run )); then

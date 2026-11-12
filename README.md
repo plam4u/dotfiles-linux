@@ -352,13 +352,13 @@ To remove the override and allow the system Light Locker autostart entry again,
 run from the checkout:
 
 ```bash
-stow --dir="$PWD/packages/disable-light-locker" --target="$HOME" --no-folding --delete stow
+./bin/pm uninstall disable-light-locker
 ```
 
-`pm` currently has no uninstall command. Removing this override allows Light
-Locker to start at the next login if its system autostart entry is installed
-and enabled. If installation backed up an existing user override, that backup
-remains beside the original path and is not restored automatically.
+Removing this override allows Light Locker to start at the next login if its
+system autostart entry is installed and enabled. If installation backed up an
+existing user override, that backup remains beside the original path and is
+not restored automatically.
 
 ### Back up conflicting files
 
@@ -377,12 +377,44 @@ Review directory conflicts and unrelated symlinks manually. If you linked
 `pm stow vim`. `pm` calls GNU Stow with per-file links and package-local ignore
 rules, independently of your personal Stow settings.
 
+## Uninstall packages
+
+```bash
+pm uninstall --dry-run vim tmux
+pm uninstall vim tmux
+pm uninstall --bundle starter
+```
+
+`pm uninstall` reads the matching distro and architecture rows in `install.tsv`.
+It first removes the selected packages' Stow links, leaving regular files,
+unrelated symlinks, and backups intact. It then processes packages and their
+install rows in reverse order, using `apt-get remove`, `pacman -R`, or system
+Flatpak uninstall. Native targets and Flatpak apps that are already absent are
+skipped. Removal errors stop the command; earlier removals are not rolled back.
+
+For each script row, `pm` runs the package's optional `uninstall.sh` as your
+regular user. If it is missing, `pm` prints a warning and continues with the
+remaining removals. A dry run previews commands and config unlinking without
+executing uninstall scripts.
+
+Removal follows the manifest, including targets that were installed before
+`pm` or are shared with other packages. There is no ownership tracking, purge,
+or automatic dependency cleanup. Native package managers still enforce their
+removal rules. Backups and app data such as browser profiles, Docker data,
+and Steam libraries remain. The initial script uninstallers remove known
+installation paths and preserve changed system config files; they do not
+restore earlier backups. Shared setup such as Steam's i386 architecture,
+Docker's signing key, and the upstream ChatGPT Arch repository remains.
+
 ## Add a package
 
 `pm add <name>` creates a commented `packages/<name>/install.tsv`. Add
 tab-separated `distro`, `installer`, and `target` fields, with one target per
 row. Supported installers are `apt`, `pacman`, `flatpak` (Flathub), and `script`
 (an `install.sh` in the package directory).
+Add an optional `uninstall.sh` beside `install.sh` to reverse its setup. It
+should tolerate already-removed files, preserve user data, and use `sudo`
+where system changes require it. No extra manifest row is needed.
 
 One `pm` package can install multiple system packages. `pm` processes every row
 for the detected distro in file order, then links the config. For example, the
