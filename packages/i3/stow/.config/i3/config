@@ -198,9 +198,12 @@ assign [instance="^crx_hnpfjngllnobngcgfapefoaidbinmjnm$"] workspace number 3
 # ---------------------------------------------
 # 4 — Media
 # ---------------------------------------------
+# YouTube
 assign [instance="^crx_agimnkijcaahngcdmfeangaknmldooml$"] workspace number 4
-assign [instance="^crx_idniplokpnmiplmpfgamffjpfbfemgim$"] workspace number 4
-assign [instance="^crx_bdlnfdpdhknidkahpgicifonclffkmck$"] workspace number 4
+# Twitch
+assign [instance="^crx_idniplokpnmiplmpfgamffjpfbfemgim$"] workspace number 4 
+# Plex
+assign [instance="^crx_bdlnfdpdhknidkahpgicifonclffkmck$"] workspace number 4 
 
 # ---------------------------------------------
 # 5 — Gaming
