@@ -1,3 +1,7 @@
 # distro	installer	target
 debian	script	install.sh
+debian	apt	python3
+debian	script	downloads.sh
 arch	flatpak	com.brave.Browser
+arch	pacman	python
+arch	script	downloads.sh

@@ -8,7 +8,7 @@ Run from the repository root:
 ```
 
 The package installs `xdg-user-dirs` and Stow links
-`~/.config/user-dirs.dirs`. Downloads, Documents, and Pictures use their own
+`~/.config/user-dirs.dirs`. Downloads uses `~/downloads`; Documents and Pictures use their own
 folders. Desktop, Templates, Public, Music, and Videos resolve to the home
 directory, disabling dedicated folders for those locations.
 
