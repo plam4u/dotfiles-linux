@@ -96,6 +96,6 @@ complete -o filenames -cd -I
 # Save commands and reload history after each command
 PROMPT_COMMAND="history -a; history -n${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
 
-if command -v fastfetch >/dev/null 2>&1; then
-    fastfetch
-fi
+# if command -v fastfetch >/dev/null 2>&1; then
+#     fastfetch
+# fi
