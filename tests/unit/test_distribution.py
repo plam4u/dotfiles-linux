@@ -64,7 +64,7 @@ class Distribution(unittest.TestCase):
                 for expected in ('wl-clipboard', '/mbpfan/arch.sh', 'intel-ucode',
                                  '/system-preferences/hyprland.sh', 'linux-firmware-radeon'):
                     self.assertIn(expected, result.stdout)
-                for excluded in ('lightdm', 'xfce4', 'i3-wm', 'post-install.sh'):
+                for excluded in ('lightdm', 'xfce4', 'i3-wm', 'post-install.sh', 'com.brave.Browser'):
                     self.assertNotIn(excluded, result.stdout)
                 self.assertEqual(result.stdout.splitlines().count('tmux'), 1)
             release.write_text('ID=arch\n')
@@ -73,3 +73,4 @@ class Distribution(unittest.TestCase):
             self.assertIn('lightdm', result.stdout)
             self.assertIn('i3-wm', result.stdout)
             self.assertNotIn('Using omarchy-workstation', result.stdout)
+            self.assertIn('com.brave.Browser', result.stdout)

@@ -37,7 +37,7 @@ checkout, with `code` selected. An existing `main` session is reused unchanged.
 Window names stay fixed. Run `~/.local/bin/hypr-main-terminal` to open it manually.
 
 Workspace 2 opens the default browser through Omarchy's browser launcher.
-The package installs Brave and routes Brave/Chromium windows to workspace 2.
+Omarchy supplies Brave; this package routes Brave/Chromium windows to workspace 2.
 Workspace 3 opens Telegram (Flatpak) and WhatsApp Web through Omarchy's web-app
 launcher. WhatsApp requires a supported Chromium-based default browser and may
 require login. Rules use silent placement to avoid startup focus changes.

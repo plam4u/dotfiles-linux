@@ -3,5 +3,4 @@ arch	pacman	omarchy
 arch	pacman	foot
 arch	pacman	tmux
 arch	pacman	flatpak
-arch	flatpak	com.brave.Browser
 arch	flatpak	org.telegram.desktop

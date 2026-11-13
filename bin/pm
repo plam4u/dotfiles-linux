@@ -54,6 +54,10 @@ read_bundle() {
 }
 
 read_package() {
+    if [[ $platform == omarchy && $package == brave-browser ]]; then
+        skipped[$package]="Brave is supplied by Omarchy"
+        return
+    fi
     local line row_distro installer target row_architecture
     local row_pattern=$'^([a-z][a-z0-9-]*)\t([a-z][a-z0-9-]*)\t([^\t]+)(\t([a-z0-9_]+(,[a-z0-9_]+)*))?$'
     local has_rows=0 has_distro_rows=0 supported_architectures= architecture_matched=0
