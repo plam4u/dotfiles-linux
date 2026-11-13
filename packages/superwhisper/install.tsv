@@ -1,0 +1,6 @@
+# distro	installer	target
+debian	apt	curl
+debian	apt	zstd
+debian	apt	python3
+debian	script	install.sh	x86_64,aarch64
+arch	pacman	superwhisper-bin	x86_64,aarch64
