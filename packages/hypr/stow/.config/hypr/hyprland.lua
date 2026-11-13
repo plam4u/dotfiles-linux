@@ -11,7 +11,10 @@ dofile((os.getenv("OMARCHY_PATH") or "/usr/share/omarchy") .. "/default/hypr/boo
 -- omarchy_preinstalled_bindings = false
 
 -- Use our console sizing in place of the packaged console module.
-package.loaded["default.hypr.qconsole"] = require("hypr.qconsole")
+-- Defer loading until Omarchy has defined the animation curves it uses.
+package.preload["default.hypr.qconsole"] = function()
+    return require("hypr.qconsole")
+end
 
 -- Load Omarchy defaults.
 require("default.hypr.omarchy")
