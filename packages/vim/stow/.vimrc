@@ -4,7 +4,7 @@ colorscheme slate
 set ts=4 sts=4 sw=4 noet aw incsearch nohls scs sb spr nobk noswf noudf cul mouse=a
 
 let mapleader = " "
-vnoremap y y:call system("xclip -selection clipboard", @")<cr>
+vnoremap y y:call system(expand("~/.local/bin/vim-copy"), @")<cr>
 nnoremap H :bp<cr>
 nnoremap L :bn<cr>
 inoremap jk <esc>
