@@ -42,3 +42,13 @@ Workspace 3 opens Telegram (Flatpak) and WhatsApp Web through Omarchy's web-app
 launcher. WhatsApp requires a supported Chromium-based default browser and may
 require login. Rules use silent placement to avoid startup focus changes.
 These applications start on the next desktop login, not on config reload.
+
+## Window navigation
+
+Super+H/J/K/L focuses left/down/up/right. Adding Shift swaps the focused window
+in that direction, matching the existing arrow-key bindings. Displaced actions:
+
+- Super+semicolon: toggle split (previously Super+J).
+- Super+F1: keybinding help (previously Super+K).
+- Super+E / Super+Alt+E: cycle workspace layout forward/backward (previously
+  Super+L / Super+Alt+L).
