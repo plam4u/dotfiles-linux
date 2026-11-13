@@ -66,17 +66,17 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# Retain Omarchy's aliases, prompt, functions and development tools.
+if [ -n "${OMARCHY_PATH:-}" ] && [ -r "$OMARCHY_PATH/default/bash/rc" ]; then
+    . "$OMARCHY_PATH/default/bash/rc"
+fi
+
 for pm_fragment in "$HOME"/.bashrc.d/*.sh; do
     if [ -f "$pm_fragment" ] && [ -r "$pm_fragment" ]; then
         . "$pm_fragment"
     fi
 done
 unset pm_fragment
-
-# Retain Omarchy's aliases, prompt, functions and development tools.
-if [ -n "${OMARCHY_PATH:-}" ] && [ -r "$OMARCHY_PATH/default/bash/rc" ]; then
-    . "$OMARCHY_PATH/default/bash/rc"
-fi
 
 # Load personal alias overrides after package fragments.
 

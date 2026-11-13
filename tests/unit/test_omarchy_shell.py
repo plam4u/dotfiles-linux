@@ -16,13 +16,14 @@ class OmarchyShell(unittest.TestCase):
             defaults.mkdir(parents=True)
             bootstrap = defaults / 'env-bootstrap'
             bootstrap.write_text('export OMARCHY_PATH="$HOME/omarchy"\nexport OMARCHY_ENV_LOADED=yes\n')
-            (defaults / 'rc').write_text('omarchy_test_function() { printf omarchy; }\nalias omarchy_test_alias=true\n')
+            (defaults / 'rc').write_text('omarchy_test_function() { printf omarchy; }\nalias omarchy_test_alias=true\nalias t=tmux\n')
             rc = home / '.bashrc'
             rc.write_text((ROOT / 'packages/shell/stow/.bashrc').read_text().replace(
                 '/usr/share/omarchy/default/bash/env-bootstrap', str(bootstrap)))
             fragments = home / '.bashrc.d'
             fragments.mkdir()
             (fragments / '00-shell.sh').symlink_to(ROOT / 'packages/shell/stow/.bashrc.d/00-shell.sh')
+            (fragments / 'tig.sh').symlink_to(ROOT / 'packages/tig/stow/.bashrc.d/tig.sh')
             (home / '.bash_aliases').write_text('alias omarchy_test_alias=false\n')
             env = {**os.environ, 'HOME': str(home), 'TERM': 'dumb'}
             result = subprocess.run(['bash', '--noprofile', '--norc', '-c',
@@ -37,7 +38,9 @@ test "$PATH" = "$first_path" || exit 1
 test "$DOTFILES_ROOT" = "$EXPECTED_ROOT" || exit 1
 omarchy_test_function
 alias omarchy_test_alias
+alias t
 '''], env={**env, 'EXPECTED_ROOT': str(ROOT)}, text=True, capture_output=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn('omarchy', result.stdout)
             self.assertIn("omarchy_test_alias='false'", result.stdout)
+            self.assertIn("t='tig'", result.stdout)
