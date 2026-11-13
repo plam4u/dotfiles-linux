@@ -1,0 +1,13 @@
+# distro	installer	target
+debian	apt	fcitx5
+debian	apt	fcitx5-config-qt
+debian	apt	fcitx5-chinese-addons
+debian	apt	fcitx5-frontend-gtk3
+debian	apt	fcitx5-frontend-gtk4
+debian	apt	fcitx5-frontend-qt5
+debian	apt	fcitx5-frontend-qt6
+arch	pacman	fcitx5
+arch	pacman	fcitx5-configtool
+arch	pacman	fcitx5-chinese-addons
+arch	pacman	fcitx5-gtk
+arch	pacman	fcitx5-qt
