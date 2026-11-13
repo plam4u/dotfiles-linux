@@ -12,7 +12,7 @@ hyprctl configerrors
 ```
 
 Stow tracks the main `hyprland.lua` entry point and personal `bindings.lua`,
-`monitors.lua`, `looknfeel.lua` and `autostart.lua`. Edit them here or through the
+`monitors.lua`, `looknfeel.lua`, `qconsole.lua` and `autostart.lua`. Edit them here or through the
 links in `~/.config/hypr/`. Existing files are backed up by the package manager.
 The entry point continues loading Omarchy's packaged defaults.
 
@@ -52,3 +52,10 @@ in that direction, matching the existing arrow-key bindings. Displaced actions:
 - Super+F1: keybinding help (previously Super+K).
 - Super+E / Super+Alt+E: cycle workspace layout forward/backward (previously
   Super+L / Super+Alt+L).
+
+## Drop-down console
+
+`~/.config/hypr/qconsole.lua` replaces Omarchy's packaged console module.
+`local share = 0.7` sets its height to 70% of the usable screen.
+`width_share = 0.5` and `box = 2` preserve the original single-window width;
+multiple windows still use the full width.

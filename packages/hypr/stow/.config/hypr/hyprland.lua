@@ -10,6 +10,9 @@ dofile((os.getenv("OMARCHY_PATH") or "/usr/share/omarchy") .. "/default/hypr/boo
 -- keeping core window-manager bindings:
 -- omarchy_preinstalled_bindings = false
 
+-- Use our console sizing in place of the packaged console module.
+package.loaded["default.hypr.qconsole"] = require("hypr.qconsole")
+
 -- Load Omarchy defaults.
 require("default.hypr.omarchy")
 
