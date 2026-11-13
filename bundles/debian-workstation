@@ -66,6 +66,7 @@ xfce4-terminal
 system-preferences
 i3
 openssh-server
+ssh-agent
 brave-browser
 chatgpt
 telegram

@@ -52,6 +52,7 @@ emacs
 fonts
 system-preferences
 openssh-server
+ssh-agent
 brave-browser
 telegram
 obsidian
