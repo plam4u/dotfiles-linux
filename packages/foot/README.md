@@ -7,8 +7,8 @@ Install from the repository root in a Wayland desktop session:
 ./bin/pm install foot
 ```
 
-The package installs Foot and runs the shared fonts installer to provide
-JetBrainsMono Nerd Font and MesloLGS NF. Stow links
+The package installs Foot and runs the [shared fonts installer](../fonts/README.md).
+Stow links
 `stow/.config/foot/foot.ini` to `~/.config/foot/foot.ini`, preserving existing
 configuration with numbered backups. To link configuration only:
 
