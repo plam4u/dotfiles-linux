@@ -53,3 +53,9 @@ hl.config({
 --     column_width = 0.97,
 --   },
 -- })
+
+hl.config({
+  cursor = {
+    no_warps = true,
+  },
+})
