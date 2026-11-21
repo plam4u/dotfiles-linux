@@ -162,8 +162,8 @@ application data are described in the owning package's documentation.
 
 This creates `packages/example/install.tsv`. Use literal tabs between `distro`,
 `installer` and `target`, with an optional fourth architecture field. Supported
-installers are `apt`, `pacman`, `flatpak` for system Flathub, and `script` for a
-package-local `.sh` file. Script targets are filenames without directory
+installers are `apt`, `pacman`, `flatpak` for per-user Flathub apps, and `script`
+for a package-local `.sh` file. Script targets are filenames without directory
 components; multiple scripts can split setup into logical units.
 
 Declare each package's dependencies before scripts that use them. Packages must
