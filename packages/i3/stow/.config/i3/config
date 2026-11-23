@@ -198,14 +198,9 @@ assign [class="^TelegramDesktop$"] workspace number 3
 assign [instance="^crx_hnpfjngllnobngcgfapefoaidbinmjnm$"] workspace number 3
 
 # ---------------------------------------------
-# 4 — Media
+# 4 — Notes
 # ---------------------------------------------
-# YouTube
-assign [instance="^crx_agimnkijcaahngcdmfeangaknmldooml$"] workspace number 4
-# Twitch
-assign [instance="^crx_idniplokpnmiplmpfgamffjpfbfemgim$"] workspace number 4 
-# Plex
-assign [instance="^crx_bdlnfdpdhknidkahpgicifonclffkmck$"] workspace number 4 
+assign [class="^md\.obsidian\.Obsidian$"] workspace number 4
 
 # ---------------------------------------------
 # 5 — Gaming
@@ -213,9 +208,14 @@ assign [instance="^crx_bdlnfdpdhknidkahpgicifonclffkmck$"] workspace number 4
 assign [class="^steam$"] workspace number 5
 
 # ---------------------------------------------
-# 6 — Notes
+# 6 — Media
 # ---------------------------------------------
-assign [class="^md\.obsidian\.Obsidian$"] workspace number 6
+# YouTube
+assign [instance="^crx_agimnkijcaahngcdmfeangaknmldooml$"] workspace number 4
+# Twitch
+assign [instance="^crx_idniplokpnmiplmpfgamffjpfbfemgim$"] workspace number 4 
+# Plex
+assign [instance="^crx_bdlnfdpdhknidkahpgicifonclffkmck$"] workspace number 4 
 
 # ---------------------------------------------
 # Scratchpad
