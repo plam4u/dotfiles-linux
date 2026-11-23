@@ -7,10 +7,14 @@ Run from the repository root:
 ./bin/pm install xdg-user-dirs
 ```
 
-The package installs `xdg-user-dirs` and Stow links
-`~/.config/user-dirs.dirs`. Downloads uses `~/downloads`; Documents and Pictures use their own
-folders. Desktop, Templates, Public, Music, and Videos resolve to the home
-directory, disabling dedicated folders for those locations.
+The package installs `xdg-user-dirs` and links `~/.config/user-dirs.dirs`
+and `~/.config/user-dirs.conf` with Stow. Desktop, Downloads, Documents,
+and Pictures use `~/desktop`, `~/downloads`, `~/documents`, and `~/pictures`.
+Templates, Public, Music, and Videos resolve to the home directory.
+
+`user-dirs.conf` disables automatic updates so `xdg-user-dirs-update` preserves
+the symlink and its mappings. Edit `user-dirs.dirs` in this package to change
+the mappings, and create any directories you want applications to use.
 
 To apply only the configuration with GNU Stow already installed:
 
