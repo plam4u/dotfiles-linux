@@ -1,0 +1,30 @@
+pkgname=nordvpn-bin
+pkgver=6.1.0
+pkgrel=1
+pkgdesc='NordVPN command-line client and daemon'
+arch=('x86_64')
+url='https://nordvpn.com/download/linux/'
+license=('custom')
+depends=('ca-certificates' 'glibc' 'iproute2' 'iptables' 'libcap-ng' 'libgcc'
+         'libidn2' 'libnl' 'libxslt' 'procps-ng' 'shadow' 'sqlite' 'systemd' 'zlib')
+provides=('nordvpn')
+conflicts=('nordvpn' 'openvpn-nordvpn')
+options=('!strip' '!debug')
+source=("https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/n/nordvpn/nordvpn_${pkgver}_amd64.deb")
+sha256sums=('f8b5489babb2b67fb49dc8ed891b9e423078831dbb3ad276fae1e5c6254731fb')
+noextract=("${source[0]##*/}")
+
+package() {
+    local library
+    bsdtar -xOf "${source[0]##*/}" data.tar.gz | bsdtar -xf - -C "$pkgdir"
+    mv "$pkgdir/usr/sbin/nordvpnd" "$pkgdir/usr/bin/"
+    rmdir "$pkgdir/usr/sbin"
+    rm "$pkgdir/etc/init.d/nordvpn"
+    rmdir "$pkgdir/etc/init.d"
+    sed -i 's|/usr/sbin/nordvpnd|/usr/bin/nordvpnd|' \
+        "$pkgdir/usr/lib/systemd/system/nordvpnd"{,-killswitch}.service
+    install -Dm644 /dev/stdin "$pkgdir/usr/lib/sysusers.d/nordvpn.conf" <<< 'g nordvpn -'
+    for library in "$pkgdir/usr/lib/nordvpn/"*.so; do
+        ln -s "nordvpn/${library##*/}" "$pkgdir/usr/lib/${library##*/}"
+    done
+}

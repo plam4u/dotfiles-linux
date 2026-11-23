@@ -1,0 +1,4 @@
+# distro	installer	target	architecture
+debian	script	debian.sh	x86_64,aarch64,armv7l
+arch	pacman	base-devel	x86_64
+arch	script	arch.sh	x86_64
