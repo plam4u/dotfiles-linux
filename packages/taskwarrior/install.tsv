@@ -1,0 +1,10 @@
+# distro	installer	target
+debian	apt	build-essential
+debian	apt	ca-certificates
+debian	apt	cmake
+debian	apt	curl
+debian	apt	git
+debian	apt	libgnutls28-dev
+debian	apt	uuid-dev
+debian	script	install.sh
+arch	pacman	task
