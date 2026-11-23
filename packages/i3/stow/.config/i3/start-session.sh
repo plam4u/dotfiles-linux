@@ -5,12 +5,16 @@ xfce4-terminal \
     --disable-server \
     --class=DevTerminal \
     --command="tmux new-session -A -s main" &
+
+# ChatGPT Native
+# REASON: app is laggy
 # if command -v chatgpt >/dev/null; then
 #     chatgpt &
 # fi
 
 # ChatGPT PWA
-gtk-launch "brave-cadlkienfkclaiaibeoongdcgmdikeeg-Default.desktop" &
+# REASON: app is laggy
+# gtk-launch "brave-cadlkienfkclaiaibeoongdcgmdikeeg-Default.desktop" &
 
 # Workspace 2: Browser
 if command -v brave-browser >/dev/null; then
