@@ -1,3 +1,7 @@
 # distro	installer	target
 debian	apt	vim
+debian	apt	xclip
+debian	apt	wl-clipboard
 arch	pacman	vim
+arch	pacman	xclip
+arch	pacman	wl-clipboard

@@ -20,17 +20,26 @@ setxkbmap -layout us -variant altgr-intl
 
 An XDG autostart entry runs it at graphical login in XFCE and in the repository's
 i3 setup (through dex). To apply it immediately, run `~/.local/bin/keyboard-layout.sh`.
-The manifest installs `setxkbmap` on both supported distributions.
+The manifest installs `setxkbmap` on Debian and Arch. The autostart helper
+exits without changing anything in a Wayland session.
+
+On Omarchy, `hyprland.sh` appends a US `altgr-intl` layout override to the user's
+`~/.config/hypr/input.lua`, preserving other input settings and saving a numbered
+backup. Repeated installation does not append duplicate overrides. It reloads
+and checks the running Hyprland configuration, or reports that it will apply at
+next login when run outside the graphical session. The installed layout remains
+on uninstall, like the timezone and appearance preferences.
 
 `keyboard.sh` installs `defaults/keyd.conf` at `/etc/keyd/default.conf`. It maps
 Caps Lock to left Ctrl and Right Command/Meta to a navigation layer, saves
 numbered backups of changed configuration, enables and starts keyd, and reloads
 its configuration.
 
-On Debian x86-64 `iMac12,2`, the script also installs
+On x86-64 `iMac12,2`, the script also installs
 `/etc/modprobe.d/imac2011-keyboard.conf`: Fn swaps with left Ctrl, and left Option
 swaps with left Command. It rebuilds the initramfs when the options change.
-Reboot to load driver changes.
+Debian uses `update-initramfs`, Arch uses `mkinitcpio`, and Omarchy uses
+`limine-mkinitcpio` to rebuild the boot images. Reboot to load driver changes.
 
 After installing the package, reapply just keyboard preferences with:
 
@@ -47,7 +56,8 @@ bash packages/system-preferences/keyboard.sh
 `appearance.sh` sets the GNOME dark color scheme, Adwaita-dark GTK theme and
 shared XFCE appearance: cursor theme, font rendering, scaling, window
 decorations, opacity, shadows and compositing. Settings apply to the current
-user when the corresponding desktop settings tools are installed.
+user when the corresponding desktop settings tools are installed. On Omarchy,
+the script preserves the active Omarchy theme instead of applying these changes.
 
 ```bash
 bash packages/system-preferences/appearance.sh --dry-run

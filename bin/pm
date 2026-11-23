@@ -33,6 +33,10 @@ request_package() {
 
 read_bundle() {
     local name=$1 line
+    if [[ ${platform:-} == omarchy && $name == arch-workstation ]]; then
+        printf 'Using omarchy-workstation for arch-workstation on Omarchy.\n'
+        name=omarchy-workstation
+    fi
     [[ ! ${active_bundles[$name]+set} ]] || die "bundle include cycle: $name"
     valid_name "$name" || die "invalid bundle name: $name"
     local path="$repo/bundles/$name"
@@ -50,6 +54,10 @@ read_bundle() {
 }
 
 read_package() {
+    if [[ $platform == omarchy && $package == brave-browser ]]; then
+        skipped[$package]="Brave is supplied by Omarchy"
+        return
+    fi
     local line row_distro installer target row_architecture
     local row_pattern=$'^([a-z][a-z0-9-]*)\t([a-z][a-z0-9-]*)\t([^\t]+)(\t([a-z0-9_]+(,[a-z0-9_]+)*))?$'
     local has_rows=0 has_distro_rows=0 supported_architectures= architecture_matched=0
@@ -146,12 +154,12 @@ install_target() {
         flatpak)
             if ! command -v flatpak >/dev/null; then
                 native_install flatpak
-            elif flatpak info --system "$target" >/dev/null 2>&1; then
+            elif flatpak info --user "$target" >/dev/null 2>&1; then
                 printf '  Already installed from Flatpak: %s\n' "$target"
                 return
             fi
-            run sudo flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-            run sudo flatpak install --system --noninteractive flathub "$target"
+            run flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+            run flatpak install --user --noninteractive flathub "$target"
             ;;
         script) run bash "$package_dir/$target" ;;
     esac
@@ -175,11 +183,11 @@ uninstall_target() {
             run sudo pacman -R --noconfirm -- "$target"
             ;;
         flatpak)
-            if ! command -v flatpak >/dev/null || ! flatpak info --system "$target" >/dev/null 2>&1; then
+            if ! command -v flatpak >/dev/null || ! flatpak info --user "$target" >/dev/null 2>&1; then
                 printf '  Not installed from Flatpak: %s\n' "$target"
                 return
             fi
-            run sudo flatpak uninstall --system --noninteractive "$target"
+            run flatpak uninstall --user --noninteractive "$target"
             ;;
         script)
             if [[ -f $package_dir/uninstall.sh ]]; then
@@ -344,7 +352,9 @@ fi
 [[ -r /etc/os-release ]] || die 'cannot read /etc/os-release'
 distro=$(. /etc/os-release; printf '%s' "${ID:-}")
 architecture=$(uname -m)
+platform=$distro
 case $distro in
+    omarchy) distro=arch ;;
     debian|arch) ;;
     *) die "unsupported distro: $distro" ;;
 esac

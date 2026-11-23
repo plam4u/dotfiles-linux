@@ -1,0 +1,40 @@
+diff --git a/src/mbpfan.c b/src/mbpfan.c
+index 4527a25..6b2bc12 100644
+--- a/src/mbpfan.c
++++ b/src/mbpfan.c
+@@ -41,0 +42 @@
++#include <glob.h>
+@@ -80,0 +82,17 @@ char applesmc_fan_path[PATH_MAX];
++static bool hwmon_fans = false;
++
++static void select_hwmon_fans(void)
++{
++    char *pattern = smprintf("%s/hwmon/hwmon*/fan1_target", applesmc_path);
++    glob_t matches = {0};
++    if (glob(pattern, 0, NULL, &matches) == 0 && matches.gl_pathc == 1) {
++        char *directory = strdup(matches.gl_pathv[0]);
++        *strrchr(directory, '/') = '\0';
++        snprintf(applesmc_path, sizeof(applesmc_path), "%s", directory);
++        snprintf(applesmc_fan_path, sizeof(applesmc_fan_path), "%s/fan", directory);
++        hwmon_fans = true;
++        free(directory);
++    }
++    globfree(&matches);
++    free(pattern);
++}
+@@ -282 +300 @@ t_fans *retrieve_fans()
+-    const char *path_output_end = "_output";
++    const char *path_output_end = hwmon_fans ? "_target" : "_output";
+@@ -295 +313,3 @@ t_fans *retrieve_fans()
+-        path_manual = smprintf("%s%d%s", path_begin, counter, path_man_end);
++        path_manual = hwmon_fans
++            ? smprintf("%s/pwm%d_enable", applesmc_path, counter)
++            : smprintf("%s%d%s", path_begin, counter, path_man_end);
+@@ -299 +319 @@ t_fans *retrieve_fans()
+-        FILE *file = fopen(path_output, "w");
++        FILE *file = access(path_output, F_OK) == 0 ? fopen(path_output, "w") : NULL;
+@@ -394 +414 @@ void set_fans_auto(t_fans *fans)
+-    set_fans_mode(fans, 0);
++    set_fans_mode(fans, hwmon_fans ? 2 : 0);
+@@ -589,0 +610 @@ void check_requirements(const char *program_path)
++        select_hwmon_fans();

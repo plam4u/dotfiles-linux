@@ -7,6 +7,11 @@
 Run from the repository root. The package installs Bash, Bash completion and Zsh,
 and links `.bashrc`, `.zshrc` and `.profile`. Open a new shell to load them.
 
+On Omarchy, Bash also loads the packaged environment and default Bash rc,
+preserving Omarchy aliases, functions, prompt and development tool setup.
+Package fragments load afterward so repository aliases take precedence over
+Omarchy defaults. Personal `~/.bash_aliases` overrides load last.
+
 `00-shell.sh` resolves the checkout location through its Stow symlink and exports
 `DOTFILES_ROOT`, then loads `share/shell.sh` for common PATH setup, editor defaults,
 aliases and colors. PATH includes `~/.local/bin` and this checkout's `bin`, making

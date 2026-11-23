@@ -1,3 +1,8 @@
+# Load Omarchy's login environment even in non-interactive shells.
+if [ -r /usr/share/omarchy/default/bash/env-bootstrap ]; then
+    . /usr/share/omarchy/default/bash/env-bootstrap
+fi
+
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
@@ -61,6 +66,17 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# Retain Omarchy's environment, aliases, prompt and development tools.
+# Skip its functions so Git aliases such as ga and gd remain available.
+if [ -n "${OMARCHY_PATH:-}" ] && [ -r "$OMARCHY_PATH/default/bash/rc" ]; then
+    unset -f ga gd
+    for pm_startup in envs shell aliases init; do
+        . "$OMARCHY_PATH/default/bash/$pm_startup"
+    done
+    unset pm_startup
+    bind -f "$OMARCHY_PATH/default/bash/inputrc"
+fi
+
 for pm_fragment in "$HOME"/.bashrc.d/*.sh; do
     if [ -f "$pm_fragment" ] && [ -r "$pm_fragment" ]; then
         . "$pm_fragment"
@@ -74,7 +90,12 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
+# Complete commands and directories for autocd at the start of a line.
+complete -o filenames -cd -I
+
 # Save commands and reload history after each command
 PROMPT_COMMAND="history -a; history -n${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
 
-fastfetch
+# if command -v fastfetch >/dev/null 2>&1; then
+#     fastfetch
+# fi

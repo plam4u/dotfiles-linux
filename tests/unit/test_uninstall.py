@@ -124,15 +124,38 @@ esac
         self.pm('uninstall', 'group')
         self.assertEqual(self.commands()[-1], 'pacman -R --noconfirm -- desktop-group')
 
-    def test_system_flatpak_and_optional_script(self):
+    def test_flatpak_and_optional_script(self):
         self.package('mixed', 'debian\tapt\tpresent\ndebian\tflatpak\torg.example.App\n'
                      'debian\tflatpak\tabsent\ndebian\tscript\tinstall.sh\n', config=True)
         self.pm('stow', 'mixed')
         result = self.pm('uninstall', 'mixed')
         self.assertIn('Warning: mixed: missing uninstall.sh', result.stderr)
         self.assertFalse((self.home / '.mixed').exists())
-        self.assertEqual(self.commands(), ['flatpak uninstall --system --noninteractive org.example.App',
+        self.assertEqual(self.commands(), ['flatpak uninstall --user --noninteractive org.example.App',
                                           'apt-get remove -y -- present'])
+
+    def test_user_flatpak_installs_and_uninstalls_without_sudo(self):
+        shutil.copytree(ROOT / 'packages/telegram', self.repo / 'packages/telegram')
+        self.mock('sudo', 'exit 99')
+        self.mock('flatpak', r'''
+[[ $2 == --user ]] || exit 99
+case $1 in
+    info) [[ -f "$HOME/installed" ]] ;;
+    remote-add) printf 'flatpak %s\n' "$*" >> "$PM_TEST_LOG" ;;
+    install) touch "$HOME/installed"; printf 'flatpak %s\n' "$*" >> "$PM_TEST_LOG" ;;
+    uninstall) rm "$HOME/installed"; printf 'flatpak %s\n' "$*" >> "$PM_TEST_LOG" ;;
+    *) exit 99 ;;
+esac
+''')
+        self.pm('install', 'telegram')
+        self.pm('install', 'telegram')
+        self.pm('uninstall', 'telegram')
+        self.pm('uninstall', 'telegram')
+        self.assertEqual(self.commands(), [
+            'flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo',
+            'flatpak install --user --noninteractive flathub org.telegram.desktop',
+            'flatpak uninstall --user --noninteractive org.telegram.desktop',
+        ])
 
     def test_dry_run_never_executes_removals_or_scripts(self):
         self.package('example', 'debian\tapt\tpresent\ndebian\tscript\tinstall.sh\n',

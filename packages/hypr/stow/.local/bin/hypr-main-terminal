@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script=$(realpath -- "${BASH_SOURCE[0]}")
+repo=${script%/packages/hypr/stow/.local/bin/hypr-main-terminal}
+
+if ! tmux has-session -t '=main' 2>/dev/null; then
+    tmux new-session -d -s main -n code -c "$HOME" \; \
+        set-window-option -t main:code automatic-rename off \; \
+        new-window -t main -n shell -c "$HOME" \; \
+        set-window-option -t main:shell automatic-rename off \; \
+        new-window -t main -n dotfiles -c "$repo" \; \
+        set-window-option -t main:dotfiles automatic-rename off \; \
+        select-window -t main:code
+fi
+
+exec foot --app-id=main-terminal tmux attach-session -t '=main'

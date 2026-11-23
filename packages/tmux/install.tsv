@@ -1,5 +1,9 @@
 # distro	installer	target
 debian	apt	tmux
+debian	apt	wl-clipboard
 debian	apt	xclip
+debian	script	install.sh
 arch	pacman	tmux
+arch	pacman	wl-clipboard
 arch	pacman	xclip
+arch	script	install.sh

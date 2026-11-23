@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+. /etc/os-release
+if [[ $ID == omarchy ]]; then
+    printf 'Keeping the active Omarchy theme.\n'
+    exit 0
+fi
+
 dry_run=0
 case ${1:-} in
     --dry-run) dry_run=1 ;;

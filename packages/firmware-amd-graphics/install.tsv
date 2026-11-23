@@ -1,2 +1,4 @@
 # distro	installer	target
 debian	apt	firmware-amd-graphics
+arch	pacman	linux-firmware-amdgpu
+arch	pacman	linux-firmware-radeon

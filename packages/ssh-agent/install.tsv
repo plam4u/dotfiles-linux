@@ -1,0 +1,11 @@
+# distro	installer	target
+debian	apt	openssh-client
+debian	apt	gcr4
+debian	apt	gnome-keyring
+debian	apt	dbus-user-session
+debian	script	install.sh
+arch	pacman	openssh
+arch	pacman	gcr-4
+arch	pacman	gnome-keyring
+arch	pacman	dbus
+arch	script	install.sh
