@@ -3,7 +3,8 @@
 
 (when (file-exists-p custom-file)
   (load custom-file))
-
+ 
+(setq auto-save-default nil)
 (setq inhibit-startup-screen t)
 (setq ring-bell-function 'ignore)
 
