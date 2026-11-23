@@ -1,0 +1,3 @@
+# distro	installer	target
+debian	flatpak	org.keepassxc.KeePassXC
+arch	flatpak	org.keepassxc.KeePassXC
