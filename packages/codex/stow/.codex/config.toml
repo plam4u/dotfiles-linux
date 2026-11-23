@@ -1,5 +1,5 @@
-model = "gpt-6.1-sol"
-model_reasoning_effort = "medium"
+model = "gpt-6.2-sol"
+model_reasoning_effort = "low"
 [marketplaces.openai-primary-runtime]
 source_type = "local"
 source = "/home/plam/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
@@ -65,6 +65,9 @@ trust_level = "trusted"
 [projects."/home/plam/dotfiles-macos"]
 trust_level = "trusted"
 
+[projects."/home/plam/projects/42-projects"]
+trust_level = "trusted"
+
 [desktop]
 sansFontSize = 16
 codeFontSize = 14
@@ -79,4 +82,4 @@ theme = "dark-neon"
 agents_overview_grouping = "status"
 
 [tui.model_availability_nux]
-"gpt-6.1-sol" = 3
+"gpt-6.1-sol" = 4
