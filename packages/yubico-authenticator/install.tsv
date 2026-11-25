@@ -1,0 +1,9 @@
+# distro	installer	target
+debian	apt	libccid
+debian	apt	pcscd
+debian	script	install.sh
+debian	flatpak	com.yubico.yubioath
+arch	pacman	pcsclite
+arch	pacman	ccid
+arch	script	install.sh
+arch	flatpak	com.yubico.yubioath
