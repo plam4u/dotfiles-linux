@@ -1,0 +1,7 @@
+# distro	installer	target
+debian	apt	libyubikey-udev
+debian	apt	yubikey-manager
+debian	script	install.sh
+arch	pacman	yubikey-personalization
+arch	pacman	yubikey-manager
+arch	script	install.sh
