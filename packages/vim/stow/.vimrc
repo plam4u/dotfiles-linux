@@ -9,11 +9,11 @@ nnoremap H :bp<cr>
 nnoremap L :bn<cr>
 inoremap jk <esc>
 inoremap kj <esc>
-nnoremap <leader>ls :ls<cr>
-nnoremap <leader>bd :bd<cr>
-nnoremap <leader>so :so ~/.vimrc<cr>
+nnoremap <leader>e :e %:p:h<cr>
+nnoremap <leader>r :Rexplore<cr>
 nnoremap <leader>w :w<cr>
 nnoremap <leader>q :q<cr>
 nnoremap <leader>x :wqa<cr>
-nnoremap <leader>e :e %:p:h<cr>
-nnoremap <leader>r :Rexplore<cr>
+nnoremap <leader>ls :ls<cr>
+nnoremap <leader>bd :bd<cr>
+nnoremap <leader>so :so ~/.vimrc<cr>
